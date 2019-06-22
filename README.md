@@ -18,7 +18,7 @@ The game is set to 4 Quarters each 12 minutes long.
 
 ## Home Screen:
 
-When the program is launched from `BasketballMain` the *Home Screen* is created and is
+When the program is launched from `BasketballMain` the **Home Screen** is created and is
 shown below:
 
 <img src = "Screenshots/GetPlayersPanelwPlayers.PNG" width = "600">
@@ -37,7 +37,7 @@ Icon | Component Name | Description
 
 ## Starter Selection:
 
-If the number of players entered in the *Home Screen* is greater the number
+If the number of players entered in the **Home Screen** is greater the number
 of starters selected in the settings window, then you will need to choose
 who will start in your game. 
 
@@ -54,16 +54,16 @@ Icon | Component Name | Description
 <img src = "Image/start.png" width = "50"> | **Start Game** | Becomes enabled when the correct number of starters have been entered. Opens a **Roster Management** window.
 <img src = "Image/close.png" width = "50"> | **Close** | Closes the **Starter Selection** window.
 
-### Roster Management
+## Roster Management
 
 If the number of players entered equals the number of starters specified (either by default or in
 the settings) then you will be directed to this window after clicking the Start Game
-button in the *Home Screen* or if the game you are loading with the *Old Games*
+button in the **Home Screen** or if the game you are loading with the *Old Games*
 button had as many players as starters specified. 
 
 <img src = "Screenshots/ManagementPanelNoBench.PNG" width = "600">
 
-If the number of players entered was greate than the number of starters specified, then you were redirected to the *Starter Selection* window where you chose your starters. Once you pressed the *Start Game* button there, you will be redirected to an alternate version of the *Roster Management* window with starters and a bench.
+If the number of players entered was greater than the number of starters specified, then you were redirected to the **Starter Selection** window where you chose your starters. Once you pressed the *Start Game* button there, you will be redirected to an alternate version of the **Roster Management** window with starters and a bench.
 
 <img src = "Screenshots/ManagementPanelwBench.PNG" width = "600">
 
