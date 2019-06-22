@@ -2,25 +2,19 @@
 ### By: Alex Eidt
 A program that can track player statistics for a Basketball game
 
-[GetPlayersPanel]: Screenshots/GetPlayersPanel.PNG
-[GetPlayersPanelwPlayers]: Screenshots/GetPlayersPanelwPlayers.png
-[SettingsWindow]: Screenshots/SettingsWindow.png
-[StartersPanel]: Screenshots/StartersPanel.png
-[StartersPanelwPlayers]: Screenshots/StartersPanelwPlayers.png
-[ManagementPanelNoBench]: Screenshots/ManagementPanelNoBench.png
-[ManagementPanelwBench]: Screenshots/ManagementPanelwBench.png
-[BoxScoreTable]: Screenshots/BoxScoreTable.png
-[BoxScoreTableTotal]: Screenshots/BoxScoreTableTotal.png
-[AddStatWindow]: Screenshots/AddStatPanel.png
-[Instructions]: Screenshots/InstructionsAbbreviations.png
-[BBALLFileType]: Screenshots/BBALLFileType.png
-[BBALLFileTypeUndo]: Screenshots/BBALLFileTypeUndo.png
-[UndoButton]: Screenshots/UndoButton.png
-[OREB]: Screenshots/OffensiveRebounded.png
-[WhoGotOREB]: Screenshots/WhoGotTheOffensiveRebound.png
-[LoadOldGame]: Screenshots/LoadOldGame.png
-[Assist]: Screenshots/AssistedFG.png
-[WhoGotAst]: Screenshots/WhoGotTheAssist.png
+
+[ManagementPanelNoBench]: Screenshots/ManagementPanelNoBench.PNG
+[ManagementPanelwBench]: Screenshots/ManagementPanelwBench.PNG
+[BoxScoreTable]: Screenshots/BoxScoreTable.PNG
+[BoxScoreTableTotal]: Screenshots/BoxScoreTableTotal.PNG
+[AddStatWindow]: Screenshots/AddStatPanel.PNG
+[BBALLFileType]: Screenshots/BBALLFileType.PNG
+[BBALLFileTypeUndo]: Screenshots/BBALLFileTypeUndo.PNG
+[UndoButton]: Screenshots/UndoButton.PNG
+[OREB]: Screenshots/OffensiveRebounded.PNG
+[WhoGotOREB]: Screenshots/WhoGotTheOffensiveRebound.PNG
+[Assist]: Screenshots/AssistedFG.PNG
+[WhoGotAst]: Screenshots/WhoGotTheAssist.PNG
 
 ## Overview:
 The Basketball Statistics Tracking Program allows the user to track statistics for all their players
@@ -52,7 +46,7 @@ at the bottom of the `GetPlayersPanel`. To remove the most recently added
 player, press the Undo button. The player list is updated every time a player
 is added or removed.
 
-![Entering player names of your team](GetPlayersPanelwPlayers)
+![Entering player names of your team](Screenshots/GetPlayersPanelwPlayers.PNG)
 
 ##### Load Old Games Button:
 
@@ -60,7 +54,7 @@ The Load Old Games button allows you to load any games you have previously
 tracked using this software. In the case of a crash or unwanted closure of 
 the program, you can resume tracking your game with no concerns.
 
-![Old Games available to load](LoadOldGame)
+![Old Games available to load](Screenshots/LoadOldGame.PNG)
 
 Clicking on any one of these games will result in a new window opening
 with all your players and their statistics ready to go for you to continue
@@ -79,7 +73,7 @@ Below is a statistic explanation that appears when the Abbreviations button
 is clicked. If the user is unfamiliar with Basketball statistic abbreviations
 they can look up any abbreviated statistic in the Instructions.
 
-![Statistic Explanation](Instructions)
+![Statistic Explanation](Screenshots/InstructionsAbbreviations.PNG)
 
 ##### Settings Button:
 
@@ -89,7 +83,7 @@ The background color used throughout the program can also be changed
 by clicking one of the colored buttons on the panel on the right.
 The settings window is shown below:
 
-![Settings Window](SettingsWindow)
+![Settings Window](Screenshots/SettingsWindow.PNG)
 
 ##### Close
 
@@ -102,13 +96,13 @@ of starters selected in the settings window, then you will need to choose
 who will start in your game. The following window opens after the Start Game
 button is pressed in the `GetPlayersPanel`: 
 
-![Starter Selection](StartersPanel)
+![Starter Selection](Screenshots/StartersPanel.PNG)
 
 Clicking on the player names will add them to a list of players currently
 selected to start the game. You will only be able to start the game
 once you have selected the appropriate number of starters.
 
-![Starter Selection](StartersPanelwPlayers)
+![Starter Selection](Screenshots/StartersPanelwPlayers.PNG)
 
 ### Statistic Tracking
 
