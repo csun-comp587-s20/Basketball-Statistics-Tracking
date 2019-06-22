@@ -2,7 +2,7 @@
 ### By: Alex Eidt
 A program that can track player statistics for a Basketball game
 
-[GetPlayersPanel]: Screenshots/GetPlayersPanel.png
+[GetPlayersPanel]: Screenshots/GetPlayersPanel.PNG
 [GetPlayersPanelwPlayers]: Screenshots/GetPlayersPanelwPlayers.png
 [SettingsWindow]: Screenshots/SettingsWindow.png
 [StartersPanel]: Screenshots/StartersPanel.png
