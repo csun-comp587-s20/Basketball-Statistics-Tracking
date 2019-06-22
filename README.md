@@ -1,6 +1,6 @@
 # Basketball-Statistics-Tracking
 ### By: Alex Eidt
-A program that can track player statistics for a Basketball game
+A program that can track player statistics for a Basketball Game
 
 
 [ManagementPanelNoBench]: Screenshots/ManagementPanelNoBench.PNG
@@ -32,7 +32,7 @@ The game is set to 4 Quarters each 12 minutes long.
 
 ## Home Screen:
 
-When the program is launched from `BasketballMain` the `GetPlayersPanel` is created and is
+When the program is launched from `BasketballMain` the *Home Screen* is created and is
 shown below:
 
 <img src = "Screenshots/GetPlayersPanel.PNG" width = "600">
@@ -42,24 +42,24 @@ shown below:
 
 Player's first and last names must be entered in the text field. Pressing the
 enter key or the Add Players button will add the player to the player list
-at the bottom of the `GetPlayersPanel`. To remove the most recently added
+at the bottom of the *Home Screen*. To remove the most recently added
 player, press the Undo button. The player list is updated every time a player
 is added or removed.
 
 <img src = "Screenshots/GetPlayersPanelwPlayers.PNG" width = "600">
 
-### Load Old Games Button:
+### Old Games Button:
 <img src = "Image/oldGames.png" width = "50"> 
 
-The Load Old Games button allows you to load any games you have previously
+The Old Games button allows you to load any games you have previously
 tracked using this software. In the case of a crash or unwanted closure of 
 the program, you can resume tracking your game with no concerns.
 
 <img src = "Screenshots/LoadOldGame.PNG" width = "600">
 
-Clicking on any one of these games will result in a new window opening
-with all your players and their statistics ready to go for you to continue
-tracking. The current period and time left in the period will also be shown
+Clicking on any one of these games will result in a new *Roster Management* window opening
+with all your players and their statistics ready to go for you to continue. 
+The current period and time left in the period will also be shown
 based on when the game was closed as well as the number of timeouts and
 team fouls that were left. 
 
@@ -70,12 +70,6 @@ The Instructions button opens a new window with the documentation for the
 program. There is text that walks the user through all the components
 of the program and has interactive panes where the user can become
 familiar with the mechanics of the program. 
-
-Below is a statistic explanation that appears when the Abbreviations button
-is clicked. If the user is unfamiliar with Basketball statistic abbreviations
-they can look up any abbreviated statistic in the Instructions.
-
-<img src = "Screenshots/InstructionsAbbreviations.PNG" width = "600">
 
 ### Settings Button:
 <img src = "Image/settings.png" width = "50">
@@ -88,17 +82,12 @@ The settings window is shown below:
 
 <img src = "Screenshots/SettingsWindow.PNG" width = "600">
 
-### Close
-<img src = "Image/close.png" width = "50">
-
-Clicking the close buttons closes the program.
-
 ## Starter Selection:
 
-If the number of players entered in the `GetPlayersPanel` is greater the number
+If the number of players entered in the *Home Screen* is greater the number
 of starters selected in the settings window, then you will need to choose
 who will start in your game. The following window opens after the Start Game
-button is pressed in the `GetPlayersPanel`: 
+button is pressed in the *Home Screen*: 
 
 <img src = "Screenshots/StartersPanel.PNG" width = "600">
 
@@ -108,5 +97,69 @@ once you have selected the appropriate number of starters.
 
 <img src = "Screenshots/StartersPanelwPlayers.PNG" width = "600">
 
-### Statistic Tracking
+### Roster Management
+
+There are three different ways of getting to this next window.
+
+If the number of players entered equals the number of starters specified (either by default or in
+the settings) then you will be directed to this window after clicking the Start Game
+button in the *Home Screen* or if the game you are loading with the *Old Games*
+button had as many players as starters specified. 
+
+<img src = "Screenshots/ManagementPanelNoBench.PNG" width = "600">
+
+If the number of players entered was greate than the number of starters specified, then you were redirected to the *Starter Selection* window where you chose your starters. Once you pressed the *Start Game* button there, you will be redirected to an alternate version of the *Roster Management* window with starters and a bench.
+
+<img src = "Screenshots/ManagementPanelwBench.PNG" width = "600">
+
+## Buttons and Labels:
+### Score:
+<img src = "Image/score.png" width = "50">
+
+Shows the total points scored by the team.
+
+### Box Score:
+<img src = "Image/boxScore.png" width = "50">
+
+Opens a new window showing all player statistics in the traditional Box Score
+format used for Basketball Games.
+
+<img src = "Screenshots/BoxScoreTable.PNG" width = "600">
+
+The totals for each statistic are shown at the bottom of the table:
+<img src = "Screenshots/BoxScoreTableTotal.PNG" width = "600">
+
+### Undo:
+<img src = "Image/undo.png" width = "50">
+
+Opens a new window allowing the user to correct any statistics they entered by
+deleting them. All periods of the game are shown and clicking on a period
+shows the user all statistics that were entered during that period.
+Clicking on any statistic closes the Undo window and removes that statistic.
+
+<img src = "Screenshots/UndoButton.PNG" width = "600">
+
+### Done:
+<img src = "Image/done.png" width = "50">
+
+Stops the game and closes the *Roster Management* window.
+
+### Start/Stop:
+
+Starts/Stops the timer for the game.
+
+### Timeouts:
+<img src = "Image/timeout.png" width = "50">
+
+Takes away one timeout (Timeouts remaining shown on button) and stops the 
+timer.
+
+### Team Fouls:
+<img src = "Image/teamFouls.png" width = "50">
+
+Shows the current number of team fouls in the period.
+Resets after each period.
+
+
+
 
