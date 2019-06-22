@@ -2,20 +2,6 @@
 ### By: Alex Eidt
 A program that can track player statistics for a Basketball Game
 
-
-[ManagementPanelNoBench]: Screenshots/ManagementPanelNoBench.PNG
-[ManagementPanelwBench]: Screenshots/ManagementPanelwBench.PNG
-[BoxScoreTable]: Screenshots/BoxScoreTable.PNG
-[BoxScoreTableTotal]: Screenshots/BoxScoreTableTotal.PNG
-[AddStatWindow]: Screenshots/AddStatPanel.PNG
-[BBALLFileType]: Screenshots/BBALLFileType.PNG
-[BBALLFileTypeUndo]: Screenshots/BBALLFileTypeUndo.PNG
-[UndoButton]: Screenshots/UndoButton.PNG
-[OREB]: Screenshots/OffensiveRebounded.PNG
-[WhoGotOREB]: Screenshots/WhoGotTheOffensiveRebound.PNG
-[Assist]: Screenshots/AssistedFG.PNG
-[WhoGotAst]: Screenshots/WhoGotTheAssist.PNG
-
 ## Overview:
 The Basketball Statistics Tracking Program allows the user to track statistics for all their players
 using rules from the Rulebook. 
@@ -85,12 +71,12 @@ If the number of players entered was greate than the number of starters specifie
 Icon | Component Name | Description
 --- | --- | ---
 <img src = "Image/score.png" width = "50"> | **Score** | Shows the total points scored by the team.
-<img src = "Image/boxScore.png" width = "50"> | **Box Score** | Opens a new window showing all player statistics in the traditional Box Score format used for Basketball Games.
+<img src = "Image/boxscore.png" width = "50"> | **Box Score** | Opens a new window showing all player statistics in the traditional Box Score format used for Basketball Games.
 <img src = "Image/undo.png" width = "50"> | **Undo** | Opens a new window allowing the user to correct any statistics they entered by deleting them. All periods of the game are shown and clicking on a period shows the user all statistics that were entered during that period. Clicking on any statistic closes the Undo window and removes that statistic.
 <img src = "Image/done.png" width = "50"> | **Done** | Stops the game and closes the *Roster Management* window.
-<img src = "Image/play.png" width = "50"> <img src = "Image/pause.png" width = "50" | **Start/Stop** | Starts/Stops the timer for the game.
+<img src = "Image/play.png" width = "50"> | **Start/Stop** | Starts/Stops the timer for the game.
 <img src = "Image/timeout.png" width = "50"> | **Timeouts** | Takes away one timeout (Timeouts remaining shown on button) and stops the  timer.
-<img src = "Image/teamFouls.png" width = "50"> | **Team Fouls** | Shows the current number of team fouls in the period. Resets after each period.
+<img src = "Image/fouls.png" width = "50"> | **Team Fouls** | Shows the current number of team fouls in the period. Resets after each period.
 
 <img src = "Screenshots/UndoButton.PNG" width = "600">
 
