@@ -35,7 +35,7 @@ The game is set to 4 Quarters each 12 minutes long.
 When the program is launched from `BasketballMain` the `GetPlayersPanel` is created and is
 shown below:
 
-![The opening screen of the program](Screenshots/GetPlayersPanel.PNG)
+<img src = "Screenshots/GetPlayersPanel.PNG" width = "300">
 
 #### Buttons:
 ##### Entering Players:
@@ -46,7 +46,7 @@ at the bottom of the `GetPlayersPanel`. To remove the most recently added
 player, press the Undo button. The player list is updated every time a player
 is added or removed.
 
-![Entering player names of your team](Screenshots/GetPlayersPanelwPlayers.PNG)
+<img src = "Screenshots/GetPlayersPanelwPlayers.PNG" width = "300">
 
 ##### Load Old Games Button:
 
@@ -54,7 +54,7 @@ The Load Old Games button allows you to load any games you have previously
 tracked using this software. In the case of a crash or unwanted closure of 
 the program, you can resume tracking your game with no concerns.
 
-![Old Games available to load](Screenshots/LoadOldGame.PNG)
+<img src = "Screenshots/LoadOldGame.PNG" width = "300">
 
 Clicking on any one of these games will result in a new window opening
 with all your players and their statistics ready to go for you to continue
@@ -73,7 +73,7 @@ Below is a statistic explanation that appears when the Abbreviations button
 is clicked. If the user is unfamiliar with Basketball statistic abbreviations
 they can look up any abbreviated statistic in the Instructions.
 
-![Statistic Explanation](Screenshots/InstructionsAbbreviations.PNG)
+<img src = "Screenshots/InstructionsAbbreviations.PNG" width = "300">
 
 ##### Settings Button:
 
@@ -83,7 +83,7 @@ The background color used throughout the program can also be changed
 by clicking one of the colored buttons on the panel on the right.
 The settings window is shown below:
 
-![Settings Window](Screenshots/SettingsWindow.PNG)
+<img src = "Screenshots/SettingsWindow.PNG" width = "300">
 
 ##### Close
 
@@ -96,13 +96,13 @@ of starters selected in the settings window, then you will need to choose
 who will start in your game. The following window opens after the Start Game
 button is pressed in the `GetPlayersPanel`: 
 
-![Starter Selection](Screenshots/StartersPanel.PNG)
+<img src = "Screenshots/StartersPanel.PNG" width = "300">
 
 Clicking on the player names will add them to a list of players currently
 selected to start the game. You will only be able to start the game
 once you have selected the appropriate number of starters.
 
-![Starter Selection](Screenshots/StartersPanelwPlayers.PNG)
+<img src = "Screenshots/StartersPanelwPlayers.PNG" width = "300">
 
 ### Statistic Tracking
 
