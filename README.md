@@ -35,61 +35,25 @@ The game is set to 4 Quarters each 12 minutes long.
 When the program is launched from `BasketballMain` the *Home Screen* is created and is
 shown below:
 
-<img src = "Screenshots/GetPlayersPanel.PNG" width = "600">
-
-## Buttons:
-### Entering Players:
-
-Player's first and last names must be entered in the text field. Pressing the
-enter key or the Add Players button will add the player to the player list
-at the bottom of the *Home Screen*. To remove the most recently added
-player, press the Undo button. The player list is updated every time a player
-is added or removed.
-
 <img src = "Screenshots/GetPlayersPanelwPlayers.PNG" width = "600">
 
-### Old Games Button:
-<img src = "Image/oldGames.png" width = "50"> 
-
-The Old Games button allows you to load any games you have previously
-tracked using this software. In the case of a crash or unwanted closure of 
-the program, you can resume tracking your game with no concerns.
-
-<img src = "Screenshots/LoadOldGame.PNG" width = "600">
-
-Clicking on any one of these games will result in a new *Roster Management* window opening
-with all your players and their statistics ready to go for you to continue. 
-The current period and time left in the period will also be shown
-based on when the game was closed as well as the number of timeouts and
-team fouls that were left. 
-
-### Instructions Button:
-<img src = "Image/instructions.png" width = "50">
-
-The Instructions button opens a new window with the documentation for the
-program. There is text that walks the user through all the components
-of the program and has interactive panes where the user can become
-familiar with the mechanics of the program. 
-
-### Settings Button:
-<img src = "Image/settings.png" width = "50">
-
-If the user wishes to change the regulations/rules their game is played
-by, they can do so in the settings window. 
-The background color used throughout the program can also be changed
-by clicking one of the colored buttons on the panel on the right.
-The settings window is shown below:
-
-<img src = "Screenshots/SettingsWindow.PNG" width = "600">
+## Buttons and Labels:
+Icon | Component Name | Description
+--- | --- | ---
+<img src = "Image/submit.png" width = "50"> | **Add Player** | Adds the player name entered in the text field. 
+<img src = "Image/undo.png" width = "50"> | **Undo** | Removes the most recently added player.
+<img src = "Image/player.png" width = "50"> | **Players** | The players entered by the user. The most recently added player appears at the top of the list.
+<img src = "Image/start.png" width = "50"> | **Start Game** | Becomes enabled when the user enters the minimum required players. The default minimum is 5, however the user can change this in the **Settings**.
+<img src = "Image/oldGames.png" width = "50"> | **Old Games** | Loads any games previously tracked using this software. In the case of a crash or unwanted closure of the program, statistic tracking can resume without any concerns.
+<img src = "Image/instructions.png" width = "50"> | **Instructions** | Opens a new window with the documentation for the program. There is text that walks the user through all the components of the program and has interactive panes where the user can become familiar with the mechanics of the program. 
+<img src = "Image/settings.png" width = "50"> | **Settings** | Allows user to change the rules governing gameplay and the background color of the program while they use it.
+<img src = "Image/close.png" width = "50"> | **Close** | Closes the program.
 
 ## Starter Selection:
 
 If the number of players entered in the *Home Screen* is greater the number
 of starters selected in the settings window, then you will need to choose
-who will start in your game. The following window opens after the Start Game
-button is pressed in the *Home Screen*: 
-
-<img src = "Screenshots/StartersPanel.PNG" width = "600">
+who will start in your game. 
 
 Clicking on the player names will add them to a list of players currently
 selected to start the game. You will only be able to start the game
@@ -97,9 +61,14 @@ once you have selected the appropriate number of starters.
 
 <img src = "Screenshots/StartersPanelwPlayers.PNG" width = "600">
 
-### Roster Management
+## Buttons and Labels:
+Icon | Component Name | Description
+--- | --- | ---
+<img src = "Image/undo.png" width = "50"> | **Undo** | Removes the most recently added starter.
+<img src = "Image/start.png" width = "50"> | **Start Game** | Becomes enabled when the correct number of starters have been entered. Opens a **Roster Management** window.
+<img src = "Image/close.png" width = "50"> | **Close** | Closes the **Starter Selection** window.
 
-There are three different ways of getting to this next window.
+### Roster Management
 
 If the number of players entered equals the number of starters specified (either by default or in
 the settings) then you will be directed to this window after clicking the Start Game
@@ -113,53 +82,16 @@ If the number of players entered was greate than the number of starters specifie
 <img src = "Screenshots/ManagementPanelwBench.PNG" width = "600">
 
 ## Buttons and Labels:
-### Score:
-<img src = "Image/score.png" width = "50">
-
-Shows the total points scored by the team.
-
-### Box Score:
-<img src = "Image/boxScore.png" width = "50">
-
-Opens a new window showing all player statistics in the traditional Box Score
-format used for Basketball Games.
-
-<img src = "Screenshots/BoxScoreTable.PNG" width = "600">
-
-The totals for each statistic are shown at the bottom of the table:
-<img src = "Screenshots/BoxScoreTableTotal.PNG" width = "600">
-
-### Undo:
-<img src = "Image/undo.png" width = "50">
-
-Opens a new window allowing the user to correct any statistics they entered by
-deleting them. All periods of the game are shown and clicking on a period
-shows the user all statistics that were entered during that period.
-Clicking on any statistic closes the Undo window and removes that statistic.
+Icon | Component Name | Description
+--- | --- | ---
+<img src = "Image/score.png" width = "50"> | **Score** | Shows the total points scored by the team.
+<img src = "Image/boxScore.png" width = "50"> | **Box Score** | Opens a new window showing all player statistics in the traditional Box Score format used for Basketball Games.
+<img src = "Image/undo.png" width = "50"> | **Undo** | Opens a new window allowing the user to correct any statistics they entered by deleting them. All periods of the game are shown and clicking on a period shows the user all statistics that were entered during that period. Clicking on any statistic closes the Undo window and removes that statistic.
+<img src = "Image/done.png" width = "50"> | **Done** | Stops the game and closes the *Roster Management* window.
+<img src = "Image/play.png" width = "50"> <img src = "Image/pause.png" width = "50" | **Start/Stop** | Starts/Stops the timer for the game.
+<img src = "Image/timeout.png" width = "50"> | **Timeouts** | Takes away one timeout (Timeouts remaining shown on button) and stops the  timer.
+<img src = "Image/teamFouls.png" width = "50"> | **Team Fouls** | Shows the current number of team fouls in the period. Resets after each period.
 
 <img src = "Screenshots/UndoButton.PNG" width = "600">
-
-### Done:
-<img src = "Image/done.png" width = "50">
-
-Stops the game and closes the *Roster Management* window.
-
-### Start/Stop:
-
-Starts/Stops the timer for the game.
-
-### Timeouts:
-<img src = "Image/timeout.png" width = "50">
-
-Takes away one timeout (Timeouts remaining shown on button) and stops the 
-timer.
-
-### Team Fouls:
-<img src = "Image/teamFouls.png" width = "50">
-
-Shows the current number of team fouls in the period.
-Resets after each period.
-
-
 
 
