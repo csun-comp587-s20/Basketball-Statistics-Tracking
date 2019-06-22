@@ -48,7 +48,7 @@ is added or removed.
 
 <img src = "Screenshots/GetPlayersPanelwPlayers.PNG" width = "600">
 
-<img src = "Image/oldGames.PNG"> #### Load Old Games Button:
+<img src = "Image/oldGames.png"> #### Load Old Games Button:
 
 The Load Old Games button allows you to load any games you have previously
 tracked using this software. In the case of a crash or unwanted closure of 
