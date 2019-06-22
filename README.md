@@ -41,7 +41,7 @@ The game is set to 4 Quarters each 12 minutes long.
 When the program is launched from `BasketballMain` the `GetPlayersPanel` is created and is
 shown below:
 
-![The opening screen of the program](GetPlayersPanel)
+![The opening screen of the program](Screenshots/GetPlayersPanel.PNG)
 
 #### Buttons:
 ##### Entering Players:
