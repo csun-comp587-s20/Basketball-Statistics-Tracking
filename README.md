@@ -37,8 +37,8 @@ shown below:
 
 <img src = "Screenshots/GetPlayersPanel.PNG" width = "600">
 
-### Buttons:
-#### Entering Players:
+## Buttons:
+### Entering Players:
 
 Player's first and last names must be entered in the text field. Pressing the
 enter key or the Add Players button will add the player to the player list
@@ -48,8 +48,8 @@ is added or removed.
 
 <img src = "Screenshots/GetPlayersPanelwPlayers.PNG" width = "600">
 
-#### Load Old Games Button:
-<img src = "Image/oldGames.png" width = "80"> 
+### Load Old Games Button:
+<img src = "Image/oldGames.png" width = "50"> 
 
 The Load Old Games button allows you to load any games you have previously
 tracked using this software. In the case of a crash or unwanted closure of 
@@ -63,8 +63,8 @@ tracking. The current period and time left in the period will also be shown
 based on when the game was closed as well as the number of timeouts and
 team fouls that were left. 
 
-#### Instructions Button:
-<img src = "Image/instructions.png" width = "80">
+### Instructions Button:
+<img src = "Image/instructions.png" width = "50">
 
 The Instructions button opens a new window with the documentation for the
 program. There is text that walks the user through all the components
@@ -77,8 +77,8 @@ they can look up any abbreviated statistic in the Instructions.
 
 <img src = "Screenshots/InstructionsAbbreviations.PNG" width = "600">
 
-#### Settings Button:
-<img src = "Image/settings.png" width = "80">
+### Settings Button:
+<img src = "Image/settings.png" width = "50">
 
 If the user wishes to change the regulations/rules their game is played
 by, they can do so in the settings window. 
@@ -88,12 +88,12 @@ The settings window is shown below:
 
 <img src = "Screenshots/SettingsWindow.PNG" width = "600">
 
-#### Close
-<img src = "Image/close.png" width = "80">
+### Close
+<img src = "Image/close.png" width = "50">
 
 Clicking the close buttons closes the program.
 
-### Starter Selection:
+## Starter Selection:
 
 If the number of players entered in the `GetPlayersPanel` is greater the number
 of starters selected in the settings window, then you will need to choose
