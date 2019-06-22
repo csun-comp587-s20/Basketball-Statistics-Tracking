@@ -30,15 +30,15 @@ The Player is ejected from the game after:
 The game is set to 4 Quarters each 12 minutes long.
 
 
-### Home Screen:
+## Home Screen:
 
 When the program is launched from `BasketballMain` the `GetPlayersPanel` is created and is
 shown below:
 
 <img src = "Screenshots/GetPlayersPanel.PNG" width = "600">
 
-#### Buttons:
-##### Entering Players:
+### Buttons:
+#### Entering Players:
 
 Player's first and last names must be entered in the text field. Pressing the
 enter key or the Add Players button will add the player to the player list
@@ -48,7 +48,7 @@ is added or removed.
 
 <img src = "Screenshots/GetPlayersPanelwPlayers.PNG" width = "600">
 
-##### Load Old Games Button:
+<img src = "Image/oldGames.PNG"> #### Load Old Games Button:
 
 The Load Old Games button allows you to load any games you have previously
 tracked using this software. In the case of a crash or unwanted closure of 
@@ -62,7 +62,7 @@ tracking. The current period and time left in the period will also be shown
 based on when the game was closed as well as the number of timeouts and
 team fouls that were left. 
 
-##### Instructions Button:
+#### Instructions Button:
 
 The Instructions button opens a new window with the documentation for the
 program. There is text that walks the user through all the components
@@ -75,7 +75,7 @@ they can look up any abbreviated statistic in the Instructions.
 
 <img src = "Screenshots/InstructionsAbbreviations.PNG" width = "600">
 
-##### Settings Button:
+#### Settings Button:
 
 If the user wishes to change the regulations/rules their game is played
 by, they can do so in the settings window. 
@@ -85,7 +85,7 @@ The settings window is shown below:
 
 <img src = "Screenshots/SettingsWindow.PNG" width = "600">
 
-##### Close
+#### Close
 
 Clicking the close buttons closes the program.
 
