@@ -2,20 +2,7 @@
 ### By: Alex Eidt
 A program that can track player statistics for a Basketball Game
 
-## Overview:
-The Basketball Statistics Tracking Program allows the user to track statistics for all their players
-using rules from the Rulebook. 
-
-#### Default Rules and Regulations:
-The Player is ejected from the game after:
-* 6 Personal Fouls 
-* 2 Technical Fouls 
-* 2 Flagrant I Fouls
-* 1 Flagrant II Foul
-
-The game is set to 4 Quarters each 12 minutes long.
-
-
+# Overview:
 ## Home Screen:
 
 When the program is launched from `BasketballMain` the **Home Screen** is created and is
@@ -77,7 +64,3 @@ Icon | Component Name | Description
 <img src = "Image/play.png" width = "50"> | **Start/Stop** | Starts/Stops the timer for the game.
 <img src = "Image/timeout.png" width = "50"> | **Timeouts** | Takes away one timeout (Timeouts remaining shown on button) and stops the  timer.
 <img src = "Image/fouls.png" width = "50"> | **Team Fouls** | Shows the current number of team fouls in the period. Resets after each period.
-
-<img src = "Screenshots/UndoButton.PNG" width = "600">
-
-
