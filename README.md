@@ -48,7 +48,8 @@ is added or removed.
 
 <img src = "Screenshots/GetPlayersPanelwPlayers.PNG" width = "600">
 
-<img src = "Image/oldGames.png"> #### Load Old Games Button:
+<img src = "Image/oldGames.png" width = "80"> 
+#### Load Old Games Button:
 
 The Load Old Games button allows you to load any games you have previously
 tracked using this software. In the case of a crash or unwanted closure of 
@@ -62,6 +63,7 @@ tracking. The current period and time left in the period will also be shown
 based on when the game was closed as well as the number of timeouts and
 team fouls that were left. 
 
+<img src = "Image/instructions.png" width = "80">
 #### Instructions Button:
 
 The Instructions button opens a new window with the documentation for the
@@ -75,6 +77,7 @@ they can look up any abbreviated statistic in the Instructions.
 
 <img src = "Screenshots/InstructionsAbbreviations.PNG" width = "600">
 
+<img src = "Image/settings.png" width = "80">
 #### Settings Button:
 
 If the user wishes to change the regulations/rules their game is played
@@ -85,6 +88,7 @@ The settings window is shown below:
 
 <img src = "Screenshots/SettingsWindow.PNG" width = "600">
 
+<img src = "Image/close.png" width = "80">
 #### Close
 
 Clicking the close buttons closes the program.
