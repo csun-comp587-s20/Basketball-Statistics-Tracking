@@ -84,13 +84,13 @@ Icon | Component Name | Description
 
 ## Box Score Button:
 
-The window that appears when the **Box Score** Button is pressed. It shows all player statistics in the traditional 'Box Score' format.
+The window that appears when the **Box Score** Button is pressed. It shows all player statistics in the traditional 'Box Score' format. The table is shown below:
 
 <p align = "center">
   <img src = "Screenshots/BoxScoreTable.PNG" width = "800" alt = "Box Score Table">
 </p>
 
-The totals for each statistic are shown in the bottom row.
+The totals for each statistic are shown in the bottom row:
 
 <p align = "center">
   <img src = "Screenshots/BoxScoreTableTotal.PNG" width = "800" alt = "Home Screen">
@@ -124,6 +124,12 @@ If the statistic is a missed shot, then the user is asked if someone on their te
 Did a team member get the Offensive Rebound? | Who got the Rebound?
 :---: | :---:
 <img src = "Screenshots/OffensiveRebounded.PNG" width = "410" alt = "Offensive Rebound Question Frame"> | <img src = "Screenshots/WhoGotTheOffensiveRebound.PNG" width = "410" alt = "Who got the offensive rebound?">
+
+If the **Roster Management** window has a bench panel on it, then clicking on one of the players on the bench will open a window that will ask the user to substitute the player that was clicked into the game. The window is shown below:
+
+<p align = "center">
+  <img src = "Screenshots/SubstitutePlayer.PNG" width = "600" alt = "Undo Button Window">
+</p>
 
 ## Undo Button:
 
