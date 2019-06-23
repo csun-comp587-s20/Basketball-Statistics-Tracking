@@ -89,9 +89,11 @@ For example, if a Made 3pt FG is selected, then **Points, Made FG, FGA, Made 3pt
 If the statistic is a made shot, then the user is asked if the shot was assisted, if that is the case, then the user will be asked who else on the court assisted the shot. These windows are shown below:
 
 <p align = "center">
-  Was the shot Assisted? | Who got the Assist?
-  --- | ---
-  <img src = "Screenshots/AssistedFG.PNG" width = "350" alt = "Assisted Field Goal Question Frame"> | <img src = "Screenshots/WhoGotTheAssist.PNG" width = "350" alt = "Who got the assist?">
+  
+Was the shot Assisted? | Who got the Assist?
+--- | ---
+<img src = "Screenshots/AssistedFG.PNG" width = "350" alt = "Assisted Field Goal Question Frame"> | <img src = "Screenshots/WhoGotTheAssist.PNG" width = "350" alt = "Who got the assist?">
+
 </p>
 
 
