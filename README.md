@@ -13,7 +13,7 @@ shown below:
 ## Buttons and Labels:
 Icon | Component Name | Description
 --- | --- | ---
-<img src = "Image/submit.png" width = "50"> | **Add Player** | Adds the player name entered in the text field. 
+<img src = "Image/submit.png" width = "50" alt = "Add Player Icon"> | **Add Player** | Adds the player name entered in the text field. 
 <img src = "Image/undo.png" width = "50"> | **Undo** | Removes the most recently added player.
 <img src = "Image/player.png" width = "50"> | **Players** | The players entered by the user. The most recently added player appears at the top of the list.
 <img src = "Image/start.png" width = "50"> | **Start Game** | Becomes enabled when the user enters the minimum required players. The default minimum is 5, however the user can change this in the **Settings**.
@@ -45,12 +45,12 @@ Icon | Component Name | Description
 
 If the number of players entered equals the number of starters specified (either by default or in
 the settings) then you will be directed to this window after clicking the Start Game
-button in the **Home Screen** or if the game you are loading with the *Old Games*
+button in the **Home Screen** or if the game you are loading with the **Old Games**
 button had as many players as starters specified. 
 
 <img src = "Screenshots/ManagementPanelNoBench.PNG" width = "600">
 
-If the number of players entered was greater than the number of starters specified, then you were redirected to the **Starter Selection** window where you chose your starters. Once you pressed the *Start Game* button there, you will be redirected to an alternate version of the **Roster Management** window with starters and a bench.
+If the number of players entered was greater than the number of starters specified, then you were redirected to the **Starter Selection** window where you chose your starters. Once you pressed the **Start Game** button there, you will be redirected to an alternate version of the **Roster Management** window with starters and a bench.
 
 <img src = "Screenshots/ManagementPanelwBench.PNG" width = "600">
 
@@ -60,7 +60,7 @@ Icon | Component Name | Description
 <img src = "Image/score.png" width = "50"> | **Score** | Shows the total points scored by the team.
 <img src = "Image/boxscore.png" width = "50"> | **Box Score** | Opens a new window showing all player statistics in the traditional Box Score format used for Basketball Games.
 <img src = "Image/undo.png" width = "50"> | **Undo** | Opens a new window allowing the user to correct any statistics they entered by deleting them. All periods of the game are shown and clicking on a period shows the user all statistics that were entered during that period. Clicking on any statistic closes the Undo window and removes that statistic.
-<img src = "Image/done.png" width = "50"> | **Done** | Stops the game and closes the *Roster Management* window.
+<img src = "Image/done.png" width = "50"> | **Done** | Stops the game and closes the **Roster Management** window.
 <img src = "Image/play.png" width = "50"> | **Start/Stop** | Starts/Stops the timer for the game.
 <img src = "Image/timeout.png" width = "50"> | **Timeouts** | Takes away one timeout (Timeouts remaining shown on button) and stops the  timer.
 <img src = "Image/fouls.png" width = "50"> | **Team Fouls** | Shows the current number of team fouls in the period. Resets after each period.
