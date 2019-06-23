@@ -15,7 +15,7 @@ shown below:
 
 ## Buttons and Labels:
 Icon | Component Name | Description
---- | --- | ---
+--- | :---: | ---
 <img src = "Image/submit.png" width = "50" alt = "Add Player Icon"> | **Add Player** | Adds the player name entered in the text field. 
 <img src = "Image/undo.png" width = "50" alt = "Undo Icon"> | **Undo** | Removes the most recently added player.
 <img src = "Image/player.png" width = "50" alt = "Player Icon"> | **Players** | The players entered by the user. The most recently added player appears at the top of the list.
@@ -49,7 +49,7 @@ once you have selected the appropriate number of starters.
 
 ## Buttons and Labels:
 Icon | Component Name | Description
---- | --- | ---
+--- | :---: | ---
 <img src = "Image/undo.png" width = "50" alt = "Undo Icon"> | **Undo** | Removes the most recently added starter.
 <img src = "Image/start.png" width = "50" alt = "Start Game Icon"> | **Start Game** | Becomes enabled when the correct number of starters have been entered. Opens a **Roster Management** window.
 <img src = "Image/close.png" width = "50" alt = "Close Icon"> | **Close** | Closes the **Starter Selection** window.
@@ -73,7 +73,7 @@ If the number of players entered was greater than the number of starters specifi
 
 ## Buttons and Labels:
 Icon | Component Name | Description
---- | --- | ---
+--- | :---: | ---
 <img src = "Image/score.png" width = "50" alt = "Score Icon"> | **Score** | Shows the total points scored by the team.
 <img src = "Image/boxscore.png" width = "50" alt = "Box Score Icon"> | **Box Score** | Opens a new window showing all player statistics in the traditional Box Score format used for Basketball Games.
 <img src = "Image/undo.png" width = "50" alt = "Undo Icon"> | **Undo** | Opens a new window allowing the user to correct any statistics they entered by deleting them. All periods of the game are shown and clicking on a period shows the user all statistics that were entered during that period. Clicking on any statistic closes the Undo window and removes that statistic.
@@ -106,7 +106,7 @@ Was the shot Assisted? | Who got the Assist?
 If the statistic is a missed shot, then the user is asked if someone on their team got the Offensive Rebound. As with the shot assist, the user will then be asked who on the team actually got the rebound.
 
 Did a team member get the Offensive Rebound? | Who got the Rebound?
---- | ---
+:---: | :---:
 <img src = "Screenshots/OffensiveRebounded.PNG" width = "410" alt = "Offensive Rebound Question Frame"> | <img src = "Screenshots/WhoGotTheOffensiveRebound.PNG" width = "410" alt = "Who got the offensive rebound?">
 
 If there was a mistake when entering a statistic, it is possible to undo this mistake with the **Undo** Button. When clicked, a window will open with a bar at the top allowing the user to chose from any period of the game. If that period has not yet started, then those buttons will be disabled. When the desired period button is clicked, a list of buttons will appear each showing the statistics entered in chronological order. Clicking on a statistic will close the window and remove that statistic. The window is shown below:
