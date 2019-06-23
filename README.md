@@ -128,7 +128,7 @@ Did a team member get the Offensive Rebound? | Who got the Rebound?
 If the **Roster Management** window has a bench panel on it, then clicking on one of the players on the bench will open a window that will ask the user to substitute the player that was clicked into the game. The window is shown below:
 
 <p align = "center">
-  <img src = "Screenshots/SubstitutePlayer.PNG" width = "600" alt = "Undo Button Window">
+  <img src = "Screenshots/PlayerSubstitution.PNG" width = "600" alt = "Player Substitution Window">
 </p>
 
 ## Undo Button:
