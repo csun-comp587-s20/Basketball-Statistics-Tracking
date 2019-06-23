@@ -9,7 +9,9 @@ A program that can track player statistics for a Basketball Game
 When the program is launched from `BasketballMain` the **Home Screen** is created and is
 shown below:
 
-<div style="text-align:center"><img src = "Screenshots/GetPlayersPanelwPlayers.PNG" width = "800" alt = "Home Screen"></div>
+<p align = "center">
+  <img src = "Screenshots/GetPlayersPanelwPlayers.PNG" width = "800" alt = "Home Screen">
+</p>
 
 ## Buttons and Labels:
 Icon | Component Name | Description
@@ -33,7 +35,9 @@ Clicking on the player names will add them to a list of players currently
 selected to start the game. You will only be able to start the game
 once you have selected the appropriate number of starters.
 
-<div style="text-align:center"><img src = "Screenshots/StartersPanelwPlayers.PNG" width = "800" alt = "Starters Selection"></div>
+<p align = "center">
+  <img src = "Screenshots/StartersPanelwPlayers.PNG" width = "800" alt = "Starters Selection">
+</p>
 
 ## Buttons and Labels:
 Icon | Component Name | Description
@@ -49,11 +53,15 @@ the settings) then you will be directed to this window after clicking the Start 
 button in the **Home Screen** or if the game you are loading with the **Old Games**
 button had as many players as starters specified. 
 
-<div style="text-align:center"><img src = "Screenshots/ManagementPanelNoBench.PNG" width = "800" alt = "Roster Management"></div>
+<p align = "center">
+  <img src = "Screenshots/ManagementPanelNoBench.PNG" width = "800" alt = "Roster Management">
+</p>
 
 If the number of players entered was greater than the number of starters specified, then you were redirected to the **Starter Selection** window where you chose your starters. Once you pressed the **Start Game** button there, you will be redirected to an alternate version of the **Roster Management** window with starters and a bench.
 
-<div style="text-align:center"><img src = "Screenshots/ManagementPanelwBench.PNG" width = "800" alt = "Roster Management with Bench"></div>
+<p align = "center">
+  <img src = "Screenshots/ManagementPanelwBench.PNG" width = "800" alt = "Roster Management with Bench">
+</p>
 
 ## Buttons and Labels:
 Icon | Component Name | Description
@@ -68,15 +76,22 @@ Icon | Component Name | Description
 
 There are some additional features in the **Roster Management** window. When a player's button is clicked (who is on the court), a new window will open that allows the user to select from all possible statistics. Pressing on any statistic will increment that statistic for the given player by the correct amount. 
 
-<div style="text-align:center"><img src = "Screenshots/AddStatPanel.PNG" width = "800" alt = "Add Statistic to Player"></div>
+<p align = "center">
+  <img src = "Screenshots/AddStatPanel.PNG" width = "800" alt = "Add Statistic to Player">
+</p>
 
 Some statistics increment several other statistics when they are incremented:
 1. Made FG
 2. Made 3pt FG
 3. OREB/DREB
+
 For example, if a Made 3pt FG is selected, then **Points, Made FG, FGA, Made 3pt FG, and 3PA** are all incremented as well.
 If the statistic is a made shot, then the user is asked if the shot was assisted, if that is the case, then the user will be asked who else on the court assisted the shot. These windows are shown below:
 
-<img src = "Screenshots/AssistedFG.PNG" width = "350" alt = "Assisted Field Goal Question Frame"> | <img src = "Screenshots/WhoGotTheAssist.PNG" width = "350" alt = "Who got the assist?">
---- | ---
+<p align = "center">
+  Was the shot Assisted? | Who got the Assist?
+  --- | ---
+  <img src = "Screenshots/AssistedFG.PNG" width = "350" alt = "Assisted Field Goal Question Frame"> | <img src = "Screenshots/WhoGotTheAssist.PNG" width = "350" alt = "Who got the assist?">
+</p>
+
 
