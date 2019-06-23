@@ -82,6 +82,19 @@ Icon | Component Name | Description
 <img src = "Image/timeout.png" width = "50" alt = "Pause Button Icon"> | **Timeouts** | Takes away one timeout (Timeouts remaining shown on button) and stops the  timer.
 <img src = "Image/fouls.png" width = "50" alt = "Team Fouls Icon"> | **Team Fouls** | Shows the current number of team fouls in the period. Resets after each period.
 
+### Box Score Button:
+
+The window that appears when the **Box Score** Button is pressed. It shows all player statistics and has the totals at the bottom of the table.
+
+<p align = "center">
+  <img src = "Screenshots/BoxScoreTable.PNG" width = "800" alt = "Box Score Table">
+</p>
+<p align = "center">
+  <img src = "Screenshots/BoxScoreTableTotal.PNG" width = "800" alt = "Home Screen">
+</p>
+
+### Player Buttons:
+
 There are some additional features in the **Roster Management** window. When a player's button is clicked (who is on the court), a new window will open that allows the user to select from all possible statistics. Pressing on any statistic will increment that statistic for the given player by the correct amount. This window is shown below:
 
 <p align = "center">
