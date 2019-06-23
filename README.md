@@ -65,7 +65,7 @@ button had as many players as starters specified.
   <img src = "Screenshots/ManagementPanelNoBench.PNG" width = "800" alt = "Roster Management">
 </p>
 
-If the number of players entered was greater than the number of starters specified, then you were redirected to the **Starter Selection** window where you chose your starters. Once you pressed the **Start Game** button there, you will be redirected to an alternate version of the **Roster Management** window with starters and a bench.
+If the number of players entered was greater than the number of starters specified, then you were redirected to the **Starter Selection** window where you chose your starters. Once you pressed the **Start Game** button there, you will be redirected to an alternate version of the **Roster Management** window with starters and a bench. Players who foul out of the game have their button marked red and disabled. If the foul that got that player ejected is removed through the **Undo** Button, then that player's button will become enabled and will be colored light gray to show they are back on the bench and can be substituted in. 
 
 <p align = "center">
   <img src = "Screenshots/ManagementPanelwBench.PNG" width = "800" alt = "Roster Management with Bench">
@@ -82,18 +82,21 @@ Icon | Component Name | Description
 <img src = "Image/timeout.png" width = "50" alt = "Pause Button Icon"> | **Timeouts** | Takes away one timeout (Timeouts remaining shown on button) and stops the  timer.
 <img src = "Image/fouls.png" width = "50" alt = "Team Fouls Icon"> | **Team Fouls** | Shows the current number of team fouls in the period. Resets after each period.
 
-### Box Score Button:
+## Box Score Button:
 
-The window that appears when the **Box Score** Button is pressed. It shows all player statistics and has the totals at the bottom of the table.
+The window that appears when the **Box Score** Button is pressed. It shows all player statistics in the traditional 'Box Score' format.
 
 <p align = "center">
   <img src = "Screenshots/BoxScoreTable.PNG" width = "800" alt = "Box Score Table">
 </p>
+
+The totals for each statistic are shown in the bottom row.
+
 <p align = "center">
   <img src = "Screenshots/BoxScoreTableTotal.PNG" width = "800" alt = "Home Screen">
 </p>
 
-### Player Buttons:
+## Player Buttons:
 
 There are some additional features in the **Roster Management** window. When a player's button is clicked (who is on the court), a new window will open that allows the user to select from all possible statistics. Pressing on any statistic will increment that statistic for the given player by the correct amount. This window is shown below:
 
