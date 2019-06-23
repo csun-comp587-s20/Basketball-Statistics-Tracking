@@ -24,6 +24,14 @@ Icon | Component Name | Description
 <img src = "Image/instructions.png" width = "50" alt = "Instructions Icon"> | **Instructions** | Opens a new window with the documentation for the program. There is text that walks the user through all the components of the program and has interactive panes where the user can become familiar with the mechanics of the program. 
 <img src = "Image/settings.png" width = "50" alt = "Settings Icon"> | **Settings** | Allows user to change the rules governing gameplay and the background color of the program while they use it.
 <img src = "Image/close.png" width = "50" alt = "Close Icon"> | **Close** | Closes the program.
+
+## Settings Window:
+The settings window features several Radio Button groups to change the configurations of the game. There is also the option of changing the background color of the program. The settings window is shown below:
+
+<p align = "center">
+  <img src = "Screenshots/SettingsWindow.PNG" width = "800" alt = "Settings Window">
+</p>
+
 ***
 # Starter Selection:
 
@@ -88,6 +96,7 @@ Some statistics increment several other statistics when they are incremented:
 For example, if a Made 3pt FG is selected, then **Points, Made FG, FGA, Made 3pt FG, and 3PA** are all incremented as well.
 
 The program incorporates several features to make statistical tracking quicker during actual game play. The following features highlight this.
+
 If the statistic is a made shot, then the user is asked if the shot was assisted, if that is the case, then the user will be asked who else on the court assisted the shot. These windows are shown below:
   
 Was the shot Assisted? | Who got the Assist?
@@ -103,5 +112,5 @@ Did a team member get the Offensive Rebound? | Who got the Rebound?
 If there was a mistake when entering a statistic, it is possible to undo this mistake with the **Undo** Button. When clicked, a window will open with a bar at the top allowing the user to chose from any period of the game. If that period has not yet started, then those buttons will be disabled. When the desired period button is clicked, a list of buttons will appear each showing the statistics entered in chronological order. Clicking on a statistic will close the window and remove that statistic. The window is shown below:
 
 <p align = "center">
-  <img src = "Screenshots/UndoButton.PNG" width = "800" alt = "Undo Button Window">
+  <img src = "Screenshots/UndoButton.PNG" width = "600" alt = "Undo Button Window">
 </p>
