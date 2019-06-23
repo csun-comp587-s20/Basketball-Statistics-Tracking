@@ -3,6 +3,7 @@
 A program that can track player statistics for a Basketball Game
 
 # Overview:
+***
 ## Home Screen:
 
 When the program is launched from `BasketballMain` the **Home Screen** is created and is
@@ -21,7 +22,7 @@ Icon | Component Name | Description
 <img src = "Image/instructions.png" width = "50" alt = "Instructions Icon"> | **Instructions** | Opens a new window with the documentation for the program. There is text that walks the user through all the components of the program and has interactive panes where the user can become familiar with the mechanics of the program. 
 <img src = "Image/settings.png" width = "50" alt = "Settings Icon"> | **Settings** | Allows user to change the rules governing gameplay and the background color of the program while they use it.
 <img src = "Image/close.png" width = "50" alt = "Close Icon"> | **Close** | Closes the program.
-
+***
 ## Starter Selection:
 
 If the number of players entered in the **Home Screen** is greater the number
@@ -40,7 +41,7 @@ Icon | Component Name | Description
 <img src = "Image/undo.png" width = "50" alt = "Undo Icon"> | **Undo** | Removes the most recently added starter.
 <img src = "Image/start.png" width = "50" alt = "Start Game Icon"> | **Start Game** | Becomes enabled when the correct number of starters have been entered. Opens a **Roster Management** window.
 <img src = "Image/close.png" width = "50" alt = "Close Icon"> | **Close** | Closes the **Starter Selection** window.
-
+***
 ## Roster Management
 
 If the number of players entered equals the number of starters specified (either by default or in
