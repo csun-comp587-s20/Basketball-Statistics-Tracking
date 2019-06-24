@@ -138,3 +138,12 @@ If there was a mistake when entering a statistic, it is possible to undo this mi
 <p align = "center">
   <img src = "Screenshots/UndoButton.PNG" width = "400" alt = "Undo Button Window">
 </p>
+
+
+***
+
+
+**All Images in the 'Image' Folder are not mine and all rights are reserved to their respective owners.**
+
+
+
