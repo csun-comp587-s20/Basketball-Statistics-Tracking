@@ -4,7 +4,7 @@ A program that can track player statistics for a Basketball Game
 
 ***
 
-**All Images in the 'Image' Folder are not mine and all rights are reserved to their respective owners.**
+**All Icons in the 'Image' Folder are not mine and all rights are reserved to their respective owners.**
 
 **Visit [pngtree.com](https://pngtree.com) for Free Icon Downloads.**
 
