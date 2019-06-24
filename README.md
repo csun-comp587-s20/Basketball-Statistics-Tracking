@@ -144,6 +144,6 @@ If there was a mistake when entering a statistic, it is possible to undo this mi
 
 
 **All Images in the 'Image' Folder are not mine and all rights are reserved to their respective owners.**
-
+**Visit pngtree.com for Free Icon Downloads.**
 
 
