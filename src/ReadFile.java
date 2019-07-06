@@ -51,8 +51,7 @@ public class ReadFile extends BasketballMain {
 				this.numPlayers++;
 			}	
     	}
-    	int undoSize = this.fileData.size() - (this.numPlayers * STATISTIC_ABBREVIATIONS.length) - 1;
-		this.undoFile = new ArrayList<String[]>(undoSize);
+		this.undoFile = new ArrayList<String[]>();
 		this.players = new ArrayList<Player>(this.numPlayers);
 		this.SETTINGS = settings;
 		this.version = this.fileData.remove();

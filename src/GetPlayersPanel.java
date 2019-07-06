@@ -205,6 +205,9 @@ public class GetPlayersPanel extends GUISettings {
                         run(list, new ArrayList<Undo>(), fileName, !IS_SCAN, SETTINGS);
                         pane.removeAll();
             			pane.add(mainPanel);
+            			players.clear();
+            			displayNames.clear();
+            			updatePlayerList();
             			pane.revalidate();
             			pane.repaint();
             			frame.setTitle("Basketball Statistics Tracking");
@@ -219,7 +222,7 @@ public class GetPlayersPanel extends GUISettings {
     
     // Post: Returns a file name for a new game so that there are no duplicate file names.
     public static String getFileName(String name) {
-    	File file = new File(".");
+    	File file = new File(FILE_PATH + "\\" + GAMEFILESFOLDER);
     	List<String> names = new ArrayList<String>();
     	boolean found = false;
     	for (File f : file.listFiles()) {

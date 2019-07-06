@@ -409,6 +409,15 @@ public class ManagementPanel extends GUISettings {
                 frame.dispose();
             }
         });
+	    this.frame.addWindowListener(new WindowAdapter() {
+	        public void windowClosed(WindowEvent w) {
+                Player player = new Player("DONE", "DONE", "DONE");
+                Undo newest = new Undo(player, "DONE", "DONE");
+                if (!undo.contains(newest)) {
+                    undo.add(newest);
+                }
+            }
+	    });
     }
     
     // Post: Adds function to the 'Start/Stop' buttons used to manage the time.
@@ -772,6 +781,8 @@ public class ManagementPanel extends GUISettings {
     			}
     		}
     	}
+    	this.pane.revalidate();
+    	this.pane.repaint();
     }
     
     // Post: Returns a String used to display the time in the ManagementPanel.
@@ -819,7 +830,7 @@ public class ManagementPanel extends GUISettings {
                     		if (stat.equals("Personal Foul")) {
                         		teamFoulsInPeriod++;
                     		}
-                    		if (!splitPane) {
+                    		if (!splitPane && getFouledOut() == 1) {
                                 subNewPlayer(play, bench, players, true);
                     		}
                     		button.setEnabled(false);
@@ -828,7 +839,7 @@ public class ManagementPanel extends GUISettings {
                     		switch (stat) {
                         	case "Made FG":
                         	case "Made 3pt FG":
-                        		openNewStatWindow(recent, play, "Assist", "Assisted FG?", "Who got the Assist?");
+                        		openNewStatWindow(recent, play, "Assist", "Assisted FG?", "Who got the Assist?", false);
                     			break;
                             case "Personal Foul":
                             	teamFoulsInPeriod++;
@@ -846,10 +857,12 @@ public class ManagementPanel extends GUISettings {
                             case "Missed FG":
                             case "Missed 3pt FG":
                             case "Missed Free Throw":
-                            	openNewStatWindow(recent, play, "Offensive Rebound", "Offensive Rebounded?", "Who got the Offensive Rebound?");
+                            	openNewStatWindow(recent, play, "Offensive Rebound", "Offensive Rebounded?", 
+                            			          "Who got the Offensive Rebound?", true);
                             	break;
                             case "Block":
-                            	openNewStatWindow(recent, play, "Defensive Rebound", "Defensive Rebounded?", "Who got the Defensive Rebound?");
+                            	openNewStatWindow(recent, play, "Defensive Rebound", "Defensive Rebounded?", 
+                            			          "Who got the Defensive Rebound?", true);
                             	break;
                         	}
                     	}
@@ -881,7 +894,7 @@ public class ManagementPanel extends GUISettings {
     // 'stat': The statistic in question.
     // 'frameText': The text the appears in the Yes/No frame title bar.
     // 'frameHeder': The text that appears in the frame that opens when 'Yes' is clicked in the 'assistFrame'.
-    private void openNewStatWindow(Undo recent, Player play, String stat, String frameText, String frameHeader) {
+    private void openNewStatWindow(Undo recent, Player play, String stat, String frameText, String frameHeader, boolean allPlayers) {
     	JFrame assistFrame = new JFrame(frameText);
         JPanel assistPanel = new JPanel(new GridLayout(2, 1));
         formatFrame(assistFrame, assistPanel, SCREENWIDTH / 3, SCREENHEIGHT / 2);
@@ -890,11 +903,19 @@ public class ManagementPanel extends GUISettings {
         yes.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = new JFrame(frameHeader);
-                JPanel panel = new JPanel(new GridLayout(players.size() - getFouledOut(), 1));
+                int size = players.size();
+                if (!allPlayers) {
+                	size -= 1;
+                } 
+                JPanel panel = new JPanel(new GridLayout(size, 1));
                 formatFrame(frame, panel, SCREENWIDTH / 3, SCREENHEIGHT / 2 + (SCREENHEIGHT / 6));
                 JButton assistPlayerButton;
                 for (Player assistPlayer : players) {
-                	if (assistPlayer != play && !assistPlayer.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {
+                	boolean check = assistPlayer != play;
+                	if (allPlayers) {
+                		check = true;
+                	}
+                	if (check && !assistPlayer.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {
                         assistPlayerButton = new JButton(assistPlayer.toString());
                         formatButton(assistPlayerButton, BUTTON_HEIGHT, BUTTON_HEIGHT * 3 / 2, FONT_SIZE / 2, SETTINGS);
                         panel.add(assistPlayerButton);
@@ -985,9 +1006,9 @@ public class ManagementPanel extends GUISettings {
     
     // Post: Returns the number of players who have fouled out of the game.
     private int getFouledOut() {
-        int fouledOut = 1;
-        for (Player player : this.players) {
-            if (player.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {
+        int fouledOut = 0;
+        for (Player player : this.bench) {
+            if (!player.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {
                 fouledOut++;
             }
         }
