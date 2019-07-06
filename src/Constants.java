@@ -127,13 +127,25 @@ public abstract class Constants extends JFrame {
 	protected static final int DEFAULT_PERSONAL_FOULS_ALLOWED = 6;
 	protected static final int DEFAULT_TECHNICAL_FOULS_ALLOWED = 2;
 	protected static final int DEFAULT_CURRENT_PERIOD = 0;
-	protected static final boolean DEFAULT_AUTO_CORRECT_NAMES = false;
 	protected static final boolean DEFAULT_PERIOD_TYPE = true; // Default Period Type is Quarters
 	protected static final double DEFAULT_GAME_LENGTH = 12.0;
+	protected static final double DEFAULT_OVERTIME_LENGTH = 5.0;
 	protected static final double DEFAULT_TIME_REMAINING = 12.0;
 	protected static final int DEFAULT_TIMEOUTS = 7;
+	protected static final int DEFAULT_OT_TIMEOUTS = 2;
 	protected static final int DEFAULT_FLAGRANT_1 = 2;
 	protected static final int DEFAULT_FLAGRANT_2 = 1;
+	
+	/*
+	 * ************************************************
+	 * *			   MAXIMUM CONSTANTS              *
+	 * ************************************************
+	 * The Maximum values for each of the settings shown in the 'DEFAULT SETTINGS'.
+	 */
+	protected static final int MAX_STARTERS = 5;
+	protected static final int MAX_PERSONAL_FOULS = 7;
+	protected static final int MAX_TECHNICAL_FOULS = 4;
+	protected static final int MAX_TIMEOUTS = 7;
 	
 	/*
 	 * ************************************************
@@ -151,9 +163,10 @@ public abstract class Constants extends JFrame {
     protected static final int SCREENHEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;
     protected static final int BUTTON_HEIGHT = SCREENHEIGHT / 10;
     protected static final int FONT_SIZE = SCREENHEIGHT / 18;
+    protected static final int BORDER_SIZE = SCREENHEIGHT / 108;
     protected static final int QUARTERS = 4;
     protected static final int HALVES = 2;
-    protected static final int END_OF_GAME = 10;
+    protected static final int END_OF_GAME = 1909;
     protected static final int TIMER_SETTING = 100;
     protected static final Color FOULED_OUT_BUTTON_COLOR = Color.RED;
     protected static final Color BENCH_BUTTON_COLOR = Color.LIGHT_GRAY;
@@ -165,32 +178,49 @@ public abstract class Constants extends JFrame {
     protected static final boolean ROUNDED_BORDERS = false;
     protected static final String FILETYPE = "bball";
     
+	// InstructionPanel Files:
+	
+	// Name of the text file containing the written explanations for each statistic being
+	// tracked by the program
+    protected static final String STAT_EXPLANATIONS_FILE = "Stat_Explanations.txt";
+	// Name of the text file containing the explanations found in the Instructions window
+    protected static final String TEXT_FILE_NAME = "Instructions.txt";	
+	// The sequence of characters in the TEXT_FILE that signals a new paragraph
+    protected static final String GAMEDATA_FILE_NAME = "InstructionExample." + FILETYPE;
+	// Used when scanning the text file to enter the correct number of starters
+    
 	/*
 	 * ************************************************
 	 * *		         ICON NAMES                   *
 	 * ************************************************
 	 * File names of all icons used for buttons
 	 */
-    protected static final String ICON_SYMBOL = "/";
-    protected static final String SUBMIT_BUTTON_ICON = ICON_SYMBOL + "submit.png";
-    protected static final String UNDO_BUTTON_ICON = ICON_SYMBOL + "undo.png";
-    protected static final String START_BUTTON_ICON = ICON_SYMBOL + "start.png";
-    protected static final String OLDGAMES_BUTTON_ICON = ICON_SYMBOL + "oldGames.png";
-    protected static final String INSTRUCTIONS_BUTTON_ICON = ICON_SYMBOL + "instructions.png";
-    protected static final String CLOSE_BUTTON_ICON = ICON_SYMBOL + "close.png";
-    protected static final String SETTINGS_BUTTON_ICON = ICON_SYMBOL + "settings.png";
-    protected static final String PLAYER_ICON = ICON_SYMBOL + "player.png";
-    protected static final String SCORE_BUTTON_ICON = ICON_SYMBOL + "score.png";
-    protected static final String PLAY_BUTTON_ICON = ICON_SYMBOL + "play.png";
-    protected static final String PAUSE_BUTTON_ICON = ICON_SYMBOL + "pause.png";
-    protected static final String DONE_BUTTON_ICON = ICON_SYMBOL + "done.png";
-    protected static final String BOXSCORE_BUTTON_ICON = ICON_SYMBOL + "boxscore.png";
-    protected static final String MAINMENU_BUTTON_ICON = ICON_SYMBOL + "mainMenu.png";
-    protected static final String ABBREVIATIONS_BUTTON_ICON = ICON_SYMBOL + "abbreviations.png";
-    protected static final String ROSTER_MANAGEMENT_ICON = ICON_SYMBOL + "rosterManagement.png";
-    protected static final String TIMEOUT_BUTTON_ICON = ICON_SYMBOL + "timeout.png";
-    protected static final String TEAMFOULS_ICON = ICON_SYMBOL + "fouls.png";
-    protected static final int ICON_SIZE = 80;
+    protected static final String SLASH = "/";
+    protected static final String SUBMIT_BUTTON_ICON = SLASH + "submit.png";
+    protected static final String UNDO_BUTTON_ICON = SLASH + "undo.png";
+    protected static final String START_BUTTON_ICON = SLASH + "start.png";
+    protected static final String OLDGAMES_BUTTON_ICON = SLASH + "oldGames.png";
+    protected static final String INSTRUCTIONS_BUTTON_ICON = SLASH + "instructions.png";
+    protected static final String CLOSE_BUTTON_ICON = SLASH + "close.png";
+    protected static final String SETTINGS_BUTTON_ICON = SLASH + "settings.png";
+    protected static final String PLAYER_ICON = SLASH + "player.png";
+    protected static final String SCORE_BUTTON_ICON = SLASH + "score.png";
+    protected static final String PLAY_BUTTON_ICON = SLASH + "play.png";
+    protected static final String PAUSE_BUTTON_ICON = SLASH + "pause.png";
+    protected static final String DONE_BUTTON_ICON = SLASH + "done.png";
+    protected static final String BOXSCORE_BUTTON_ICON = SLASH + "boxscore.png";
+    protected static final String MAINMENU_BUTTON_ICON = SLASH + "mainMenu.png";
+    protected static final String ABBREVIATIONS_BUTTON_ICON = SLASH + "abbreviations.png";
+    protected static final String ROSTER_MANAGEMENT_ICON = SLASH + "rosterManagement.png";
+    protected static final String TIMEOUT_BUTTON_ICON = SLASH + "timeout.png";
+    protected static final String TEAMFOULS_ICON = SLASH + "fouls.png";
+    protected static final String FILE_WARNING_ICON = SLASH + "fileWarning.png";
+    protected static final String OVERTIME_ICON = SLASH + "overtime.png";
+    protected static final String SUB_PLAYER_ICON = SLASH + "sub.png";
+    protected static final String TEAM_ICON = SLASH + "team.png";
+    protected static final String GAME_OVER_ICON = SLASH + "gameOver.png";
+    protected static final String GAMEOVER_WARNING_ICON = SLASH + "combo.png";
+    protected static final int ICON_SIZE = SCREENHEIGHT * 2 / 27;
     
 	/*
 	 * ************************************************
@@ -206,11 +236,14 @@ public abstract class Constants extends JFrame {
 		 NUMBER_OF_STARTERS,
 		 PERSONAL_FOULS,
 		 TECHNICAL_FOULS,
+		 FLAGRANT_I,
+		 FLAGRANT_II,
 		 CURRENT_PERIOD,
 		 PERIOD_TYPE,
-		 AUTO_CORRECT_NAMES,
 		 GAME_LENGTH,
+		 OVERTIME_LENGTH,
 		 TIME_REMAINING,
-		 TIMEOUTS;
+		 TIMEOUTS,
+		 OT_TIMEOUTS;
 	}
 }
