@@ -53,33 +53,33 @@ public class GameSettings extends BasketballMain implements ActionListener {
     protected Object getSetting(Setting choose) {
         switch(choose) {
             case BACKGROUND_COLOR:
-            return this.background_color;
+                return this.background_color;
             case NUMBER_OF_STARTERS:
-            return this.number_of_starters;
+                return this.number_of_starters;
             case PERSONAL_FOULS:
-            return this.personal_fouls;
+                return this.personal_fouls;
             case TECHNICAL_FOULS:
-            return this.technical_fouls;
+                return this.technical_fouls;
             case FLAGRANT_I:
-            return this.flagrant_i;
+                return this.flagrant_i;
             case FLAGRANT_II:
-            return this.flagrant_ii;
+                return this.flagrant_ii;
             case CURRENT_PERIOD:
-            return this.current_period;
+                return this.current_period;
             case PERIOD_TYPE:
-            return this.period_type;
+                return this.period_type;
             case GAME_LENGTH:
-            return this.game_length;
+                return this.game_length;
             case OVERTIME_LENGTH:
-            return this.overtime_length;
+                return this.overtime_length;
             case TIME_REMAINING:
-            return this.time_remaining;
+                return this.time_remaining;
             case TIMEOUTS:
-            return this.timeouts;
+                return this.timeouts;
             case OT_TIMEOUTS:
-            return this.OTTimeouts;
+                return this.OTTimeouts;
             default:
-            return null;
+                return null;
         }
     }
     
@@ -88,46 +88,46 @@ public class GameSettings extends BasketballMain implements ActionListener {
     protected void setSetting(Object data, Setting choose) {
         switch (choose) {
             case BACKGROUND_COLOR:
-            this.background_color = (Color) data;
-            break;
+                this.background_color = (Color) data;
+                break;
             case NUMBER_OF_STARTERS:
-            this.number_of_starters = (int) data;
-            break;
+                this.number_of_starters = (int) data;
+                break;
             case PERSONAL_FOULS:
-            this.personal_fouls = (int) data;
-            break;
+                this.personal_fouls = (int) data;
+                break;
             case TECHNICAL_FOULS:
-            this.technical_fouls = (int) data;
-            break;
+                this.technical_fouls = (int) data;
+                break;
             case FLAGRANT_I:
-            this.flagrant_i = (int) data;
-            break;
+                this.flagrant_i = (int) data;
+                break;
             case FLAGRANT_II:
-            this.flagrant_ii = (int) data;
-            break;
+                this.flagrant_ii = (int) data;
+                break;
             case CURRENT_PERIOD:
-            this.current_period = (int) data;
-            break;
+                this.current_period = (int) data;
+                break;
             case PERIOD_TYPE:
-            this.period_type = (boolean) data;
-            break;
+                this.period_type = (boolean) data;
+                break;
             case GAME_LENGTH:
-            this.game_length = (double) data;
-            break;
+                this.game_length = (double) data;
+                break;
             case OVERTIME_LENGTH:
-            this.overtime_length = (double) data;
-            break;
+                this.overtime_length = (double) data;
+                break;
             case TIME_REMAINING:
-            this.time_remaining = (double) data;
-            break;
+                this.time_remaining = (double) data;
+                break;
             case TIMEOUTS:
-            this.timeouts = (int) data;
-            break;
+                this.timeouts = (int) data;
+                break;
             case OT_TIMEOUTS:
-            this.OTTimeouts = (int) data;
-            break;
+                this.OTTimeouts = (int) data;
+                break;
             default:
-            break;
+                break;
         }
     }
     
