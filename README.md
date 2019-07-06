@@ -98,12 +98,6 @@ The window that appears when the **Box Score** Button is pressed. It shows all p
   <img src = "Screenshots/BoxScoreTable.PNG" width = "600" alt = "Box Score Table">
 </p>
 
-The totals for each statistic are shown in the bottom row:
-
-<p align = "center">
-  <img src = "Screenshots/BoxScoreTableTotal.PNG" width = "600" alt = "Home Screen">
-</p>
-
 ## Player Buttons:
 
 There are some additional features in the **Roster Management** window. When a player's button is clicked (who is on the court), a new window will open that allows the user to select from all possible statistics. Pressing on any statistic will increment that statistic for the given player by the correct amount. This window is shown below:
