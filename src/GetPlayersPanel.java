@@ -396,6 +396,7 @@ public class GetPlayersPanel extends GUISettings {
     public void createSettingsButton() {  	
     	this.buttonArray[SETTINGS_BUTTON].addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
+    			buttonArray[SETTINGS_BUTTON].setEnabled(false);
     		    JPanel colorPanel = new JPanel(new GridLayout(COLOR_NAMES.length, 1));
     		    JScrollPane scrollPane = addScrollPane(colorPanel);
     		    for (int i = 0; i < COLOR_NAMES.length; i++) {
@@ -462,7 +463,7 @@ public class GetPlayersPanel extends GUISettings {
     		    enableButtons(hO, false);	    
     		 		    
     		    JPanel settingsButtons = new JPanel(new GridLayout(1, 3));
-    		    JButton close = new JButton("Apply and Close");
+    		    JButton close = new JButton("Apply");
     		    formatButton(close, 260, 50, 20, SETTINGS);
     		    close.setBackground(DEFAULT_BACKGROUND_COLOR);
     		    close.addActionListener(new ActionListener() {
@@ -487,12 +488,12 @@ public class GetPlayersPanel extends GUISettings {
     		    			btn.setForeground(DEFAULT_FONT_COLOR);
     		    		}
     		    		updatePlayerList();
+    		    		settingsFrame.dispose();
     		    	}
     		    });
     		    
     		    settingsButtons.add(close);
     		    settingsButtons.add(defaultBtn);
-    		    noButton(settingsFrame, settingsButtons, FONT_SIZE / 3, BUTTON_HEIGHT * 3, BUTTON_HEIGHT / 2, "Cancel", SETTINGS, true);
     		    
     		    JScrollPane totalScrollPane = addScrollPane(total);
     		    totalScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -500,17 +501,27 @@ public class GetPlayersPanel extends GUISettings {
     		    totalScrollPanel.add(totalScrollPane);  
     		    
     		    JSplitPane pane3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPanel, settingsButtons);
-    		    pane3.setDividerLocation(SCREENHEIGHT / 2 + BUTTON_HEIGHT * 2);
+    		    pane3.setDividerLocation(SCREENHEIGHT / 2 + BUTTON_HEIGHT * 3);
     		    pane3.setEnabled(false);   
     		    
     		    JSplitPane pane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, total, pane3);
-    		    pane1.setDividerLocation(SCREENWIDTH / 2);
+    		    pane1.setDividerLocation(SCREENWIDTH / 2 + BUTTON_HEIGHT * 5 / 2);
     		    pane1.setEnabled(false);
     		    
     		    JPanel panels = new JPanel();
     		    panels.add(pane1);
     		    panels.setLayout(new BoxLayout(panels, BoxLayout.Y_AXIS));
-    		    formatFrame(settingsFrame, panels, SCREENWIDTH - (BUTTON_HEIGHT * 2), SCREENHEIGHT - BUTTON_HEIGHT);    		    
+    		    formatFrame(settingsFrame, panels, SCREENWIDTH - (BUTTON_HEIGHT * 3), SCREENHEIGHT - BUTTON_HEIGHT); 
+    		    
+    		    settingsFrame.addWindowListener(new WindowAdapter() {
+    		        @Override
+    		        public void windowClosing(WindowEvent windowEvent) {
+    		            buttonArray[SETTINGS_BUTTON].setEnabled(true);
+    		        }
+    		        public void windowClosed(WindowEvent w) {
+    		            buttonArray[SETTINGS_BUTTON].setEnabled(true);
+    		        }
+    		    });
     		}
     	});
     }
