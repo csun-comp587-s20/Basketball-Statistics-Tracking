@@ -13,12 +13,15 @@ public class GameSettings extends BasketballMain implements ActionListener {
 	private int number_of_starters; // Number of starters for the game
 	private int personal_fouls; // Number of personal fouls allowed
 	private int technical_fouls; // Number of technical fouls allowed
+	private int flagrant_i; // Number of Flagrant I fouls allowed
+	private int flagrant_ii; // Number of Flagrant II fouls allowed
 	private int current_period; // The current period of the game (1st quarter/half, 2nd quarter/half ...)
 	private boolean period_type; // Period Type ---> Quarters: true / Halves: false
-	private boolean auto_correct_names; // Whether names should be auto capitalized
 	private double game_length; // The length of each period
+	private double overtime_length; // The length of an overtime
 	private double time_remaining; // The time remaining in the current period
 	private int timeouts; // The number of timeouts for the team
+	private int OTTimeouts; // The number of timeouts per overtime period
 	
     private static final long serialVersionUID = 1L;
     
@@ -32,12 +35,16 @@ public class GameSettings extends BasketballMain implements ActionListener {
     	this.number_of_starters = DEFAULT_NUMBER_OF_STARTERS;
     	this.personal_fouls = DEFAULT_PERSONAL_FOULS_ALLOWED;
     	this.technical_fouls = DEFAULT_TECHNICAL_FOULS_ALLOWED;
-    	this.auto_correct_names = DEFAULT_AUTO_CORRECT_NAMES;
+    	this.flagrant_i = DEFAULT_FLAGRANT_1;
+    	this.flagrant_ii = DEFAULT_FLAGRANT_2;
     	this.period_type = DEFAULT_PERIOD_TYPE;
     	this.game_length = DEFAULT_GAME_LENGTH;
+    	this.overtime_length = DEFAULT_OVERTIME_LENGTH;
     	this.time_remaining = DEFAULT_TIME_REMAINING;
     	this.current_period = DEFAULT_CURRENT_PERIOD;
     	this.timeouts = DEFAULT_TIMEOUTS;
+    	this.OTTimeouts = DEFAULT_OT_TIMEOUTS;
+    	
     }
     
     // Post: Returns an object representing the setting linked with a certain integer
@@ -53,18 +60,24 @@ public class GameSettings extends BasketballMain implements ActionListener {
     		return this.personal_fouls;
     	case TECHNICAL_FOULS:
     		return this.technical_fouls;
+    	case FLAGRANT_I:
+    		return this.flagrant_i;
+    	case FLAGRANT_II:
+    		return this.flagrant_ii;
     	case CURRENT_PERIOD:
     		return this.current_period;
     	case PERIOD_TYPE:
     		return this.period_type;
-    	case AUTO_CORRECT_NAMES:
-    		return this.auto_correct_names;
     	case GAME_LENGTH:
     		return this.game_length;
+    	case OVERTIME_LENGTH:
+    		return this.overtime_length;
     	case TIME_REMAINING:
     		return this.time_remaining;
     	case TIMEOUTS:
     		return this.timeouts;
+    	case OT_TIMEOUTS:
+    		return this.OTTimeouts;
     	default:
     		return null;	
     	}
@@ -86,17 +99,23 @@ public class GameSettings extends BasketballMain implements ActionListener {
     	case TECHNICAL_FOULS:
     		this.technical_fouls = (int) data;
     		break;
+    	case FLAGRANT_I:
+    		this.flagrant_i = (int) data;
+    		break;
+    	case FLAGRANT_II:
+    		this.flagrant_ii = (int) data;
+    		break;
     	case CURRENT_PERIOD:
     		this.current_period = (int) data;
     		break;
     	case PERIOD_TYPE:
     		this.period_type = (boolean) data;
     		break;
-    	case AUTO_CORRECT_NAMES:
-    		this.auto_correct_names = (boolean) data;
-    		break;
     	case GAME_LENGTH:
     		this.game_length = (double) data;
+    		break;
+    	case OVERTIME_LENGTH:
+    		this.overtime_length = (double) data;
     		break;
     	case TIME_REMAINING:
     		this.time_remaining = (double) data;
@@ -104,20 +123,30 @@ public class GameSettings extends BasketballMain implements ActionListener {
     	case TIMEOUTS:
     		this.timeouts = (int) data;
     		break;
+    	case OT_TIMEOUTS:
+    		this.OTTimeouts = (int) data;
+    		break;
     	default:
     		break;
     	}
     }
     
-    private static final String DIVIDER = "_";
+    protected static final String DIVIDER = "_";
     
     // Post: Returns a String representation of the game settings used when writing
     //       to the game file.
     public String toString() {
-    	return this.number_of_starters + DIVIDER + this.personal_fouls + DIVIDER + 
-    		   this.technical_fouls + DIVIDER + this.period_type + DIVIDER + 
-    		   this.game_length + DIVIDER + this.time_remaining +  DIVIDER + this.current_period +
-    		   DIVIDER + this.timeouts;
+    	String[] data = {this.number_of_starters + "", + this.personal_fouls + "",
+            this.technical_fouls + "", this.flagrant_i + "",
+            this.flagrant_ii + "", this.period_type + "",
+            this.game_length + "", this.time_remaining + "",
+            this.overtime_length + "", this.current_period + "", 
+            this.timeouts + ""};
+    	String result = data[0];
+    	for (int i = 1; i < data.length; i++) {
+    		result += DIVIDER + data[i];
+    	}
+    	return result;
     }
     
     public void actionPerformed(ActionEvent arg0) {       

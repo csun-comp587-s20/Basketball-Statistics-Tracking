@@ -41,6 +41,11 @@ public class Player extends Constants implements Comparable<Player> {
     	this.statMap.put("OnCourt", "OnCourt");
     }
     
+    // Post: Alternate Player Constructor with only the first name given
+    public Player(String name) {
+    	this(name, "", "");
+    }
+    
     // Post: Returns true if the two players being compared have the exact same first and last name (case sensitive)
     //       Otherwise returns false
     public boolean equals(Object obj){
@@ -116,7 +121,7 @@ public class Player extends Constants implements Comparable<Player> {
         		Scanner scanner = new Scanner(num);
          		this.name = scanner.next();
          		this.lastName = scanner.next();
-         		this.displayName = this.name + " " + this.lastName.substring(0, 1) + ".";
+         		this.displayName = this.name + " " + this.lastName.charAt(0) + ".";
          		scanner.close();
         	} else {
         		this.name = this.displayName = num;
@@ -144,15 +149,15 @@ public class Player extends Constants implements Comparable<Player> {
     //       The 'total' parameter only applies if the 'statistic' in question is "Player". In which case,
     //       'total' is used to distinguish a normal player from the abstract Total player used in the
     //       Table class to show the totals of each statistic throughout the team.
-    public String getStat(String statistic, boolean total) {
+    public String getStat(String statistic) {
     	String stat = mapStat(statistic);
     	switch (stat) {
     	case "Player":
-    		if (!total) {
-                return this.name + "_" + this.lastName;
-        	} else {
-        		return this.displayName;
-        	}
+    		if (this.displayName.isEmpty()) {
+    			return this.name;
+    		} else {
+        		return this.name + "_" + this.lastName;
+    		}
     	case "MIN":
             return Integer.toString((int) Math.ceil(this.data.get(stat) / 600.0));
     	case "FG%":
@@ -206,13 +211,26 @@ public class Player extends Constants implements Comparable<Player> {
     
     // Post: Returns true if the player's personal fouls are greater than the minimum given by the user
     //       or if the player's technical fouls are greater than the minimum given by the user.
-    public boolean hasFouledOut(int PF, int TF) {
-    	return Integer.valueOf(getStat("PF", false)) >= PF 
-    		   || Integer.valueOf(getStat("TF", false)) >= TF 
-    		   || Integer.valueOf(getStat("FLGI", false)) >= DEFAULT_FLAGRANT_1 
-    		   || Integer.valueOf(getStat("FLGII", false)) >= DEFAULT_FLAGRANT_2;
+    public boolean hasFouledOut(int PF, int TF, int FI, int FII) {
+    	return Integer.valueOf(getStat("PF")) >= PF 
+    		   || Integer.valueOf(getStat("TF")) >= TF 
+    		   || Integer.valueOf(getStat("FLGI")) >= FI 
+    		   || Integer.valueOf(getStat("FLGII")) >= FII;
     }
     
+    public boolean isEqual(Player other) {
+    	return this.name.equals(other.getName()) && 
+    		   this.lastName.equals(other.getLastName()) && 
+    		   this.displayName.equals(other.getDisplayName());
+    }
+    
+    // Post: Returns the calculated statistics for the player
+    public String getStatLine() {
+    	return toString() + ": " + getStat("PTS") + " Points | " + getStat("REB") + " Rebounds | FG%: "
+               + getStat("FG%") + " | 3P% " + getStat("3P%") + " | FT%: " + getStat("FT%");
+    }
+    
+    // Post: Returns the players first and last name separated by a space
     public String toString() {
     	return this.name + " " + this.lastName;
     }

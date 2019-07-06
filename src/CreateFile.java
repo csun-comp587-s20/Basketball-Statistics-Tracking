@@ -6,19 +6,22 @@
 
 import java.util.*;
 
-public class CreateFile {
+public class CreateFile extends BasketballMain {
 
+	private static final long serialVersionUID = 1L;
+	
 	private Formatter boxscore; // The Formatter used to create the file
-	private String fileName;
+	private String fileName; // Name of file with the game data
     
 	// Post: Creates a file with the name 'fileName'
     public CreateFile(String fileName) {
     	this.fileName = fileName;
     }
     
-    public void openFile() {
+    @SuppressWarnings("static-access")
+	public void openFile() {
         try {
-            this.boxscore = new Formatter(this.fileName);
+            this.boxscore = new Formatter(super.FILE_PATH + "\\" + GAMEFILESFOLDER + "\\" + this.fileName);
         } catch(Exception e) {
             System.out.println(e.getMessage());
         }
@@ -37,7 +40,7 @@ public class CreateFile {
     
     // Post: Prints all game history (each undo is an event that happened in the game) in 
     //       chronological order to the bottom of the file.
-    public void addUndo(ArrayList<Undo> undo) {
+    public void addUndo(List<Undo> undo) {
     	for(Undo u : undo) {
     		this.boxscore.format("%s%n", u.toStringArray().toString().replaceAll("\\[", "").replaceAll("\\]", ""));
     	}

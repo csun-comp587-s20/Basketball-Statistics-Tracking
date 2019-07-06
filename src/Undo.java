@@ -57,8 +57,8 @@ public class Undo implements Comparable<Undo> {
 	}
 	
 	// Post: Returns an ArrayList<String> of all the player data and statistical data
-    public ArrayList<String> toStringArray() {
-    	ArrayList<String> data = new ArrayList<String>(8);
+    public List<String> toStringArray() {
+    	List<String> data = new ArrayList<String>(8);
     	data.add(this.player.getName());
     	data.add(this.player.getLastName());
     	data.add(this.player.getDisplayName());
@@ -74,12 +74,12 @@ public class Undo implements Comparable<Undo> {
     //                        If assisted: '(stat) - Assisted by (astPlayer) (time)'
     public String toString() {
     	String text = this.stat;
-    	if(text.equals("Substitution")) {
+    	if (text.equals("Substitution")) {
     		return "Substitution for: " + this.astPlayer.getDisplayName() + " " + time;
     	} else {
         	boolean isAst = this.astPlayer.getName().equals("TEST") && this.astPlayer.getLastName().equals("TEST") 
         			&& this.astPlayer.getDisplayName().equals("TEST");
-        	if(isAst) {
+        	if (isAst) {
         		return text + " " + time;
         	} else {
         		text += " - Assisted by: " + this.astPlayer.getName() + " " + this.astPlayer.getLastName();
@@ -88,12 +88,42 @@ public class Undo implements Comparable<Undo> {
     	}
     }
     
+    // Post: Returns Positive number if this undo occurs before the 'other' undo.
+    //       Returns 0 if both undos occur at the same time.
+    //       Returns negative number if this undo occurs after the 'other' undo.
     public int compareTo(Undo other) {
-    	return getTime(getTimeOf()) - getTime(other.getTimeOf());
+    	if (other.getTimeOf().equals("DONE") || getTimeOf().equals("DONE")) {
+    		return 1;
+    	} else {
+    		String[] time = getTimeOf().split(" ");
+        	String[] otherTime = other.getTimeOf().split(" ");
+        	boolean timeOT = time[0].contains("OT");
+        	boolean otherTimeOT = otherTime[0].contains("OT");
+        	if (timeOT && !otherTimeOT) {
+        		return -1;
+        	} else if (!timeOT && otherTimeOT) {
+        		return 1;
+        	} else if (timeOT && otherTimeOT) {
+        		return comparePeriods(time[0], otherTime[0], time[1], otherTime[1], "[A-Z]+");
+        	} else {
+        		return comparePeriods(time[0], otherTime[0], time[1], otherTime[1], "[a-z]+");
+        	}
+    	}
+    }
+    
+    private int comparePeriods(String thisPeriod, String otherPeriod, 
+    						   String thisTime, String otherTime, String regex) {
+		int thisPer = Integer.valueOf(thisPeriod.replaceAll(regex, ""));
+		int otherPer = Integer.valueOf(otherPeriod.replaceAll(regex, ""));
+		if (thisPer == otherPer) {
+			return getTime(otherTime) - getTime(thisTime);
+		} else {
+			return otherPer - thisPer;
+		}
     }
     
     private int getTime(String time) {
-    	String[] data = time.split(":");
+    	String[] data = time.trim().split(":");
     	String minutes = data[0].trim();
     	String seconds = data[1].trim();
     	int min = Integer.valueOf(minutes);

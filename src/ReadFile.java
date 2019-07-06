@@ -5,27 +5,32 @@
 
 import java.io.*;
 import java.util.*;
+import java.util.List;
 import java.util.regex.*;
 
-public class ReadFile extends Constants {
+public class ReadFile extends BasketballMain {
 
 	private static final long serialVersionUID = 1L;
+	private static final int UNDO_LENGTH = 8;
 	
 	private Scanner scanFile;				// Scanner for file
 	private Scanner getLines;				// Scanner to get number of lines in the file
-	private ArrayList<String[]> undoFile;   // List of undo's listed at bottom of game file
-	private ArrayList<Player> players;		// List of players from game file 
-	private GameSettings colors;			// Settings used for coloring/formatting of program
+	private List<String[]> undoFile;        // List of undo's listed at bottom of game file
+	private List<Player> players;		    // List of players from game file 
+	private Queue<String> fileData;			// All the lines in the scanned file
+	private GameSettings SETTINGS;			// Settings used for coloring/formatting of program
+	private String version;                 // Current Version of the Program
+	private int numPlayers;					// The number of players being scanned in
 	
 	// Post: Constructs a ReadFile given the 'fileName' of the input file and the 'settings'
 	//       used to format the program.
+	@SuppressWarnings("static-access")
 	public ReadFile(String fileName, GameSettings settings) {
 		try {
-			this.scanFile = new Scanner(new File(fileName));
-			this.getLines = new Scanner(new File(fileName));
-			System.out.println(fileName + " was scanned");
-		}
-		catch (Exception e) {
+			File file = new File(super.FILE_PATH + "\\" + GAMEFILESFOLDER + "\\" + fileName);
+			this.scanFile = new Scanner(file);
+			this.getLines = new Scanner(file);
+		} catch (Exception e) {
 			System.out.println("Error, file not found");
 			System.out.println(e.getMessage());
 		}
@@ -33,57 +38,133 @@ public class ReadFile extends Constants {
 			System.out.println(fileName + " is empty.");
 			throw new IllegalArgumentException();
 		}
-		this.undoFile = new ArrayList<String[]>();
-		this.players = new ArrayList<Player>();
-		this.colors = settings;
+		this.fileData = new LinkedList<String>();
+		while (this.getLines.hasNextLine()) {
+			this.fileData.add(this.getLines.nextLine());
+		}
+		this.getLines.close();
+    	Pattern playerPattern = Pattern.compile("Player\\s.+_.+");
+    	// Count the number of players in the input file
+    	for (String line : this.fileData) {
+    		Matcher playerMatch = playerPattern.matcher(line);
+			if (playerMatch.find()) {
+				this.numPlayers++;
+			}	
+    	}
+    	int undoSize = this.fileData.size() - (this.numPlayers * STATISTIC_ABBREVIATIONS.length) - 1;
+		this.undoFile = new ArrayList<String[]>(undoSize);
+		this.players = new ArrayList<Player>(this.numPlayers);
+		this.SETTINGS = settings;
+		this.version = this.fileData.remove();
+	}
+	
+	// Post: Returns true if the game being scanned in is over.
+	//       Returns false otherwise or if the file is corrupted.
+	public boolean isGameOver() {
+		try {
+			return Integer.valueOf(this.version.split("_")[CURRENT_PERIOD]) == END_OF_GAME;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	// Post: Returns true if the file is ready to be read in by the system (i.e. is not corrupted).
+	//       Returns false otherwise.
+	public boolean checkFile() {
+		for (int i = 0; i < this.numPlayers; i++) {
+			for (int j = 0; j < STATISTIC_ABBREVIATIONS.length + 1; j++) {
+				if (j == STATISTIC_ABBREVIATIONS.length) {
+					this.fileData.remove();
+				} else {
+					String stat = STATISTIC_ABBREVIATIONS[j];
+					String gameData = this.fileData.remove();
+					if (!gameData.contains(stat)) {
+						return false;
+					}
+				}
+			}	
+		}
+		int undo = 0;
+		int totalUndo = this.fileData.size();
+		while (!this.fileData.isEmpty()) {
+			String data = this.fileData.remove();
+			String[] checkData = data.split(",");
+			if (checkData(checkData) && checkData.length == UNDO_LENGTH) {
+				undo++;
+			}
+		}
+		return undo == totalUndo;
+	}
+	
+	// Post: Returns true if all elements in 'data' are correct.
+	//       Returns false otherwise.
+	private boolean checkData(String[] data) {
+		String[] patterns = {"[A-Za-z\\s\\.]+", "[A-Za-z0-9\\s]+", "(OT[0-9])|([0-9][a-z]+)"};
+		for (int i = 0; i < data.length; i++) {
+			Pattern pattern;
+			Matcher match;
+			if (i <= 6) {
+				pattern = Pattern.compile(patterns[0]);
+				match = pattern.matcher(data[i]);
+			} else {
+				pattern = Pattern.compile(patterns[i - 6]);
+				match = pattern.matcher(data[i]);
+			}
+			if (!match.find()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	// Indices of game data in 'boxscoreData'.
 	private static final int NUM_STARTERS = 0;
 	private static final int PERSONAL_FOULS = 1;
 	private static final int TECHNICAL_FOULS = 2;
-	private static final int PERIOD_TYPE = 3;
-	private static final int GAME_LENGTH = 4;
-	private static final int TIME_REMAINING = 5;
-	private static final int CURRENT_PERIOD = 6;
-	private static final int TIMEOUTS = 7;
+	private static final int FLAGRANT_I = 3;
+	private static final int FLAGRANT_II = 4;
+	private static final int PERIOD_TYPE = 5;
+	private static final int GAME_LENGTH = 6;
+	private static final int TIME_REMAINING = 7;
+	private static final int OVERTIMES = 8;
+	private static final int CURRENT_PERIOD = 9;
+	private static final int TIMEOUTS = 10;
 	private static final String PERIOD_TYPE_ID = "false";
 	
+	// Post: Returns all the data stored in the game file.
+	public Object[] getFileData() {
+		return new Object[] {getGameSettingsData(),
+				             getPlayers(),
+				             getUndoArray()};
+		}
+	
 	// Post: Returns the GameSettings used in the game that is being scanned in from the file.
-	public GameSettings getGameSettingsData() {
+	private GameSettings getGameSettingsData() {
 		String[] boxscoreData = this.scanFile.nextLine().split("_");
 		GameSettings data = new GameSettings();
 		data.setSetting(Integer.valueOf(boxscoreData[NUM_STARTERS]), Setting.NUMBER_OF_STARTERS);
 		data.setSetting(Integer.valueOf(boxscoreData[PERSONAL_FOULS]), Setting.PERSONAL_FOULS);
 		data.setSetting(Integer.valueOf(boxscoreData[TECHNICAL_FOULS]), Setting.TECHNICAL_FOULS);
+		data.setSetting(Integer.valueOf(boxscoreData[FLAGRANT_I]), Setting.FLAGRANT_I);
+		data.setSetting(Integer.valueOf(boxscoreData[FLAGRANT_II]), Setting.FLAGRANT_II);
 		data.setSetting(!boxscoreData[PERIOD_TYPE].equals(PERIOD_TYPE_ID), Setting.PERIOD_TYPE);
 		data.setSetting(Double.valueOf(boxscoreData[GAME_LENGTH]), Setting.GAME_LENGTH);
 		data.setSetting((Double.valueOf(boxscoreData[TIME_REMAINING])), Setting.TIME_REMAINING);
+		data.setSetting(Double.valueOf(boxscoreData[OVERTIMES]), Setting.OVERTIME_LENGTH);
 		data.setSetting(Integer.valueOf(boxscoreData[CURRENT_PERIOD]), Setting.CURRENT_PERIOD);
 		data.setSetting(Integer.valueOf(boxscoreData[TIMEOUTS]), Setting.TIMEOUTS);
-		data.setSetting(this.colors.getSetting(Setting.BACKGROUND_COLOR), Setting.BACKGROUND_COLOR);
-		data.setSetting(this.colors.getSetting(Setting.FONT_COLOR), Setting.FONT_COLOR);
-		data.setSetting(this.colors.getSetting(Setting.TEXT_BORDER_COLOR), Setting.TEXT_BORDER_COLOR);
-		data.setSetting(this.colors.getSetting(Setting.FONT_TYPE), Setting.FONT_TYPE);
+		data.setSetting(this.SETTINGS.getSetting(Setting.BACKGROUND_COLOR), Setting.BACKGROUND_COLOR);
+		data.setSetting(this.SETTINGS.getSetting(Setting.FONT_COLOR), Setting.FONT_COLOR);
+		data.setSetting(this.SETTINGS.getSetting(Setting.TEXT_BORDER_COLOR), Setting.TEXT_BORDER_COLOR);
+		data.setSetting(this.SETTINGS.getSetting(Setting.FONT_TYPE), Setting.FONT_TYPE);
 		return data;
 	}
 	
 	// Post: Returns a list of the players in the input file with all their statistical data.
-	public ArrayList<Player> getPlayers() {
-		int numPlayers = 0;
-    	Pattern pattern = Pattern.compile("Player\\s.+_.+");
-    	// Count the number of players in the input file
-		while (this.getLines.hasNextLine()) {
-			String line = this.getLines.nextLine();
-            Matcher match = pattern.matcher(line);
-			if (match.find()) {
-				numPlayers++;
-			}
-		}
-		this.getLines.close();	
+	private List<Player> getPlayers() {
 		// Add all statistics for each player as they appear in the input file
-		for (int i = 0; i < numPlayers; i++) {
-			Player player = new Player("", "", "");
+		for (int i = 0; i < this.numPlayers; i++) {
+			Player player = new Player("");
 			for (int j = 0; j < STATISTIC_ABBREVIATIONS.length + 1; j++) {
 				if (this.scanFile.hasNextLine()) {
 					String line = this.scanFile.nextLine();
@@ -118,8 +199,8 @@ public class ReadFile extends Constants {
 	private static final int TIME = 7;
 	
 	// Post: Returns a list of every undo stored in the input file.
-	public ArrayList<Undo> getUndoArray() {
-		ArrayList<Undo> undoArray = new ArrayList<Undo>();
+	private List<Undo> getUndoArray() {
+		List<Undo> undoArray = new ArrayList<Undo>();
 		for (String[] line : this.undoFile) {
 			Undo undo = null;
 			for (Player player : this.players) {

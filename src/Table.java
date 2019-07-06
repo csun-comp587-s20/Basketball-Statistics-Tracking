@@ -6,15 +6,16 @@
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
 
 public class Table extends GUISettings {
     
 	private static final long serialVersionUID = 1L;
-	private JTable boxscore;	// The table displaying all player data
-	private Dimension size;		// The size of the table
-	private int font, headerFont;
+	private GameSettings SETTINGS;			// Settings used to format the table
+	private JScrollPane scrollPanel; 		// Scrollbar used for the table
+	private JTable boxscore;				// Table with all information
     
 	// Post: Constructs a new table according to the parameters given.
 	// Parameters:
@@ -23,43 +24,38 @@ public class Table extends GUISettings {
 	// 'width', 'height': Dimensions of the table
 	// 'fontSize', 'headerFontSize': Font sizes
 	// 'settings': Settings used to format the fonts and colors used in the table
-    public Table(ArrayList<Player> players, String[][] data, int width, int height, 
-    		     int fontSize, int headerFontSize, GameSettings settings) {
+    public Table(List<Player> players, String[][] data, int fontSize, int headerFontSize, GameSettings settings) {
         
-        this.setLayout(new FlowLayout());
-        this.size = new Dimension(width, height);
-        this.font = fontSize;
-        this.headerFont = headerFontSize;
+        this.SETTINGS = settings;
         
         // Creates a new ArrayList of the existing players in order to accommodate for the
         // 'total' player which represents the totals for each statistic.
-        ArrayList<Player> newPlayers = new ArrayList<Player>(players.size() + 1);
+        List<Player> newPlayers = new ArrayList<Player>(players.size() + 1);
         newPlayers.addAll(players);
         
-        // Adds a row at the bottom of the table representing the totals for each statistical category.
-        Player total = new Player("Total", "", "");
-        int[] totalStats = new int[STATISTIC_ABBREVIATIONS.length];
-        for(Player player : players) {
-        	int index = 0;
-        	for(String stat : STATISTIC_ABBREVIATIONS) {
-        		if(!(stat.equals("FG%") || stat.equals("3P%") || stat.equals("FT%") || stat.equals("Player"))) {
-        			totalStats[index] += Integer.valueOf(player.getStat(stat, false));
-        		}
-        		index++;
-        	}
-        }
-        for(int i = 1; i < totalStats.length; i++) {
-        	total.setStat(STATISTIC_ABBREVIATIONS[i], String.valueOf(totalStats[i]));
-        }
-		total.setStat(STATISTIC_ABBREVIATIONS[0], "Total");
-        newPlayers.add(total);
-        
-        for(Player player : newPlayers){
-            for(int column = 0; column < STATISTIC_ABBREVIATIONS.length; column++) {
-                data[newPlayers.indexOf(player)][column] = player.getStat(STATISTIC_ABBREVIATIONS[column], true);
+        if (players.size() > 1) {
+        	// Adds a row at the bottom of the table representing the totals for each statistical category.
+            Player total = new Player("Total");
+            int[] totalStats = new int[STATISTIC_ABBREVIATIONS.length];
+            for (Player player : players) {
+            	int index = 0;
+            	for (String stat : STATISTIC_ABBREVIATIONS) {
+            		if (!(stat.equals("FG%") || stat.equals("3P%") || stat.equals("FT%") || stat.equals("Player"))) {
+            			totalStats[index] += Integer.valueOf(player.getStat(stat));
+            		}
+            		index++;
+            	}
+            }
+            for (int i = 1; i < totalStats.length; i++) {
+            	total.setStat(STATISTIC_ABBREVIATIONS[i], String.valueOf(totalStats[i]));
+            }
+    		total.setStat(STATISTIC_ABBREVIATIONS[0], "Total");
+            newPlayers.add(total);
+            for (int column = 0; column < STATISTIC_ABBREVIATIONS.length; column++) {
+            	data[newPlayers.size() - 1][column] = total.getStat(STATISTIC_ABBREVIATIONS[column]).replaceAll("_", " ");
             }
         }
-              
+                          
         this.boxscore = new JTable(data, STATISTIC_ABBREVIATIONS) {
 			private static final long serialVersionUID = 1L;
 			public boolean isCellEditable(int data, int STATISTIC_ABBREVIATIONS) {
@@ -68,8 +64,9 @@ public class Table extends GUISettings {
             public Component prepareRenderer(TableCellRenderer r, int data, int STATISTIC_ABBREVIATIONS) {
                 Component c = super.prepareRenderer(r, data, STATISTIC_ABBREVIATIONS);
                 //Change color of cell when selected
-                if(isCellSelected(data, STATISTIC_ABBREVIATIONS)) {
-                    c.setBackground(((Color) settings.getSetting(Setting.BACKGROUND_COLOR) != Color.WHITE) ? (Color) settings.getSetting(Setting.BACKGROUND_COLOR): Color.CYAN);
+                if (isCellSelected(data, STATISTIC_ABBREVIATIONS)) {
+                    c.setBackground(((Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR) != Color.WHITE) ? 
+                    		        (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR): Color.CYAN);
                 } else {
                 	c.setBackground(Color.WHITE);
                 }  
@@ -79,31 +76,38 @@ public class Table extends GUISettings {
         //Get longest player name
         String longest = "";
         int max = 0;
-        for(Player player : newPlayers) {
-            if(player.getName().length() > max) {
+        for (Player player : newPlayers) {
+            if (player.getName().length() > max) {
                 max = player.getName().length();
             }
         }
-        for(Player player : newPlayers) {
-        	if(player.getName().length() == max) {
+        for (Player player : newPlayers) {
+        	if (player.getName().length() == max) {
         		longest = player.getName();
         		break;
         	}
         }
-        int maxWidth = getDimension(formatLabel(longest, this.font, settings), Dim.WIDTH); 
+        int maxWidth = (int) getDimension(formatLabel(longest, fontSize, settings)).getWidth(); 
         
-        this.boxscore.setPreferredScrollableViewportSize(this.size);
-        this.boxscore.setFillsViewportHeight(true);
+        JTableHeader header = this.boxscore.getTableHeader();
+        header.setBackground((Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR));
         
-        JScrollPane table = new JScrollPane(this.boxscore);
-        table.getVerticalScrollBar().setUnitIncrement(3);
+        this.scrollPanel = new JScrollPane(this.boxscore);
+        this.scrollPanel.getVerticalScrollBar().setUnitIncrement(6);
+        this.scrollPanel.setBackground((Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR)); 
         
+        int size;
+        if (players.size() > 1) {
+        	size = Math.min(SCREENHEIGHT / newPlayers.size(), FONT_SIZE * 20 / 3);
+        } else {
+        	size = SCREENHEIGHT * 3 / 4;
+        }
         // Format Table
-        this.boxscore.setFont(new Font(DEFAULT_FONT_TYPE, Font.PLAIN, this.font));
-        this.boxscore.setRowHeight(Math.min(SCREENHEIGHT/newPlayers.size(), 200));
+        this.boxscore.setFont(new Font(DEFAULT_FONT_TYPE, Font.PLAIN, fontSize));
+        this.boxscore.setRowHeight(size);
         this.boxscore.setRowMargin(20);
-        this.boxscore.getColumnModel().getColumn(0).setPreferredWidth(Math.max(maxWidth, 200));
-        this.boxscore.getTableHeader().setFont(new Font(DEFAULT_FONT_TYPE, Font.BOLD, this.headerFont));
+        this.boxscore.getColumnModel().getColumn(0).setPreferredWidth(Math.max(maxWidth, FONT_SIZE * 10 / 3));
+        this.boxscore.getTableHeader().setFont(new Font(DEFAULT_FONT_TYPE, Font.BOLD, headerFontSize));
         
         // Center Data in cell
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -114,7 +118,19 @@ public class Table extends GUISettings {
         }
         
         this.boxscore.setEnabled(false);
-        this.boxscore.setShowGrid(false);
-        this.add(table);
+        this.boxscore.setShowGrid(players.size() > 1);
+    }
+    
+    // Post: Returns the JTable in a JPanel.
+    public JPanel getTable() {
+    	JPanel table = new JPanel(new GridLayout(1, 1));
+    	table.add(this.scrollPanel);
+     	table.setBackground((Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR));
+    	return table;
+    }
+    
+    // Post: Returns the JTable.
+    public JTable getBoxScore() {
+    	return this.boxscore;
     }
 }
