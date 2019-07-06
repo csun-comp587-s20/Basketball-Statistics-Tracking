@@ -10,8 +10,6 @@ A program that can track player statistics for a Basketball Game
 
 ***
 
-# Overview:
-***
 # Home Screen:
 
 When the program is launched from `BasketballMain` the **Home Screen** is created and is
