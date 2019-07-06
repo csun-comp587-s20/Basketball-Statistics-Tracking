@@ -18,11 +18,11 @@ import javax.swing.text.*;
 
 @SuppressWarnings("serial")
 public abstract class GUISettings extends BasketballMain {
-	
-	// Post: Returns a JLabel with the given 'text' and 'fontSize' while using the colors
+    
+    // Post: Returns a JLabel with the given 'text' and 'fontSize' while using the colors
     //       given by the 'settings' GameSettings.
     protected static JLabel formatLabel(String text, int fontSize, GameSettings settings) {
-    	JLabel label = new JLabel(text, JLabel.CENTER);
+        JLabel label = new JLabel(text, JLabel.CENTER);
         label.setForeground((Color) settings.getSetting(Setting.FONT_COLOR));
         label.setFont(new Font(DEFAULT_FONT_TYPE, Font.BOLD, fontSize));
         return label;
@@ -38,10 +38,10 @@ public abstract class GUISettings extends BasketballMain {
         frame.add(panel);
         // Add logo here
         try {
-			//frame.setIconImage(ImageIO.read(new File("logo.jpg")));
-		} catch (Exception e) {
-			System.out.println("Icon not found.");
-		}
+            //frame.setIconImage(ImageIO.read(new File("logo.jpg")));
+        } catch (Exception e) {
+            System.out.println("Icon not found.");
+        }
     }
     
     // Post: Formats a JButton with the given width, height, font size and colors/font type given in the 'settings'.
@@ -52,12 +52,12 @@ public abstract class GUISettings extends BasketballMain {
         button.setForeground((Color) settings.getSetting(Setting.FONT_COLOR));
         button.setBackground((Color) settings.getSetting(Setting.BACKGROUND_COLOR));
         button.setBorder(new LineBorder(DEFAULT_TEXT_BORDER_COLOR, 6, ROUNDED_BORDERS));
-    	Font originalFont = button.getFont();
-    	// Hover Effect
+        Font originalFont = button.getFont();
+        // Hover Effect
         button.getModel().addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                if (button.getModel().isRollover()) { 
-                	button.setFont(new Font(DEFAULT_FONT_TYPE, Font.BOLD, fontSize + 3));
+                if (button.getModel().isRollover()) {
+                    button.setFont(new Font(DEFAULT_FONT_TYPE, Font.BOLD, fontSize + 3));
                 } else {
                     button.setFont(originalFont);
                 }
@@ -67,20 +67,20 @@ public abstract class GUISettings extends BasketballMain {
     
     // Post: Returns an array of JButton with names given by 'buttonNames' and dimensions given by 'size'.
     protected static JButton[] createButtonArray(String[] buttonNames, int[] size, GameSettings settings) {
-    	JButton[] list = new JButton[buttonNames.length];
-    	for (int i = 0; i < buttonNames.length; i++) {
-    		JButton btn = new JButton(buttonNames[i]);
-    		formatButton(btn, (int) getDimension(formatLabel(buttonNames[i], size[i] + 8, settings)).getWidth() + ICON_SIZE,
-    				          BUTTON_HEIGHT, size[i], settings);
-    		list[i] = btn;
-    	}
-    	return list;
+        JButton[] list = new JButton[buttonNames.length];
+        for (int i = 0; i < buttonNames.length; i++) {
+            JButton btn = new JButton(buttonNames[i]);
+            formatButton(btn, (int) getDimension(formatLabel(buttonNames[i], size[i] + 8, settings)).getWidth() + ICON_SIZE,
+            BUTTON_HEIGHT, size[i], settings);
+            list[i] = btn;
+        }
+        return list;
     }
     
     // Post: Returns a JTextArea formatted using 'settings' with given 'width' and 'height'.
     public static JTextArea formatTextArea(int width, int height, GameSettings settings) {
-    	JTextArea area = new JTextArea();
-    	area.setSize(width, height);
+        JTextArea area = new JTextArea();
+        area.setSize(width, height);
         area.setEditable(false);
         area.setForeground((Color) settings.getSetting(Setting.FONT_COLOR));
         area.setBackground((Color) settings.getSetting(Setting.BACKGROUND_COLOR));
@@ -92,28 +92,28 @@ public abstract class GUISettings extends BasketballMain {
     
     // Post: Formats the given JPanel 'panel'.
     public static void formatPanel(JPanel panel, Component[] components, int[] borderDimension,
-    		                       LayoutManager layout, Color borderColor, Color bckgrnd) {
-    	// Add components to panel
-    	for (Component component : components) {
-    		panel.add(component);
-    	}
-    	// Set layout of panel
-    	if (layout == null) {
-    		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    	} else {
-        	panel.setLayout(layout);
-    	}
-    	// Set border of panel if necessary
-    	if (borderDimension != null) {
-    		panel.setBorder(new MatteBorder(borderDimension[0], borderDimension[1], 
-    				                        borderDimension[2], borderDimension[3], borderColor));
-    	}
-    	panel.setBackground(bckgrnd);
+    LayoutManager layout, Color borderColor, Color bckgrnd) {
+        // Add components to panel
+        for (Component component : components) {
+            panel.add(component);
+        }
+        // Set layout of panel
+        if (layout == null) {
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        } else {
+            panel.setLayout(layout);
+        }
+        // Set border of panel if necessary
+        if (borderDimension != null) {
+            panel.setBorder(new MatteBorder(borderDimension[0], borderDimension[1],
+            borderDimension[2], borderDimension[3], borderColor));
+        }
+        panel.setBackground(bckgrnd);
     }
     
     // Post: Returns a JScrollPane for the given JPanel 'panel'.
     public static JScrollPane addScrollPane(Component panel) {
-    	JScrollPane scrollPane = new JScrollPane(panel);
+        JScrollPane scrollPane = new JScrollPane(panel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setPreferredSize(new Dimension(SCREENWIDTH, SCREENHEIGHT));
@@ -123,19 +123,19 @@ public abstract class GUISettings extends BasketballMain {
             public void run() {
                 scrollPane.getViewport().setViewPosition(new Point(0, 0));
             }
-        });	
+        });
         return scrollPane;
     }
     
     // Post: Creates a pop-up window with the given 'text'.
     protected static void confirmPanel(String text, String frameText, int fontSize, GameSettings settings) {
-    	Color background = (Color) settings.getSetting(Setting.BACKGROUND_COLOR);
-        JFrame frame = new JFrame(frameText); 
+        Color background = (Color) settings.getSetting(Setting.BACKGROUND_COLOR);
+        JFrame frame = new JFrame(frameText);
         
         JPanel askPanel = new JPanel();
         askPanel.setBackground(background);
         
-        JTextPane ask = formatTextPane(text, fontSize, settings);  
+        JTextPane ask = formatTextPane(text, fontSize, settings);
         askPanel.setBorder(new MatteBorder(20, 20, 20, 20, background));
         askPanel.add(ask, Alignment.CENTER);
         askPanel.setLayout(new GridLayout(1, 1));
@@ -164,21 +164,21 @@ public abstract class GUISettings extends BasketballMain {
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         Style style = pane.addStyle("", null);
         StyleConstants.setForeground(style, DEFAULT_FONT_COLOR);
-		try {
-			doc.insertString(doc.getLength(), text, style);
-		} catch (BadLocationException e1) {
-			e1.printStackTrace();
-		}   
-		return pane;
+        try {
+            doc.insertString(doc.getLength(), text, style);
+        } catch (BadLocationException e1) {
+            e1.printStackTrace();
+        }
+        return pane;
     }
     
     // Post: Adds a button that closes the given JFrame 'frame'.
-    protected static void noButton(JFrame frame, JPanel panel, int fontsize, int width, int height, 
-    		                       String text, GameSettings settings, boolean isSettings) {
+    protected static void noButton(JFrame frame, JPanel panel, int fontsize, int width, int height,
+    String text, GameSettings settings, boolean isSettings) {
         JButton no = new JButton(text);
         formatButton(no, width, height, fontsize, settings);
         if (isSettings) {
-        	no.setBackground(DEFAULT_BACKGROUND_COLOR);
+            no.setBackground(DEFAULT_BACKGROUND_COLOR);
         }
         no.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -191,66 +191,66 @@ public abstract class GUISettings extends BasketballMain {
     // Post: Returns the width if d = Dim.WIDTH and height if d = Dim.HEIGHT
     //       of the 'component'.
     protected static Dimension getDimension(Component component) {
-    	JFrame frame = new JFrame();
-    	frame.add(component);
-    	frame.pack();
-    	int height = frame.getHeight();
-    	int width = frame.getWidth();
-    	frame = null;
-    	return new Dimension(width, height);
+        JFrame frame = new JFrame();
+        frame.add(component);
+        frame.pack();
+        int height = frame.getHeight();
+        int width = frame.getWidth();
+        frame = null;
+        return new Dimension(width, height);
     }
     
     // Post: Adds an Icon with file name 'image' to the given button at index 'index'
     //       in 'buttons'.
     protected void setIcon(JButton[] buttons, int index, String image) {
-    	try {
-        	Image icon = new ImageIcon(this.getClass().getResource(image)).getImage();
-        	Image newImage = icon.getScaledInstance(ICON_SIZE, ICON_SIZE, java.awt.Image.SCALE_SMOOTH);  
-        	buttons[index].setIcon(new ImageIcon(newImage));
-    	} catch (Exception e) {
-    		System.out.println(image + " is not in the directory.");
-    		System.out.println("Make sure to store all icons in a source folder called 'Image'.");
-    	}
+        try {
+            Image icon = new ImageIcon(this.getClass().getResource(image)).getImage();
+            Image newImage = icon.getScaledInstance(ICON_SIZE, ICON_SIZE, java.awt.Image.SCALE_SMOOTH);
+            buttons[index].setIcon(new ImageIcon(newImage));
+        } catch (Exception e) {
+            System.out.println(image + " is not in the directory.");
+            System.out.println("Make sure to store all icons in a source folder called 'Image'.");
+        }
     }
     
     // Post: Adds an Icon with file name 'image' to the given JLabel 'component'.
     protected void setIcon(JLabel component, String image) {
-    	try {
-        	Image icon = new ImageIcon(this.getClass().getResource(image)).getImage();
-        	Image newImage = icon.getScaledInstance(ICON_SIZE, ICON_SIZE, java.awt.Image.SCALE_SMOOTH);  
-        	component.setIcon(new ImageIcon(newImage));
-    	} catch (Exception e) {
-    		System.out.println(image + " is not in the directory.");
-    		System.out.println("Make sure to store all icons in a source folder called 'Image'.");
-    	}
+        try {
+            Image icon = new ImageIcon(this.getClass().getResource(image)).getImage();
+            Image newImage = icon.getScaledInstance(ICON_SIZE, ICON_SIZE, java.awt.Image.SCALE_SMOOTH);
+            component.setIcon(new ImageIcon(newImage));
+        } catch (Exception e) {
+            System.out.println(image + " is not in the directory.");
+            System.out.println("Make sure to store all icons in a source folder called 'Image'.");
+        }
     }
     
     // Post: Reformats the given button at index 'index' in 'buttons' to align text and icon.
     protected void setButton(JButton[] buttons, int index, Border border) {
-    	buttons[index].setHorizontalAlignment(SwingConstants.LEFT);
-    	buttons[index].setHorizontalTextPosition(SwingConstants.RIGHT);
-    	buttons[index].setBorder(null);
+        buttons[index].setHorizontalAlignment(SwingConstants.LEFT);
+        buttons[index].setHorizontalTextPosition(SwingConstants.RIGHT);
+        buttons[index].setBorder(null);
     }
     
     // Post: Adds an icon to each JButton in 'buttons' and aligns the buttons text with the icon.
     protected void formatIcons(JButton[] buttons, int[] indices, String[] icons) {
-    	for (int i = 0; i < indices.length; i++) {
-    		setIcon(buttons, indices[i], icons[i]);
-    		setButton(buttons, indices[i], null);
-    	}
+        for (int i = 0; i < indices.length; i++) {
+            setIcon(buttons, indices[i], icons[i]);
+            setButton(buttons, indices[i], null);
+        }
     }
     
     // Post: Switches the current window to one that asks the user to confirm their selection by clicking a 'Yes' or 'No'
     //       button.
-    protected void confirmPane(JPanel pane, JFrame frame, ActionListener noButton, ActionListener yesButton, 
-    		                   String text, String imageName, GameSettings settings) {
-    	pane.removeAll();
-    	frame.setTitle(text);
-    	frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-    	Color background = (Color) settings.getSetting(Setting.BACKGROUND_COLOR);
+    protected void confirmPane(JPanel pane, JFrame frame, ActionListener noButton, ActionListener yesButton,
+    String text, String imageName, GameSettings settings) {
+        pane.removeAll();
+        frame.setTitle(text);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        Color background = (Color) settings.getSetting(Setting.BACKGROUND_COLOR);
         JPanel confirmPanel = new JPanel();
         confirmPanel.setBackground(background);
-
+        
         JLabel doneMessage = formatLabel("   " + text, FONT_SIZE, settings);
         setIcon(doneMessage, imageName);
         confirmPanel.add(doneMessage);
@@ -274,13 +274,13 @@ public abstract class GUISettings extends BasketballMain {
         noPanel.add(no);
         
         JPanel panels = new JPanel();
-		formatPanel(panels, new Component[] {confirmPanel, yesPanel, noPanel}, null, null, null, background);
-
-		JPanel total = new JPanel(new FlowLayout(1, 100, 100));
-		total.add(panels);
-		total.setBackground(background);
-		pane.add(total);
-		pane.repaint();
-		pane.revalidate();
+        formatPanel(panels, new Component[] {confirmPanel, yesPanel, noPanel}, null, null, null, background);
+        
+        JPanel total = new JPanel(new FlowLayout(1, 100, 100));
+        total.add(panels);
+        total.setBackground(background);
+        pane.add(total);
+        pane.repaint();
+        pane.revalidate();
     }
 }
