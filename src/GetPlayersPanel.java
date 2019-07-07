@@ -633,7 +633,12 @@ public class GetPlayersPanel extends GUISettings {
 	    		public void actionPerformed(ActionEvent e) {
 	    			for (int i = 0; i < names.length; i++) {
 	    				if (select.getText().equals(names[i])) {
-	    					int value = Integer.valueOf(names[i]);
+	    					int value;
+	    					try {
+		    					value = Integer.valueOf(names[i]);
+	    					} catch (NumberFormatException nfe) {
+	    						value = -1;
+	    					}
 	    					int selection = i + 1;
 	    					switch (gameSetting) {
 	    					case NUMBER_OF_STARTERS:

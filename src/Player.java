@@ -129,7 +129,7 @@ public class Player extends Constants implements Comparable<Player> {
         	}
     		break;
     	case "MIN":
-        	this.data.put(stat, Integer.valueOf(num) * 10 * 60);
+        	this.data.put(stat, Integer.valueOf(num));
         	break;
     	case "FG%":
     	case "3P%":
@@ -150,6 +150,8 @@ public class Player extends Constants implements Comparable<Player> {
     //       'total' is used to distinguish a normal player from the abstract Total player used in the
     //       Table class to show the totals of each statistic throughout the team.
     public String getStat(String statistic) {
+    	boolean isForTable = statistic.contains("*");
+    	statistic = statistic.replace("*", "");
     	String stat = mapStat(statistic);
     	switch (stat) {
     	case "Player":
@@ -159,7 +161,11 @@ public class Player extends Constants implements Comparable<Player> {
         		return this.name + "_" + this.lastName;
     		}
     	case "MIN":
-            return Integer.toString((int) Math.ceil(this.data.get(stat) / 600.0));
+    		if (isForTable) {
+                return Integer.toString((int) Math.round(this.data.get(stat) / 600.0));
+    		} else {
+                return Integer.toString((int) Math.round(this.data.get(stat)));
+    		}
     	case "FG%":
         	return getPercentage(this.data.get("FGM"), this.data.get("FGA"));
     	case "3P%":

@@ -41,7 +41,7 @@ public class Table extends GUISettings {
             	int index = 0;
             	for (String stat : STATISTIC_ABBREVIATIONS) {
             		if (!(stat.equals("FG%") || stat.equals("3P%") || stat.equals("FT%") || stat.equals("Player"))) {
-            			totalStats[index] += Integer.valueOf(player.getStat(stat));
+            			totalStats[index] += Integer.valueOf(player.getStat(stat + "*"));
             		}
             		index++;
             	}
@@ -55,7 +55,7 @@ public class Table extends GUISettings {
             	data[newPlayers.size() - 1][column] = total.getStat(STATISTIC_ABBREVIATIONS[column]).replaceAll("_", " ");
             }
         }
-                          
+                            
         this.boxscore = new JTable(data, STATISTIC_ABBREVIATIONS) {
 			private static final long serialVersionUID = 1L;
 			public boolean isCellEditable(int data, int STATISTIC_ABBREVIATIONS) {

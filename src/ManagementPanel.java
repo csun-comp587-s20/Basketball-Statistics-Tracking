@@ -412,10 +412,13 @@ public class ManagementPanel extends GUISettings {
 	    this.frame.addWindowListener(new WindowAdapter() {
 	        public void windowClosed(WindowEvent w) {
                 Player player = new Player("DONE", "DONE", "DONE");
-                Undo newest = new Undo(player, "DONE", "DONE");
-                if (!undo.contains(newest)) {
-                    undo.add(newest);
+                undo.add(new Undo(player, "DONE", "DONE"));
+                Collections.sort(undo);
+                updateFile(total);
+                if (clock.isRunning()) {
+                	clock.stopTimer();
                 }
+                frame.dispose();
             }
 	    });
     }
@@ -713,17 +716,15 @@ public class ManagementPanel extends GUISettings {
     // Post: Returns a two-dimensional String Array with all the player data. Used for the table from the 'Box Score'
     //       button.
     private String[][] getData() {
-    	int rows;
+    	int rows = this.total.size() + 1;
     	if (this.total.size() == 1) {
-    		rows = 1;
-    	} else {
-    		rows = this.total.size() + 1;
+    		rows -= 1;
     	}
         String[][] data = new String[rows][STATISTIC_ABBREVIATIONS.length];
         int i = 0;
         for (Player player : this.total){
             for (int column = 0; column < STATISTIC_ABBREVIATIONS.length; column++) {
-                data[i][column] = player.getStat(STATISTIC_ABBREVIATIONS[column]).replaceAll("_", " ");
+                data[i][column] = player.getStat(STATISTIC_ABBREVIATIONS[column] + "*").replaceAll("_", " ");
             }
             i++;
         }
@@ -755,8 +756,8 @@ public class ManagementPanel extends GUISettings {
         		} else {
         			this.playersOnBenchPanel.add(playerButton);
         			playerButton.setBackground(BENCH_BUTTON_COLOR);
-        			playerButton.setEnabled(true);
         		}
+    			playerButton.setEnabled(true);
         		if (fouledOut.contains(text)) {
         			playerButton.setBackground(FOULED_OUT_BUTTON_COLOR);
         			playerButton.setEnabled(false);
@@ -830,7 +831,7 @@ public class ManagementPanel extends GUISettings {
                     		if (stat.equals("Personal Foul")) {
                         		teamFoulsInPeriod++;
                     		}
-                    		if (!splitPane && getFouledOut() == 1) {
+                    		if (!splitPane && getFouledOut() >= 1) {
                                 subNewPlayer(play, bench, players, true);
                     		}
                     		button.setEnabled(false);
