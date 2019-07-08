@@ -26,7 +26,7 @@ public class StartersPanel extends GUISettings {
 	private List<Player> startingOnBench; // The players that will be on the bench to begin the game.
 	private List<Player> players; // Total list of players.
 	private List<JButton> playerButtons; // List of JButtons for each player.
-	private List<String> displayNames; // The names of players who are selected for being a starter.
+	private Stack<String> displayNames; // The names of players who are selected for being a starter.
 	private int starters; // The number of starters currently selected 
 	private JTextArea playerList; // The names of players who are selected for being a starter.
 	private JLabel header; // The header of the panel that reads 'Select X Starter(s)'
@@ -57,7 +57,7 @@ public class StartersPanel extends GUISettings {
 		this.startingOnCourt = new ArrayList<Player>(numberStarters);
 		this.startingOnBench = new ArrayList<Player>(this.players.size() - numberStarters);
 		this.playerButtons = new ArrayList<JButton>(this.players.size());
-		this.displayNames = new ArrayList<String>(numberStarters);
+		this.displayNames = new Stack<String>();
 		this.background = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);
 		this.numberStarters = (int) SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS);
         this.header = formatLabel("Select " + numberStarters + " " + startersPlural, FONT_SIZE, SETTINGS);
@@ -105,7 +105,7 @@ public class StartersPanel extends GUISettings {
 	// Post: Adds functionality to all player buttons that appear in a grid on the left side of the StartersPanel.
 	public void createPlayerButtons() {
         for (Player player : this.players) {
-        	JButton button = new JButton(player.getName() + " " + player.getLastName());
+        	JButton button = new JButton(player.toString());
         	formatButton(button, BUTTON_HEIGHT * 3, BUTTON_HEIGHT, FONT_SIZE / 2, SETTINGS);
         	buttons.add(button);
         	playerButtons.add(button);
@@ -115,7 +115,7 @@ public class StartersPanel extends GUISettings {
         			if (starters < numberStarters) {
     					starters++;
             			startingOnCourt.add(player); 
-                        displayNames.add(player.getName() + " " + player.getLastName());
+                        displayNames.push(player.getName() + " " + player.getLastName());
                         playerList.setText(displayNames.toString().replaceAll("\\[", "").replaceAll("\\]", ""));
                         button.setEnabled(false);
                         buttonArray[UNDO_BUTTON].setEnabled(true);
@@ -140,7 +140,7 @@ public class StartersPanel extends GUISettings {
     	this.buttonArray[UNDO_BUTTON].addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
 				Player remove = startingOnCourt.get(startingOnCourt.size() - 1);
-				String removeName = remove.getName() + " " + remove.getLastName();
+				String removeName = remove.toString();
 				// Reactivate the button of the most recently removed player
 				for (JButton btn : playerButtons) {
 					if (btn.getText().equals(removeName)) {
@@ -153,7 +153,7 @@ public class StartersPanel extends GUISettings {
             			btn.setEnabled(true);
             		}
             	}
-		        displayNames.remove(removeName);
+		        displayNames.pop();
 		        playerList.setText(displayNames.toString().replaceAll("\\[", "").replaceAll("\\]", ""));
 				startingOnCourt.remove(remove); 
 				starters--;		  

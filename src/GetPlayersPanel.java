@@ -48,7 +48,7 @@ public class GetPlayersPanel extends GUISettings {
     private JPanel mainPanel; // The panel that stores the Home Screen
     private GameSettings SETTINGS; // The settings used to configure the current game
     private List<JPanel> panels; // All the panels in the GetPlayersPanel, used to quickly change background color in Settings
-    private List<String> displayNames; // The player names as they appear in the 'labelList'
+    private Stack<String> displayNames; // The player names as they appear in the 'labelList'
     private JPanel playerNames; // The dynamic list of player names updated whenever a player is entered or removed
     private InstructionPanel instructionsPanel; // The instructions window that opens when the 'Instructions' button is pressed
     
@@ -61,7 +61,7 @@ public class GetPlayersPanel extends GUISettings {
     	this.background = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);
         this.players = new ArrayList<Player>();
         this.panels = new ArrayList<JPanel>();
-        this.displayNames = new ArrayList<String>();
+        this.displayNames = new Stack<String>();
         this.name = new JTextField(FONT_SIZE / 3);
         // Create all buttons used in the GetPlayersPanel
         String[] buttonNames = {" Add Player", " Undo", " Start Game", " Old Games", " Instructions", " Close", " Settings", " Main Menu"};
@@ -161,7 +161,7 @@ public class GetPlayersPanel extends GUISettings {
                         	String newName = player.getName() + ". " + player.getLastName();
                         	check.setDisplayName(newName);
                         }
-                        displayNames.add(check.getDisplayName()); 
+                        displayNames.push(check.getDisplayName()); 
                         updatePlayerList();
                         buttonArray[UNDO_BUTTON].setEnabled(true);
                     } 
@@ -178,7 +178,7 @@ public class GetPlayersPanel extends GUISettings {
     	this.buttonArray[UNDO_BUTTON].addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
     			int index = players.size() - 1;
-		        displayNames.remove(players.get(index).getDisplayName());
+		        displayNames.pop();
 				players.remove(players.get(index));
 				buttonArray[UNDO_BUTTON].setEnabled(!players.isEmpty());
 				if (players.size() < (int) SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS)) {
