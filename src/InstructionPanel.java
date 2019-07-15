@@ -36,21 +36,26 @@ public class InstructionPanel extends GUISettings {
     // Post: Constructs a InstructionPanel with the given 'settings'.
     public InstructionPanel(GameSettings settings) {
     	this.SETTINGS = settings;
-		String[] buttonNames = {" Abbreviations"};
-		int[] sizes = {FONT_SIZE * 2 / 3};
-		this.buttonArray = createButtonArray(buttonNames, sizes, SETTINGS);
+    	initalizeButtons();
 		this.abbFrame = new JFrame("Abbreviations Explanations");
 		this.abbFrame.setResizable(false);
 		this.explainFrame = new JFrame("Explanation");
 		this.explainFrame.setResizable(false);
 		this.textFields = new ArrayList<JTextArea>();
 		scanFile();
+    }
+    
+    private void initalizeButtons() {
+		String[] buttonNames = {" Abbreviations"};
+		int[] sizes = {FONT_SIZE * 2 / 3};
+		this.buttonArray = createButtonArray(buttonNames, sizes, SETTINGS);
 		addButtonFunctions();
 		int[] indices = {ABBREVIATIONS_BUTTON};
 		String[] icons = {ABBREVIATIONS_BUTTON_ICON};
 		formatIcons(this.buttonArray, indices, icons);
     }
     
+    // Post: Changes the current settings to the 'settings' parameter.
     public void setSettings(GameSettings settings) {
     	this.SETTINGS = settings;
     }
@@ -117,12 +122,11 @@ public class InstructionPanel extends GUISettings {
         		Border border = new MatteBorder(5, 5, 5, 5, textBorderColor);
         		// STATISTIC ABBREVIATIONS COLUMN
         		// ****************************************************************************************
-        		JPanel abbreviations = new JPanel(new GridLayout(STATISTIC_ABBREVIATIONS.length + 1, 1));
         		JLabel labelColumn = formatLabel("Statistic Name", 30, SETTINGS);
+        		JPanel abbreviations = panelfy(labelColumn, null, new GridLayout(STATISTIC_ABBREVIATIONS.length + 1, 1), null);
         		labelColumn.setBackground(secondaryColor);
     			labelColumn.setBorder(border);
     			labelColumn.setOpaque(true);
-        		abbreviations.add(labelColumn);
         		// Add all abbreviated statistic names to the abbreviations column
         		for (String s : STATISTIC_ABBREVIATIONS) {
         			JLabel label = formatLabel(s, 25, SETTINGS);
@@ -133,17 +137,15 @@ public class InstructionPanel extends GUISettings {
         		}
         		// STATISTIC EXPLANATIONS COLUMN
         		// ****************************************************************************************
-        		JPanel fullStatWords = new JPanel(new GridLayout(STATISTIC_ENTIRE_WORDS.length + 1, 1));
         		JLabel descriptionColumn = formatLabel("Explanation", FONT_SIZE / 2, SETTINGS);
+        		JPanel fullStatWords = panelfy(descriptionColumn, null, new GridLayout(STATISTIC_ENTIRE_WORDS.length + 1, 1), null);
         		descriptionColumn.setBackground(secondaryColor);
     			descriptionColumn.setBorder(border);
     			descriptionColumn.setOpaque(true);
-        		fullStatWords.add(descriptionColumn);
 				scanExplanationsFile(fullStatWords);
 				
-        		JPanel total = new JPanel(new GridLayout(1, 2));
-        		total.add(abbreviations);
-        		total.add(fullStatWords);
+        		JPanel total = new JPanel();
+        		formatPanel(total, new Component[] {abbreviations, fullStatWords}, null, new GridLayout(1, 2), null);
         		JScrollPane abbScrollPane = addScrollPane(total);
         		abbScrollPane.setPreferredSize(new Dimension(SCREENWIDTH / 2, abbFrame.getHeight()));
         		formatFrame(abbFrame, abbScrollPane, SCREENWIDTH / 2, 800);
@@ -225,15 +227,11 @@ public class InstructionPanel extends GUISettings {
 		}
         
 		// Panel that stores the 'Main Menu' button
-        JPanel menuPanel = new JPanel();
-        menuPanel.add(homeButton);
-        menuPanel.setBackground(background);
+        JPanel menuPanel = panelfy(homeButton, background, null, null);
         
         // Panel that stores the 'Abbreviations' button
-        JPanel abbreviate = new JPanel();
+        JPanel abbreviate = panelfy(this.buttonArray[ABBREVIATIONS_BUTTON], background, null, null);
         this.buttonArray[ABBREVIATIONS_BUTTON].setBackground(background);
-        abbreviate.add(this.buttonArray[ABBREVIATIONS_BUTTON]);
-        abbreviate.setBackground(background);
 
         // List of sample players that start on the bench
 		List<Player> bench = new ArrayList<Player>();
@@ -249,9 +247,7 @@ public class InstructionPanel extends GUISettings {
         mPanel.addElements();
         
         // The panel that stores the first Management Panel constructed above ^
-        JPanel frameMP = new JPanel();
-        frameMP.add(mPanel.getManagementPanel());
-        frameMP.setBackground(background);
+        JPanel frameMP = panelfy(mPanel.getManagementPanel(), background, null, null);
         
         // The bench is filled up with sample players numbered 6-10
         for (int i = numberOfStarters + 1; i <= MAX_SAMPLE_PLAYERS; i++) {
@@ -276,9 +272,7 @@ public class InstructionPanel extends GUISettings {
         
         // The panel that stores the ManagementPanel constructed above ^
         // MPB (Management Panel w/ Bench)
-        JPanel frameMPB = new JPanel();
-        frameMPB.add(mPanelBench.getManagementPanel());
-        frameMPB.setBackground(background);
+        JPanel frameMPB = panelfy(mPanelBench.getManagementPanel(), background, null, null);
         
         // The GetPlayersPanel. Appears when the program is opened. Serves as a 'Main Menu'
         GetPlayersPanel gPPanel = new GetPlayersPanel(SETTINGS);
@@ -288,9 +282,7 @@ public class InstructionPanel extends GUISettings {
         gPPanel.addElements();
         
         // The panel that stores the GetPlayersPanel constructed above ^
-        JPanel frameGPPanel = new JPanel();
-        frameGPPanel.add(gPPanel.getPlayersPanel());
-        frameGPPanel.setBackground(background);
+        JPanel frameGPPanel = panelfy(gPPanel.getPlayersPanel(), background, null, null);
         
         // Puts all players into one list
         List<Player> totalSamplePlayers = new ArrayList<Player>(samplePlayers.size() + bench.size());
@@ -304,9 +296,7 @@ public class InstructionPanel extends GUISettings {
         startersPanel.addElements();
         
         // The panel that stores the StartersPanel constructed above ^
-        JPanel frameSP = new JPanel();
-        frameSP.add(startersPanel.getStartersPanel());
-        frameSP.setBackground(background);
+        JPanel frameSP = panelfy(startersPanel.getStartersPanel(), background, null, null);
         
         // The panel that stores the header for the InstructionsPanel
 		JPanel header = new JPanel();
@@ -322,14 +312,9 @@ public class InstructionPanel extends GUISettings {
 						          textPanels[PARAGRAPH3], frameMP, textPanels[PARAGRAPH4], abbreviate, 
 						          textPanels[PARAGRAPH5], frameMPB, textPanels[PARAGRAPH6], 
 						          textPanels[PARAGRAPH7], textPanels[PARAGRAPH8], menuPanel, textPanels[PARAGRAPH8]};
-		formatPanel(panels, components, null, null, null, background);
+		formatPanel(panels, components, null, null, background);
         
 		// Add a scroll bar for the InstructionsPanel     
-        JPanel panePanel = new JPanel(new GridLayout(1, 1));
-        JScrollPane scroll = addScrollPane(panels);
-        scroll.setBorder(null);
-        panePanel.add(scroll);
-        panePanel.setBackground(background);
-        return panePanel;
+        return panelfy(addScrollPane(panels), background, new GridLayout(1, 1), null);
     }
 }

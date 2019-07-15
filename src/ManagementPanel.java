@@ -28,6 +28,13 @@ public class ManagementPanel extends GUISettings {
 	private static final int TIMEOUT_BUTTON = 4;
 	private static final int HOME_BUTTON = 5;
 	
+	// Key Bindings for each button in 'buttonArray'
+	private static final int UNDO_BUTTON_KEY = KeyEvent.VK_U;
+	private static final int BOXSCORE_BUTTON_KEY = KeyEvent.VK_B;
+	private static final int START_BUTTON_KEY = KeyEvent.VK_ENTER;
+	private static final int TIMEOUT_BUTTON_KEY = KeyEvent.VK_T;
+	private static final int HOME_BUTTON_KEY = KeyEvent.VK_ESCAPE;
+		
     private String fileName; // Name of the file the game data is written to
     private JButton[] buttonArray; // All the Buttons on the ManagementPanel
     /*
@@ -64,6 +71,8 @@ public class ManagementPanel extends GUISettings {
     private int period; // The current period of the game.
     private int timeouts; // The number of timeouts for the team.
     private int teamFoulsInPeriod; // The number of team fouls for the current period.
+    private Map<String, Integer> keyMap; // Maps keys pressed to their corresponding statistic.
+    private Map<Integer, Integer> playerKeys; // Maps numbers to corresponding players for each player button.
     
 	private final int personalFouls; // The number of personal fouls allowed selected by the user in the settings.
 	private final int technicalFouls; // The number of technical fouls allowed selected by the user in the settings.
@@ -100,25 +109,27 @@ public class ManagementPanel extends GUISettings {
         this.numberStarters = (int) SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS);
         this.isQuarters = (boolean) SETTINGS.getSetting(Setting.PERIOD_TYPE);
         this.playerButtons = new ArrayList<JButton>(this.total.size());
+        this.keyMap = new HashMap<String, Integer>();
+    	for (int i = 0; i < STAT_KEYS.length; i++) {
+        	this.keyMap.put(STAT_KEYS[i], KEY_EVENTS[i]);
+    	}
+    	int[] playerKey = {KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, 
+    			           KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
+    	this.playerKeys = new HashMap<Integer, Integer>();
+    	for (int i = 0; i < playerKey.length; i++) {
+    		this.playerKeys.put(i, playerKey[i]);
+    	}
         this.clock = new GameClock((int)((double) this.SETTINGS.getSetting(Setting.TIME_REMAINING) * 60 * 10));
         this.score = formatLabel("Score: " + getTotal("PTS") + "    ", FONT_SIZE * 4 / 7, SETTINGS);
-        for (Undo u : this.undo) {
-        	char periodChar = u.getTimeOf().trim().charAt(0);
-        	int adjust = 0;
-        	if (periodChar == 'O') {
-        		periodChar = u.getTimeOf().trim().charAt(2);
-        		if (this.isQuarters) {
-        			adjust = QUARTERS - 1;
-        		} else {
-        			adjust = HALVES - 1;
-        		}
-        	}
-        	if (Integer.valueOf(periodChar + "") + adjust == this.period + 1) {
-        		if (u.getStatFromPlayer().equals("Personal Foul")) {
-            		this.teamFoulsInPeriod++;
-        		}
-        	}
-        }
+        format();
+        getTeamFoulsInPeriod();
+        this.gameOver = period == END_OF_GAME;
+        this.playersOnBenchPanel.setBackground(background);
+        initializeButtons();
+    }
+    
+    // Post: Correctly formats the UI for the ManagementPanel.
+    private void format() {
         this.teamFouls = formatLabel("  Team Fouls: " + this.teamFoulsInPeriod, FONT_SIZE * 4 / 7, SETTINGS);
         this.playersOnBenchPanel = new JPanel();
         this.headerPanel = new JPanel();  
@@ -136,10 +147,12 @@ public class ManagementPanel extends GUISettings {
             this.playersOnBenchPanel.setLayout(new FlowLayout(1, 60, 40));
             this.splitPane = true;
         }
-        this.gameOver = period == END_OF_GAME;
-        this.playersOnBenchPanel.setBackground(background);
+    }
+    
+    // Post: Creates and formats all buttons used in the ManagementPanel.
+    private void initializeButtons() {
         // Create all buttons in the ManagementPanel
-        String[] buttonNames = {" Box Score", " Undo", " Done", "   Start", " Timeouts: " + this.timeouts, "  Return to Game"};
+        String[] buttonNames = {" [B]ox Score", " [U]ndo", " Done", "   Start", " [T]imeouts: " + this.timeouts, "  Return to Game"};
         int size = FONT_SIZE * 4 / 7;
         int[] sizes = {size, size, size, size, size, size}; 
         this.buttonArray = createButtonArray(buttonNames, sizes, SETTINGS);
@@ -154,31 +167,44 @@ public class ManagementPanel extends GUISettings {
         formatIcons(this.buttonArray, indices, icons);
     }
     
+    // Post: Sets 'teamFoulsInPeriod' to the current team fouls in the period.
+    private void getTeamFoulsInPeriod() {
+        for (Undo u : this.undo) {
+        	char periodChar = u.getTimeOf().trim().charAt(0);
+        	int adjust = 0;
+        	if (periodChar == 'O') {
+        		periodChar = u.getTimeOf().trim().charAt(2);
+        		if (this.isQuarters) {
+        			adjust = QUARTERS - 1;
+        		} else {
+        			adjust = HALVES - 1;
+        		}
+        	}
+        	if (Integer.valueOf(periodChar + "") + adjust == this.period + 1) {
+        		if (u.getStatFromPlayer().equals("Personal Foul")) {
+            		this.teamFoulsInPeriod++;
+        		}
+        	}
+        }
+    }
+    
     // Post: Adds function to the 'Box Score' button. Opens a new window with a table showing the
     //       statistics for each player.
     public void createTableButton() {
-        this.buttonArray[BOXSCORE_BUTTON].addActionListener(new ActionListener() {
+        this.buttonArray[BOXSCORE_BUTTON].addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
             	pane.removeAll();
             	pane.setLayout(new BorderLayout());
-            	JPanel header = new JPanel(new GridLayout(1, 2));
             	JLabel title = formatLabel("  Box Score", FONT_SIZE * 5 / 6, SETTINGS);
             	setIcon(title, BOXSCORE_BUTTON_ICON);
-            	header.add(title);
-            	header.setBorder(new MatteBorder(0, 0, 30, 0, background));
-            	header.setBackground(background);
+            	JPanel header = panelfy(title, background, new GridLayout(1, 2), new MatteBorder(0, 0, BORDER_SIZE * 3, 0, background));
             	pane.add(header, BorderLayout.NORTH);
-            	JPanel allPanels = new JPanel();
                 Table table = new Table(total, getData(), FONT_SIZE / 3, FONT_SIZE / 3, SETTINGS);
-                allPanels.add(table.getTable());
-                allPanels.setLayout(new GridLayout(1, 1));
-                allPanels.setBackground(background);
+            	JPanel allPanels = panelfy(table.getTable(), background, new GridLayout(1, 1), null);
                 JScrollPane scrollTable = addScrollPane(allPanels);
                 scrollTable.setBorder(null);
                 scrollTable.setBackground(background);
-                JPanel scroll = new JPanel(new GridLayout(1, 1));
-                scroll.add(scrollTable);
-                scroll.setBackground(background);
+                JPanel scroll = panelfy(scrollTable, background, new GridLayout(1, 1), null);
                 frame.setTitle("Box Score");
                 pane.add(scroll, BorderLayout.CENTER);
                 pane.add(buttonArray[HOME_BUTTON], BorderLayout.SOUTH);
@@ -186,11 +212,12 @@ public class ManagementPanel extends GUISettings {
                 pane.revalidate();
             }
         });
+    	setButtonKey(this.buttonArray[BOXSCORE_BUTTON], BOXSCORE_BUTTON_KEY, 0);
     }
     
     // Post: Adds functionality to the Home Button. Brings the user back to the Roster Management window.
     public void createHomeButton() {
-    	this.buttonArray[HOME_BUTTON].addActionListener(new ActionListener() {
+    	this.buttonArray[HOME_BUTTON].addActionListener(new AbstractAction() {
     		public void actionPerformed(ActionEvent e) {
     			pane.removeAll();
     			setPane();
@@ -198,13 +225,14 @@ public class ManagementPanel extends GUISettings {
     			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     		}
     	});
+    	setButtonKey(this.buttonArray[HOME_BUTTON], HOME_BUTTON_KEY, 0);
     }
     
     // Post: Adds function to the 'Undo' button. Allows the user to select which period of the game
     //       they want to eliminate a statistic from and shows a history of all statistics entered
     //       during that period with the most recently entered statistic shown at the top.
     public void createUndoButton() {
-        this.buttonArray[UNDO_BUTTON].addActionListener(new ActionListener() {
+        this.buttonArray[UNDO_BUTTON].addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
             	pane.removeAll();
             	pane.setLayout(new BorderLayout());
@@ -257,19 +285,20 @@ public class ManagementPanel extends GUISettings {
                 	selectPeriod.setEnabled(hasPeriod[i]);
                 	formatButton(selectPeriod, BUTTON_HEIGHT, BUTTON_HEIGHT, FONT_SIZE / 3, SETTINGS);
                 	periods.add(selectPeriod);
-                	selectPeriod.addActionListener(new ActionListener() {
+                	selectPeriod.addActionListener(new AbstractAction() {
                 		public void actionPerformed(ActionEvent e) {
                 			undoPanel.removeAll();
                 			int grid = 0;
-                			for (Undo u : undo) {
-                            	final Player play = u.getPlayer();
+                			for (int i = undo.size() - 1; i >= 0; i--) {
+                				Undo u = undo.get(i);
+                            	Player play = u.getPlayer();
                             	String undoString = u.toString();
                             	if (u.getTimeOf().contains(check)) {
                             		grid++;
                             		JButton undoButton = new JButton(play.toString() + " " + undoString);
                                     formatButton(undoButton, BUTTON_HEIGHT, BUTTON_HEIGHT, FONT_SIZE / 3, SETTINGS);
                                     undoPanel.add(undoButton);
-                                    undoButton.addActionListener(new ActionListener() {
+                                    undoButton.addActionListener(new AbstractAction() {
                                     	public void actionPerformed(ActionEvent e) {
                                     		if (!u.getStatFromPlayer().equals("Substitution")) {
                                                 Player astPlayer = u.getAstPlayer();
@@ -304,7 +333,6 @@ public class ManagementPanel extends GUISettings {
                                 			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                                             buttonArray[HOME_BUTTON].setText("  Return to Game");
                                             setIcon(buttonArray, HOME_BUTTON, ROSTER_MANAGEMENT_ICON);
-                                            Collections.sort(undo);
                                     	}
                                     });
                             	}
@@ -317,18 +345,13 @@ public class ManagementPanel extends GUISettings {
                 };
                 undoPanel.setBackground(background);
                 periods.setBackground(background);
-                JPanel panel = new JPanel();
                 JLabel label = formatLabel("  Undo", FONT_SIZE * 3 / 4, SETTINGS);
                 setIcon(label, UNDO_BUTTON_ICON);
                 JScrollPane scrollPane = addScrollPane(undoPanel);
                 scrollPane.setBorder(null);
                 scrollPane.setBackground(background);
-                panel.add(label);
-                panel.setBackground(background);
-                panel.setBorder(new MatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE * 2, BORDER_SIZE, background));
-                JPanel scroll = new JPanel(new GridLayout(1, 1));
-                scroll.add(scrollPane);
-                scroll.setBackground(background);
+                JPanel panel = panelfy(label, background, null, new MatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE * 2, BORDER_SIZE, background));
+                JPanel scroll = panelfy(scrollPane, background, new GridLayout(1, 1), null);
                 JPanel total = new JPanel();
                 total.add(panel);
                 total.add(periods);
@@ -341,67 +364,64 @@ public class ManagementPanel extends GUISettings {
                 pane.repaint();
             }
         });
+    	setButtonKey(this.buttonArray[UNDO_BUTTON], UNDO_BUTTON_KEY, 0);
     }
     
     // Post: Creates all the player buttons in the case that the number of players entered equals the
     //       number of starters entered by the user.
     public void createTeamButtons() {
-    	for (Player player : this.total) {
-            final Player play = player;
-            JButton playerButton = new JButton(player.toString());
-            final JButton button = playerButton;
+    	int fontSize = FONT_SIZE * 5 / 7;
+    	int height = BUTTON_HEIGHT * 6 / 5;
+    	for (int i = 0; i < this.total.size(); i++) {
+    		Player player = this.total.get(i);
+            JButton playerButton = new JButton("[" + (i + 1) + "]  " + player.toString());
             boolean isOut = !player.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII);
             playerButton.setEnabled(isOut);
             if (isOut) {
             	playerButton.setBackground(FOULED_OUT_BUTTON_COLOR);
             }
-            int width = (int) getDimension(formatLabel(playerButton.getText(), FONT_SIZE * 5 / 7, SETTINGS)).getWidth();
-            formatButton(playerButton, width * 2, BUTTON_HEIGHT * 6 / 5, FONT_SIZE * 5 / 7, SETTINGS);
-            playersOnBenchPanel.add(playerButton);
-            playerButton.addActionListener(new ActionListener() {
+            int width = (int) getDimension(formatLabel(playerButton.getText(), fontSize, SETTINGS)).getWidth();
+            formatButton(playerButton, width * 2, height, fontSize, SETTINGS);
+            this.playersOnBenchPanel.add(playerButton);
+            playerButton.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
-                    JFrame statsMenu = new JFrame(play.getStatLine());
-                    JPanel panel = addStatButton(play, statsMenu, button);
-                    formatFrame(statsMenu, panel, SCREENWIDTH - (BUTTON_HEIGHT * 5 / 2), SCREENHEIGHT - (BUTTON_HEIGHT * 2));
+                	if (!isOut) {
+                        addStatButton(player, playerButton);
+                	}
                 }
             });
-            playerButtons.add(playerButton);
+            setButtonKey(playerButton, this.playerKeys.get(i + 1), 0);
+            this.playerButtons.add(playerButton);
         }
     }
     
     // Post: Creates all the player buttons in the case that the number of players entered is greater
     //       than the number of starters entered by the user.
     public void createPlayerButtons() {
-        for (Player play : this.total) {
-        	JButton playerButton = new JButton(play.toString());
-            final JButton button = playerButton;
-            formatButton(playerButton, BUTTON_HEIGHT, BUTTON_HEIGHT, FONT_SIZE * 2 / 3, SETTINGS);
-            playerButton.addActionListener(new ActionListener() {
+    	int fontSize = FONT_SIZE * 2 / 3;
+        for (Player player : this.total) {
+        	JButton playerButton = new JButton(player.toString());
+            formatButton(playerButton, BUTTON_HEIGHT, BUTTON_HEIGHT, fontSize, SETTINGS);
+            playerButton.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
-                    if (play.isStarter()) {
-                        JFrame statsMenu = new JFrame(play.getStatLine());
-                        JPanel panel = addStatButton(play, statsMenu, button);
-                        if (panel != null) {
-                            formatFrame(statsMenu, panel, SCREENWIDTH - (BUTTON_HEIGHT * 4), SCREENHEIGHT - (BUTTON_HEIGHT * 2));
-                        }
+                    if (player.isStarter()) {
+                        addStatButton(player, playerButton);
                     } else {
-                    	subNewPlayer(play, players, bench, false);
+                    	subNewPlayer(player, players, bench, false);
                     }
                 }
             });
-            playersOnBenchPanel.add(playerButton);
-            playerButtons.add(playerButton);
+            this.playerButtons.add(playerButton);
         }
         updateOnFloorPanel();
     }
    
     // Post: Adds function to the 'Done' button. Closes the ManagementPanel.
     public void createDoneButton() {
-        this.buttonArray[DONE_BUTTON].addActionListener(new ActionListener() {
+        this.buttonArray[DONE_BUTTON].addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 Player player = new Player("DONE", "DONE", "DONE");
                 undo.add(new Undo(player, "DONE", "DONE"));
-                Collections.sort(undo);
                 updateFile(total);
                 if (clock.isRunning()) {
                 	clock.stopTimer();
@@ -413,7 +433,6 @@ public class ManagementPanel extends GUISettings {
 	        public void windowClosed(WindowEvent w) {
                 Player player = new Player("DONE", "DONE", "DONE");
                 undo.add(new Undo(player, "DONE", "DONE"));
-                Collections.sort(undo);
                 updateFile(total);
                 if (clock.isRunning()) {
                 	clock.stopTimer();
@@ -425,7 +444,7 @@ public class ManagementPanel extends GUISettings {
     
     // Post: Adds function to the 'Start/Stop' buttons used to manage the time.
     public void createStartStopButton() {
-        this.buttonArray[START_BUTTON].addActionListener(new ActionListener() {
+        this.buttonArray[START_BUTTON].addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 startStop = !startStop;
                 if (startStop) {
@@ -441,12 +460,13 @@ public class ManagementPanel extends GUISettings {
                 }
             }
         });
+        setButtonKey(buttonArray[START_BUTTON], START_BUTTON_KEY, 0);
     }
     
     // Post: Adds function to the 'Timeouts' button. Decreases the number of timeouts by 1 every time 
     //       it is pressed and stops the clock if it is running.
     public void createTimeoutButton() {
-    	this.buttonArray[TIMEOUT_BUTTON].addActionListener(new ActionListener() {
+    	this.buttonArray[TIMEOUT_BUTTON].addActionListener(new AbstractAction() {
     		public void actionPerformed(ActionEvent e) {
     			if (timeouts > 0) {
         			timeouts--;
@@ -460,68 +480,58 @@ public class ManagementPanel extends GUISettings {
         			SETTINGS.setSetting(timeouts, Setting.TIMEOUTS);
         			updateFile(total);
     			} 
-    			buttonArray[TIMEOUT_BUTTON].setText(" Timeouts: " + timeouts);
+    			buttonArray[TIMEOUT_BUTTON].setText(" [T]imeouts: " + timeouts);
     		}
     	});
+    	setButtonKey(this.buttonArray[TIMEOUT_BUTTON], TIMEOUT_BUTTON_KEY, 0);
     }
     
     // Post: Adds all the Components created to the ManagementPanel and formats the ManagementPanel.
     public void addElements() {
     	// The panel that stores the header with 'Roster Management' that appears at the top of the
     	// ManagementPanel.
-        JPanel title = new JPanel(new GridBagLayout());
-        JLabel header = formatLabel("   Roster Management", FONT_SIZE * 5 / 6, SETTINGS);
+    	JLabel header = formatLabel("   Roster Management", FONT_SIZE * 5 / 6, SETTINGS);
     	setIcon(header, ROSTER_MANAGEMENT_ICON);
-        title.add(header);
-        title.setBackground(background);
         
         startTimerWindow();
         
         FlowLayout layout = new FlowLayout(1, 20, 10);
         // The first row of the ManagementPanel that has the 'Score' label, the 'Box Score', 'Undo', and 'Done' buttons
-        JPanel buttonHeader = new JPanel(layout);
+        JPanel buttonHeader = new JPanel();
         setIcon(this.score, SCORE_BUTTON_ICON);
         formatPanel(buttonHeader, new Component[] {this.score, 
         		                                   this.buttonArray[BOXSCORE_BUTTON], 
         		                                   this.buttonArray[UNDO_BUTTON], 
         		                                   this.buttonArray[DONE_BUTTON]}, 
-        		    null, buttonHeader.getLayout(), null, background);
+        		    null, layout, background);
         // The second row of the ManagementPanel that has the current time and period of the game (timePanel), the 'Start'
         // and 'Timeout' buttons and the 'Team Fouls' label.
-        JPanel timerHeader = new JPanel(layout);
+        JPanel timerHeader = new JPanel();
         setIcon(this.teamFouls, TEAMFOULS_ICON);
         formatPanel(timerHeader, new Component[] {timePanel, 
         		                                  this.buttonArray[START_BUTTON], 
         		                                  this.buttonArray[TIMEOUT_BUTTON], 
         		                                  this.teamFouls}, 
-        		    null, timerHeader.getLayout(), null, background);
+        		    null, layout, background);
         
         // The panel that stores all of the components above in a 3 x 1 grid with the header coming first,
         // then the first row of buttons, followed by the second row of buttons.
-        this.headerPanel.setLayout(new GridLayout(3, 1));
-        formatPanel(this.headerPanel, new Component[] {title, buttonHeader, timerHeader},
-        		    new int[] {0, 0, BORDER_SIZE * 4, 0}, headerPanel.getLayout(), background, background);
+        formatPanel(this.headerPanel, new Component[] {panelfy(header, background, new GridBagLayout(), null), 
+        		                                       buttonHeader, timerHeader},
+        		    new MatteBorder(0, 0, BORDER_SIZE * 4, 0, background), new GridLayout(3, 1), background);
         
         // The panel that stores the 'Bench' label that appears above all the players currently on the bench
-        JPanel bench = new JPanel();
-        formatPanel(bench, new Component[] {formatLabel("Bench", FONT_SIZE * 2 / 3, SETTINGS)}, 
-        		    new int[] {BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE}, bench.getLayout(), 
-        		    DEFAULT_TEXT_BORDER_COLOR, DEFAULT_BACKGROUND_COLOR);
+        JPanel bench = panelfy(formatLabel("Bench", FONT_SIZE * 2 / 3, SETTINGS), DEFAULT_BACKGROUND_COLOR, null,
+        		               new MatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, DEFAULT_TEXT_BORDER_COLOR));
         // The panel that stores all the players on the bench. A scroll bar is added if the number of players on the bench
         // is large
         JPanel menu = new JPanel();
-        JScrollPane scrollPane = addScrollPane(this.playersOnBenchPanel);
-        scrollPane.setBorder(null);
-        formatPanel(menu, new Component[] {bench, scrollPane}, null, null, null, background);
+        formatPanel(menu, new Component[] {bench, addScrollPane(this.playersOnBenchPanel)}, null, null, background);
         // The panel that stores all the players currently on the court
-        JPanel onCourt = new JPanel();
-        formatPanel(onCourt, new Component[] {formatLabel("Currently on Court", FONT_SIZE * 2 / 3, SETTINGS)}, 
-    		        new int[] {BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE}, onCourt.getLayout(), 
-    		        DEFAULT_TEXT_BORDER_COLOR, DEFAULT_BACKGROUND_COLOR);
+        JPanel onCourt = panelfy(formatLabel("Currently on Court", FONT_SIZE * 2 / 3, SETTINGS), DEFAULT_BACKGROUND_COLOR,
+        		                 null, new MatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, DEFAULT_TEXT_BORDER_COLOR));
         JPanel onCourtPanel = new JPanel();
-        JScrollPane scrollPaneOnCourt = addScrollPane(this.onFloorPanel);
-        scrollPaneOnCourt.setBorder(null);
-        formatPanel(onCourtPanel, new Component[] {onCourt, scrollPaneOnCourt}, null, null, null, background);
+        formatPanel(onCourtPanel, new Component[] {onCourt, addScrollPane(this.onFloorPanel)}, null, null, background);
         
         // Switches which side the bench panel and the on court panel are based on if the user selected
         // left/right handed
@@ -566,7 +576,7 @@ public class ManagementPanel extends GUISettings {
                         // If the last period of the game is over, then the current period is set to END_OF_GAME to signal the
                         // end of the game.
                         if (((isQuarters && period > HALVES) || (!isQuarters && period > QUARTERS)) && !gameOver) {
-                        	ActionListener yesButton = new ActionListener() {
+                        	AbstractAction yesButton = new AbstractAction() {
                         		public void actionPerformed(ActionEvent e) {
                         			SETTINGS.setSetting(period, Setting.CURRENT_PERIOD);
                         			double gameLength = (double) SETTINGS.getSetting(Setting.OVERTIME_LENGTH);
@@ -577,10 +587,12 @@ public class ManagementPanel extends GUISettings {
                         			setPane();
                         			gameOver = false;
                         			timeouts = (int) SETTINGS.getSetting(Setting.OT_TIMEOUTS);
-                        			buttonArray[TIMEOUT_BUTTON].setText(" Timeouts: " + timeouts);
+                        			buttonArray[TIMEOUT_BUTTON].setText(" [T]imeouts: " + timeouts);
+                        			buttonArray[TIMEOUT_BUTTON].setEnabled(true);
+                                    setTimerLabel(timer, currentTime);
                         		}
                         	};
-                        	ActionListener noButton = new ActionListener() {
+                        	AbstractAction noButton = new AbstractAction() {
                         		public void actionPerformed(ActionEvent e) {
                         			period = END_OF_GAME;
                                     SETTINGS.setSetting(END_OF_GAME, Setting.CURRENT_PERIOD);
@@ -602,31 +614,36 @@ public class ManagementPanel extends GUISettings {
                     if (clock.getTime().endsWith(":00")) {
                         updateFile(total);
                     }
-                }
-                if (timePanel.isDisplayable()) {
-                	String result = getPeriodText();
-                    if (period == END_OF_GAME) { // If the game has ended
-                        buttonArray[START_BUTTON].setEnabled(false);
-                        // Disable all buttons
-                        for (JButton btn : playerButtons) {
-                            btn.setEnabled(false);
-                        }
-                        if (clock.isRunning()) {
-                        	clock.stopTimer();
-                        }
-                        // Stop the timer
-                        timer.cancel();
-                        timer.purge();
-                    }
-                    // Label showing the current period and time of game
-                    currentTime.setText(result);
-                    currentTime.revalidate();
-                    currentTime.repaint();
-                }            
+                    if (timePanel.isDisplayable()) {
+                    	setTimerLabel(timer, currentTime);
+                    } 
+                }           
             }
         };
         timer.schedule(t, 0, TIMER_SETTING);        
         this.timePanel.setBackground(background);
+    }
+    
+    // Post: Sets the current period number and time left in the period for the timer.
+    private void setTimerLabel(Timer timer, JLabel currentTime) {
+    	String result = getPeriodText();
+        if (period == END_OF_GAME) { // If the game has ended
+            buttonArray[START_BUTTON].setEnabled(false);
+            // Disable all buttons
+            for (JButton btn : playerButtons) {
+                btn.setEnabled(false);
+            }
+            if (clock.isRunning()) {
+            	clock.stopTimer();
+            }
+            // Stop the timer
+            timer.cancel();
+            timer.purge();
+        }
+        // Label showing the current period and time of game
+        currentTime.setText(result);
+        currentTime.revalidate();
+        currentTime.repaint();
     }
     
     // Post: Opens a window asking the user to substitute the given Player 'play' for a new player.
@@ -639,20 +656,16 @@ public class ManagementPanel extends GUISettings {
     	this.frame.setTitle("Substitution - " + play.toString() + " for:");
     	this.pane.removeAll();
     	this.pane.setLayout(new GridBagLayout());
-    	JPanel header = new JPanel(new GridBagLayout());
     	JLabel label = formatLabel(" SUBSTITUTION", FONT_SIZE * 3 / 4, SETTINGS);
-    	header.add(label);
+    	JPanel header = panelfy(label, background, new GridBagLayout(), 
+    			                new MatteBorder(BORDER_SIZE * 2, 0, BORDER_SIZE * 3, 0, background));
     	setIcon(label, SUB_PLAYER_ICON);
-    	header.setBackground(background);
-    	header.setBorder(new MatteBorder(BORDER_SIZE * 2, 0, BORDER_SIZE * 3, 0, background));
-    	JPanel subHeader = new JPanel(new GridBagLayout());
-    	subHeader.add(formatLabel(play.toString() + " for...", FONT_SIZE * 2 / 3, SETTINGS));
-    	subHeader.setBackground(background);
-    	JPanel headers = new JPanel(new GridLayout(2, 1));
-    	headers.add(header);
-    	headers.add(subHeader);
-    	headers.setBorder(new MatteBorder(0, 0, 0, BORDER_SIZE * 10, background));
-    	headers.setBackground(background);
+    	JPanel subHeader = panelfy(formatLabel(play.toString() + " for...", FONT_SIZE * 2 / 3, SETTINGS),
+    			                   background, new GridBagLayout(), null);
+    	JPanel headers = new JPanel();
+    	formatPanel(headers, new Component[] {header, subHeader},
+    			    new MatteBorder(0, 0, 0, BORDER_SIZE * 10, background),
+    			    new GridLayout(2, 1), background);
     	this.pane.add(headers);
     	JPanel buttons = new JPanel();
     	buttons.setBorder(new MatteBorder(0, BORDER_SIZE, 0, 0, DEFAULT_TEXT_BORDER_COLOR));
@@ -661,12 +674,11 @@ public class ManagementPanel extends GUISettings {
         subPanel.setBackground(background);
         for (Player player : players) {
         	if (!player.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {
-        		numberButtons++;
-        		JButton sub = new JButton(player.toString());
+        		JButton sub = new JButton("[" + (numberButtons + 1) + "]  " + player.toString());
                 formatButton(sub, BUTTON_HEIGHT * 4, BUTTON_HEIGHT, FONT_SIZE / 2, SETTINGS);
                 sub.setBorder(null);
                 buttons.add(sub);
-                sub.addActionListener(new ActionListener() {
+                sub.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         bench.remove(play);
                         bench.add(player);
@@ -688,6 +700,8 @@ public class ManagementPanel extends GUISettings {
                         updateOnFloorPanel();
                     }
                 });	
+                setButtonKey(sub, this.playerKeys.get(numberButtons + 1), 0);
+        		numberButtons++;
         	}
         }
         if (numberButtons == 0) {
@@ -695,10 +709,11 @@ public class ManagementPanel extends GUISettings {
         } else {
         	int grid;
             if (!freeze) {
-            	JButton cancel = new JButton("Cancel");
+            	JButton cancel = new JButton("[ESC] ::: Cancel");
             	formatButton(cancel, BUTTON_HEIGHT * 4, BUTTON_HEIGHT, FONT_SIZE / 2, SETTINGS);
             	cancel.setBorder(null);
             	cancel.addActionListener(this.buttonArray[HOME_BUTTON].getActionListeners()[0]);
+            	setButtonKey(cancel, KeyEvent.VK_ESCAPE, 0);
             	buttons.add(cancel);
             	grid = players.size() + 1;
             } else {
@@ -743,22 +758,37 @@ public class ManagementPanel extends GUISettings {
     	if (!this.splitPane) {
     		this.onFloorPanel.removeAll();
         	this.playersOnBenchPanel.removeAll();
-        	this.onFloorPanel.setLayout(new GridLayout(this.players.size(), 1));
+        	this.onFloorPanel.setLayout(new GridLayout(this.players.size(), 2));
             Set<String> names = new HashSet<String>(this.players.size());
             for (Player player : this.players) {
             	names.add(player.toString());
             }
+            int index = 1;
+            int benchIndex = 0;
         	for (JButton playerButton : this.playerButtons) {
         		String text = playerButton.getText();
+    			if ("123456789".contains(text.charAt(1) + "")) {
+    				text = text.substring(3).trim();
+    			} else if (text.contains("Shift")) {
+    				text = text.substring(9).trim();
+    			}
         		if (names.contains(text)) {
+        			playerButton.setText("[" + index + "]" + "  " + text);
         			this.onFloorPanel.add(playerButton);
         			playerButton.setBackground(DEFAULT_BACKGROUND_COLOR);
+                    setButtonKey(playerButton, this.playerKeys.get(index), 0);
+        			index++;
         		} else {
+        			playerButton.setText("[Shift-" + benchIndex + "]" + "  " + text);
         			this.playersOnBenchPanel.add(playerButton);
         			playerButton.setBackground(BENCH_BUTTON_COLOR);
+                    setButtonKey(playerButton, this.playerKeys.get(benchIndex), 
+                        		 InputEvent.SHIFT_DOWN_MASK);
+        			benchIndex++;
         		}
     			playerButton.setEnabled(true);
         		if (fouledOut.contains(text)) {
+        			playerButton.setText(text);
         			playerButton.setBackground(FOULED_OUT_BUTTON_COLOR);
         			playerButton.setEnabled(false);
         		}
@@ -815,71 +845,92 @@ public class ManagementPanel extends GUISettings {
     // 'play': The player to which the statistic will be added.
     // 'frame': The frame the window will appear in.
     // 'button': The button that corresponds to the player.
-    private JPanel addStatButton(Player play, JFrame frame, JButton button) {
-        JPanel statsMenuPanel = new JPanel(new GridLayout(STATISTICS.length / 2, 2));
-        JButton statbutton;
-        for (String stat : STATISTICS) {
-            statbutton = new JButton(stat + "  " + play.getStat(stat));
-            formatButton(statbutton, BUTTON_HEIGHT, BUTTON_HEIGHT * 7 / 10, FONT_SIZE / 3, SETTINGS);
-            statsMenuPanel.add(statbutton);   
-            Undo recent = new Undo(play, stat, getPeriodText().substring(0, 5).trim() + " " + clock.getTime());
-            if (frame != null) {
-                statbutton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        play.add(true, stat);
-                    	if (play.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {
-                    		if (stat.equals("Personal Foul")) {
-                        		teamFoulsInPeriod++;
-                    		}
-                    		if (!splitPane && getFouledOut() >= 1) {
-                                subNewPlayer(play, bench, players, true);
-                    		}
-                    		button.setEnabled(false);
-                    		button.setBackground(FOULED_OUT_BUTTON_COLOR);
-                    	} else if (numberStarters != 1) {
-                    		switch (stat) {
-                        	case "Made FG":
-                        	case "Made 3pt FG":
-                        		openNewStatWindow(recent, play, "Assist", "Assisted FG?", "Who got the Assist?", false);
-                    			break;
-                            case "Personal Foul":
-                            	teamFoulsInPeriod++;
-                            case "Technical Foul":
-                            case "Flagrant I Foul":
-                            case "Flagrant II Foul":
-                            	// Stop timer if foul is called
-                            	if (clock.isRunning()) {
-                            		clock.stopTimer();
-                                    startStop = !startStop;
-                                    buttonArray[START_BUTTON].setText("   Start");
-                                    setIcon(buttonArray, START_BUTTON, PLAY_BUTTON_ICON);
-                            	}
-                            	break;
-                            case "Missed FG":
-                            case "Missed 3pt FG":
-                            case "Missed Free Throw":
-                            	openNewStatWindow(recent, play, "Offensive Rebound", "Offensive Rebounded?", 
-                            			          "Who got the Offensive Rebound?", true);
-                            	break;
-                            case "Block":
-                            	openNewStatWindow(recent, play, "Defensive Rebound", "Defensive Rebounded?", 
-                            			          "Who got the Defensive Rebound?", true);
-                            	break;
-                        	}
-                    	}
-                        buttonArray[UNDO_BUTTON].setEnabled(true);
-                        undo.add(recent);
-                        updateFile(players);
-                        if (frame != null) {
-                            frame.dispose();
-                        }
-                        score.setText("Score: " + getTotal("PTS") + "    ");
-                    	teamFouls.setText("  Team Fouls: " + teamFoulsInPeriod);
-                    }
-                });
+    private void addStatButton(Player play, JButton button) {
+        JFrame statsMenu = new JFrame(play.getStatLine());
+    	JPanel statsMenuPanel = new JPanel(new GridLayout(STATISTICS.length / 2, 2));
+        JButton statButton;
+        int fontSize = FONT_SIZE * 5 / 12;
+        for (int i = 0; i < STATISTICS.length; i++) {
+        	String stat = STATISTICS[i];
+            statButton = new JButton("[" + STAT_KEYS[i] + "] ::: " + stat + "  " + play.getStat(stat));
+            formatButton(statButton, BUTTON_HEIGHT, BUTTON_HEIGHT, fontSize, SETTINGS);
+            statsMenuPanel.add(statButton);   
+            Undo recent = new Undo(play, stat, getPeriodText().substring(0, 5).trim() + " " + this.clock.getTime());
+            statButton.addKeyListener(new KeyListener() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+						statsMenu.dispose();
+					}
+				}
+				@Override
+				public void keyReleased(KeyEvent e) {}
+				@Override
+				public void keyTyped(KeyEvent e) {}          	
+            });
+            statButton.addActionListener(new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    statButtonFunction(play, stat, recent, button, statsMenu);
+                }
+            });
+            if (STAT_KEYS[i].contains("Shift")) {
+                setButtonKey(statButton, this.keyMap.get(STAT_KEYS[i]), InputEvent.SHIFT_DOWN_MASK);
+            } else {
+                setButtonKey(statButton, this.keyMap.get(STAT_KEYS[i]), 0);
             }
         }
-        return statsMenuPanel;
+        formatFrame(statsMenu, statsMenuPanel, SCREENWIDTH - (BUTTON_HEIGHT * 4), SCREENHEIGHT - (BUTTON_HEIGHT * 2));
+    }
+    
+    // Post: Opens a window with a button for every statistic available to select.
+    private void statButtonFunction(Player play, String stat, Undo recent, JButton button, JFrame frame) {
+    	play.add(true, stat);
+    	if (play.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {
+    		if (stat.equals("Personal Foul")) {
+        		this.teamFoulsInPeriod++;
+    		}
+    		if (!this.splitPane && getFouledOut() >= 1) {
+                subNewPlayer(play, bench, players, true);
+    		}
+    		button.setEnabled(false);
+    		button.setBackground(FOULED_OUT_BUTTON_COLOR);
+    	} else if (this.numberStarters != 1) {
+    		switch (stat) {
+        	case "Made FG":
+        	case "Made 3pt FG":
+        		openNewStatWindow(recent, play, "Assist", "Assisted FG?", "Who got the Assist?", false);
+    			break;
+            case "Personal Foul":
+            	this.teamFoulsInPeriod++;
+            case "Technical Foul":
+            case "Flagrant I Foul":
+            case "Flagrant II Foul":
+            	// Stop timer if foul is called
+            	if (this.clock.isRunning()) {
+            		this.clock.stopTimer();
+                    this.startStop = !this.startStop;
+                    this.buttonArray[START_BUTTON].setText("   Start");
+                    setIcon(this.buttonArray, START_BUTTON, PLAY_BUTTON_ICON);
+            	}
+            	break;
+            case "Missed FG":
+            case "Missed 3pt FG":
+            case "Missed Free Throw":
+            	openNewStatWindow(recent, play, "Offensive Rebound", "Offensive Rebounded?", 
+            			          "Who got the Offensive Rebound?", true);
+            	break;
+            case "Block":
+            	openNewStatWindow(recent, play, "Defensive Rebound", "Defensive Rebounded?", 
+            			          "Who got the Defensive Rebound?", true);
+            	break;
+        	}
+    	}
+        this.buttonArray[UNDO_BUTTON].setEnabled(true);
+        this.undo.add(recent);
+        updateFile(players);
+        this.score.setText("Score: " + getTotal("PTS") + "    ");
+    	this.teamFouls.setText("  Team Fouls: " + teamFoulsInPeriod);
+    	frame.dispose();
     }
     
     // Post: In the case that the statistic chosen in the method addStatButton is a shot or a missed shot,
@@ -899,9 +950,9 @@ public class ManagementPanel extends GUISettings {
     	JFrame assistFrame = new JFrame(frameText);
         JPanel assistPanel = new JPanel(new GridLayout(2, 1));
         formatFrame(assistFrame, assistPanel, SCREENWIDTH / 3, SCREENHEIGHT / 2);
-        JButton yes = new JButton("Yes");
+        JButton yes = new JButton("[Enter] ::: Yes");
         formatButton(yes, BUTTON_HEIGHT, BUTTON_HEIGHT, FONT_SIZE * 2 / 3, SETTINGS);
-        yes.addActionListener(new ActionListener() {
+        yes.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = new JFrame(frameHeader);
                 int size = players.size();
@@ -909,41 +960,69 @@ public class ManagementPanel extends GUISettings {
                 	size -= 1;
                 } 
                 JPanel panel = new JPanel(new GridLayout(size, 1));
-                formatFrame(frame, panel, SCREENWIDTH / 3, SCREENHEIGHT / 2 + (SCREENHEIGHT / 6));
                 JButton assistPlayerButton;
-                for (Player assistPlayer : players) {
-                	boolean check = assistPlayer != play;
-                	if (allPlayers) {
-                		check = true;
+                int fontSize = FONT_SIZE / 2;
+                if (players.size() == 2) {
+                	int index = players.indexOf(play);
+                	int newIndex = 0;
+                	if (index == 0) {
+                		newIndex = 1;
                 	}
-                	if (check && !assistPlayer.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {
-                        assistPlayerButton = new JButton(assistPlayer.toString());
-                        formatButton(assistPlayerButton, BUTTON_HEIGHT, BUTTON_HEIGHT * 3 / 2, FONT_SIZE / 2, SETTINGS);
-                        panel.add(assistPlayerButton);
-                        assistPlayerButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent e) {
-                                assistPlayer.add(true, stat);
-                                frame.dispose();
-                                score.setText("Score: " + getTotal("PTS") + "    ");
-                                switch (stat) {
-                                case "Offensive Rebound":
-                                case "Defensive Rebound":
-                            		undo.add(new Undo(assistPlayer, stat, recent.getTimeOf()));
-                            		break;
-                                default:
-                                	recent.setAstPlayer(assistPlayer);
-                                	break;
+                	if (!allPlayers) {
+                		players.get(newIndex).add(true, stat);
+                	}
+                } else {
+                	int playerNumber = 1;
+                    for (Player assistPlayer : players) {
+                    	boolean check = assistPlayer != play;
+                    	if (allPlayers) {
+                    		check = true;
+                    	}
+                    	if (check && !assistPlayer.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {
+                            assistPlayerButton = new JButton("[" + playerNumber + "]  " + assistPlayer.toString());
+                            formatButton(assistPlayerButton, BUTTON_HEIGHT, BUTTON_HEIGHT, fontSize, SETTINGS);
+                            panel.add(assistPlayerButton);
+                            assistPlayerButton.addActionListener(new AbstractAction() {
+                                public void actionPerformed(ActionEvent e) {
+                                    assistPlayer.add(true, stat);
+                                    frame.dispose();
+                                    score.setText("Score: " + getTotal("PTS") + "    ");
+                                    switch (stat) {
+                                    case "Offensive Rebound":
+                                    case "Defensive Rebound":
+                                		undo.add(new Undo(assistPlayer, stat, recent.getTimeOf()));
+                                		break;
+                                    default:
+                                    	recent.setAstPlayer(assistPlayer);
+                                    	break;
+                                    }
+                                    updateFile(players);
                                 }
-                                updateFile(players);
-                            }
-                        });
+                            });
+                            setButtonKey(assistPlayerButton, playerKeys.get(playerNumber), 0);
+                            playerNumber++;
+                        }
                     }
+                    formatFrame(frame, panel, SCREENWIDTH / 3, SCREENHEIGHT / 2 + (SCREENHEIGHT / 6));
                 }
                 assistFrame.dispose();
             }
         });
         assistPanel.add(yes);
-        noButton(assistFrame, assistPanel, FONT_SIZE * 2 / 3, BUTTON_HEIGHT, BUTTON_HEIGHT, "No", SETTINGS, false);
+        noButton(assistFrame, assistPanel, FONT_SIZE * 2 / 3, BUTTON_HEIGHT, BUTTON_HEIGHT, "[ESC] ::: No", SETTINGS, false);
+		yes.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					assistFrame.dispose();
+				}
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {}
+			@Override
+			public void keyTyped(KeyEvent e) {}			
+		});
+        assistFrame.getRootPane().setDefaultButton(yes);
     }
     
     // Post: Updates the file with 'fileName' to have all the current statistics of each player and the time remaining
@@ -983,22 +1062,20 @@ public class ManagementPanel extends GUISettings {
     public void frame() {
     	setPane();
     	this.frame.add(this.pane);
-        this.frame.getRootPane().setDefaultButton(this.buttonArray[START_BUTTON]);
         this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.frame.setVisible(true);
         this.frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.frame.getRootPane().setDefaultButton(this.buttonArray[START_BUTTON]);
     }
     
     // Post: Returns a JPanel with all the components of a ManagementPanel. Used in the InstructionsPanel.
     public JPanel getManagementPanel() {
         JPanel panel = new JPanel();
         panel.add(this.headerPanel, BorderLayout.NORTH);
-        JPanel managementP = new JPanel(new GridLayout(1, 1));
-        managementP.add(this.managementPanel);
+        JPanel managementP = panelfy(this.managementPanel, background, new GridLayout(1, 1), null);
         managementP.setPreferredSize(new Dimension(SCREENWIDTH - (BUTTON_HEIGHT * 5 / 2), 700));
         panel.setBorder(new MatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, DEFAULT_TEXT_BORDER_COLOR));
         panel.setPreferredSize(new Dimension(SCREENWIDTH - (BUTTON_HEIGHT * 5 / 2), 1100));
-        managementP.setBackground(background);
         panel.add(managementP);
         panel.setBackground(background);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

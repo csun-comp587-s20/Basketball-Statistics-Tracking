@@ -22,6 +22,11 @@ public class StartersPanel extends GUISettings {
 	private static final int CLOSE_BUTTON = 2;
 	private static final int HOME_BUTTON = 3;
 	
+	// Key Bindings for each button in 'buttonArray'
+	// Start button uses the enter key -- It is set to be the default button for the frame.
+	private static final int UNDO_BUTTON_KEY = KeyEvent.VK_BACK_SPACE;
+	private static final int CLOSE_BUTTON_KEY = KeyEvent.VK_ESCAPE;
+	
 	private List<Player> startingOnCourt; // The players that will be starting the game.
 	private List<Player> startingOnBench; // The players that will be on the bench to begin the game.
 	private List<Player> players; // Total list of players.
@@ -64,19 +69,10 @@ public class StartersPanel extends GUISettings {
         this.playerList = formatTextArea(SCREENWIDTH / 2 + 90, 500, SETTINGS);
 		this.buttons = new JPanel();
         this.buttons.setBackground((Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR));
-        String[] buttonNames = {" Undo", " Start Game", " Close", "No"};
-        int size = FONT_SIZE / 2;
-        int[] sizes = {size, size, size, FONT_SIZE * 3 / 4};
-        this.buttonArray = createButtonArray(buttonNames, sizes, SETTINGS);
-        this.buttonArray[UNDO_BUTTON].setEnabled(false);
-        this.buttonArray[STARTGAME_BUTTON].setEnabled(false);
-        buttonArray[HOME_BUTTON].setBorder(null);
     	this.fileName = fileName;
     	this.pane = new JPanel(new GridLayout(1, 1));
     	this.pane.setBackground(background);
-    	int[] indices = {UNDO_BUTTON, STARTGAME_BUTTON, CLOSE_BUTTON};
-    	String[] icons = {UNDO_BUTTON_ICON, START_BUTTON_ICON, CLOSE_BUTTON_ICON};
-    	formatIcons(this.buttonArray, indices, icons);
+    	initializeButtons();
 	}
 	
 	public void createAllButtons() {
@@ -87,9 +83,23 @@ public class StartersPanel extends GUISettings {
 		createHomeButton();
 	}
 	
+    // Post: Creates and formats all buttons used in the StartersPanel.
+	private void initializeButtons() {
+		String[] buttonNames = {" Undo", " Start Game", " Close", "No"};
+        int size = FONT_SIZE / 2;
+        int[] sizes = {size, size, size, FONT_SIZE * 3 / 4};
+        this.buttonArray = createButtonArray(buttonNames, sizes, SETTINGS);
+        this.buttonArray[UNDO_BUTTON].setEnabled(false);
+        this.buttonArray[STARTGAME_BUTTON].setEnabled(false);
+        this.buttonArray[HOME_BUTTON].setBorder(null);
+    	int[] indices = {UNDO_BUTTON, STARTGAME_BUTTON, CLOSE_BUTTON};
+    	String[] icons = {UNDO_BUTTON_ICON, START_BUTTON_ICON, CLOSE_BUTTON_ICON};
+    	formatIcons(this.buttonArray, indices, icons);
+	}
+	
 	// Post: Adds functionality to the Home Button. 
 	public void createHomeButton() {
-		this.buttonArray[HOME_BUTTON].addActionListener(new ActionListener() {
+		this.buttonArray[HOME_BUTTON].addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				pane.removeAll();
 				pane.setLayout(new GridLayout(1, 1));
@@ -98,6 +108,7 @@ public class StartersPanel extends GUISettings {
 				pane.revalidate();
 				frame.setTitle("Starter Selection");
             	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.getRootPane().setDefaultButton(buttonArray[STARTGAME_BUTTON]);
 			}
 		});
 	}
@@ -109,7 +120,7 @@ public class StartersPanel extends GUISettings {
         	formatButton(button, BUTTON_HEIGHT * 3, BUTTON_HEIGHT, FONT_SIZE / 2, SETTINGS);
         	buttons.add(button);
         	playerButtons.add(button);
-        	button.addActionListener(new ActionListener() {
+        	button.addActionListener(new AbstractAction() {
         		public void actionPerformed(ActionEvent e) {
         			// If the number of starters required has not yet been reached
         			if (starters < numberStarters) {
@@ -137,13 +148,12 @@ public class StartersPanel extends GUISettings {
 	// Post: Adds the function for the 'Undo' button which removes the most recently added player
 	//       to the starters list.
 	public void createUndoButton() {
-    	this.buttonArray[UNDO_BUTTON].addActionListener(new ActionListener() {
+    	this.buttonArray[UNDO_BUTTON].addActionListener(new AbstractAction() {
     		public void actionPerformed(ActionEvent e) {
 				Player remove = startingOnCourt.get(startingOnCourt.size() - 1);
-				String removeName = remove.toString();
 				// Reactivate the button of the most recently removed player
 				for (JButton btn : playerButtons) {
-					if (btn.getText().equals(removeName)) {
+					if (btn.getText().equals(remove.toString())) {
 						btn.setEnabled(true);
 						break;
 					}
@@ -157,22 +167,19 @@ public class StartersPanel extends GUISettings {
 		        playerList.setText(displayNames.toString().replaceAll("\\[", "").replaceAll("\\]", ""));
 				startingOnCourt.remove(remove); 
 				starters--;		  
-				if (startingOnCourt.isEmpty()) {
-					buttonArray[UNDO_BUTTON].setEnabled(false);
-				}
-				if (startingOnCourt.size() < (int) SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS)) {
-					buttonArray[STARTGAME_BUTTON].setEnabled(false);
-				}
+				buttonArray[UNDO_BUTTON].setEnabled(!startingOnCourt.isEmpty());
+				buttonArray[STARTGAME_BUTTON].setEnabled(startingOnCourt.size() >= (int) SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS));
     		}
     	});
+    	setButtonKey(this.buttonArray[UNDO_BUTTON], UNDO_BUTTON_KEY, 0);
 	}
 	
 	// Post: Adds the function for the 'Start' button. Asks the user to confirm whether they want to 
 	//       start the game. 
 	public void createStartButton() {
-    	this.buttonArray[STARTGAME_BUTTON].addActionListener(new ActionListener() {
+    	this.buttonArray[STARTGAME_BUTTON].addActionListener(new AbstractAction() {
     		public void actionPerformed(ActionEvent e) {
-    			ActionListener button = new ActionListener() {
+    			AbstractAction button = new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {                 	
                     	// Set starters to be on the court
                     	for (int i = 0; i < startingOnCourt.size(); i++) {
@@ -194,54 +201,32 @@ public class StartersPanel extends GUISettings {
 	
 	// Post: Adds functionality for the 'Close' button. Closes the StartersPanel window when pressed.
 	public void createCloseButton() {
-    	this.buttonArray[CLOSE_BUTTON].addActionListener(new ActionListener() {
+    	this.buttonArray[CLOSE_BUTTON].addActionListener(new AbstractAction() {
     		public void actionPerformed(ActionEvent e) {
     			startingOnCourt.clear();
     			startingOnBench.clear();
     			frame.dispose();
     		}
     	});
+    	setButtonKey(this.buttonArray[CLOSE_BUTTON], CLOSE_BUTTON_KEY, 0);
 	}
 	
 	// Post: Adds all components to the StartersPanel.
-	public void addElements() {  		
-		// The panel that stores the header of the StartersPanel
-    	JPanel labels = new JPanel();
-    	labels.add(this.header);
-        labels.setBackground(background);
-        labels.setBorder(new MatteBorder(BORDER_SIZE * 4, BORDER_SIZE, BORDER_SIZE * 2, BORDER_SIZE, background));
-        
-        // List of players currently selected of starters that appear as a comma separated list
-        JPanel list = new JPanel();
-        list.add(this.playerList);
-        list.setBackground(background);
-        
-        
-        // The panel that stores the 'Undo' button
-    	JPanel undoButton = new JPanel();
-        undoButton.add(this.buttonArray[UNDO_BUTTON]);
-        undoButton.setBackground(background);
-        
-        // The panel that stores the 'Start Game' button
-        JPanel start = new JPanel();
-        start.add(this.buttonArray[STARTGAME_BUTTON]);
-        start.setBackground(background);
-        
-        // The panel that stores the 'Close' button
-        JPanel close = new JPanel();
-        close.add(this.buttonArray[CLOSE_BUTTON]);
-        close.setBackground(background);
-        
+	public void addElements() {  		       
         // The panel that stores all three buttons on the StartersPanel
-        JPanel undoStartClose = new JPanel(new GridLayout(3, 1));
-        undoStartClose.add(undoButton);
-        undoStartClose.add(start);
-        undoStartClose.add(close);
-        undoStartClose.setBackground(background);
+        JPanel undoStartClose = new JPanel();
+        formatPanel(undoStartClose, new Component[] {panelfy(this.buttonArray[UNDO_BUTTON], background, null, null), 
+        		                                     panelfy(this.buttonArray[STARTGAME_BUTTON], background, null, null), 
+        		                                     panelfy(this.buttonArray[CLOSE_BUTTON], background, null, null)}, null,
+        		    new GridLayout(3, 1), background);
         
         // All the elements of the StartersPanel
         JPanel total = new JPanel();
-        formatPanel(total, new Component[]{labels, list, undoStartClose}, null, null, null, background);
+        formatPanel(total, new Component[] {panelfy(this.header, background, null, 
+        		                            new MatteBorder(BORDER_SIZE * 4, BORDER_SIZE, BORDER_SIZE * 2, BORDER_SIZE, background)), 
+        		                            panelfy(this.playerList, background, null, null), 
+        		                            undoStartClose}, 
+        		    null, null, background);
         
         // Adds a scroll bar to the list of player buttons on the left/right side of the StartersPanel
         this.buttons.setLayout(new GridLayout(players.size(), 1));
@@ -270,6 +255,7 @@ public class StartersPanel extends GUISettings {
         this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.pane.add(this.splitPane);
         this.frame.add(this.pane);
+        this.frame.getRootPane().setDefaultButton(this.buttonArray[STARTGAME_BUTTON]);
     }
     
     // Post: Returns a JPanel with all the components of a StartersPanel.

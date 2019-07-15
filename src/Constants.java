@@ -4,6 +4,7 @@
 // All the constants used in the program.
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.*;
 import javax.swing.JFrame;
 
@@ -41,6 +42,23 @@ public abstract class Constants extends JFrame {
     											  "Technical Foul",
     											  "Flagrant I Foul",
     											  "Flagrant II Foul"};
+    protected static final String[] STAT_KEYS = {"2", "Shift-2", "3", "Shift-3", "1", "Shift-1", "A", "Shift-R", "R", "T", "S", "B", "P", "F", "X", "Shift-X"};
+    protected static final int[] KEY_EVENTS = {KeyEvent.VK_2,
+    										   KeyEvent.VK_2,
+    										   KeyEvent.VK_3,
+    										   KeyEvent.VK_3,
+    										   KeyEvent.VK_1,
+    										   KeyEvent.VK_1,
+    										   KeyEvent.VK_A,
+    										   KeyEvent.VK_R,
+    										   KeyEvent.VK_R,
+    										   KeyEvent.VK_T,
+    										   KeyEvent.VK_S,
+    										   KeyEvent.VK_B,
+    										   KeyEvent.VK_P,
+    										   KeyEvent.VK_F,
+    										   KeyEvent.VK_X,
+    										   KeyEvent.VK_X};
     protected static final String[] STATISTIC_ABBREVIATIONS = {"Player", 
     														   "MIN", 
     														   "PTS", 

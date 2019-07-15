@@ -34,7 +34,6 @@ public abstract class GUISettings extends BasketballMain {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(width, height);
         frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
         frame.add(panel);
         // Add logo here
         try {
@@ -65,6 +64,13 @@ public abstract class GUISettings extends BasketballMain {
         });
     }
     
+    // Post: Adds Key Binding to the given 'button' with the given 'keyEvent'.
+    protected static void setButtonKey(JButton button, int keyEvent, int inputEvent) {
+    	button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).clear();
+    	button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(keyEvent, inputEvent), "KEY_BINDING");
+    	button.getActionMap().put("KEY_BINDING", (Action) button.getActionListeners()[0]);
+    }
+    
     // Post: Returns an array of JButton with names given by 'buttonNames' and dimensions given by 'size'.
     protected static JButton[] createButtonArray(String[] buttonNames, int[] size, GameSettings settings) {
     	JButton[] list = new JButton[buttonNames.length];
@@ -91,8 +97,8 @@ public abstract class GUISettings extends BasketballMain {
     }
     
     // Post: Formats the given JPanel 'panel'.
-    public static void formatPanel(JPanel panel, Component[] components, int[] borderDimension,
-    		                       LayoutManager layout, Color borderColor, Color bckgrnd) {
+    public static void formatPanel(JPanel panel, Component[] components, Border border,
+    		                       LayoutManager layout, Color bckgrnd) {
     	// Add components to panel
     	for (Component component : components) {
     		panel.add(component);
@@ -104,9 +110,8 @@ public abstract class GUISettings extends BasketballMain {
         	panel.setLayout(layout);
     	}
     	// Set border of panel if necessary
-    	if (borderDimension != null) {
-    		panel.setBorder(new MatteBorder(borderDimension[0], borderDimension[1], 
-    				                        borderDimension[2], borderDimension[3], borderColor));
+    	if (border != null) {
+    		panel.setBorder(border);
     	}
     	panel.setBackground(bckgrnd);
     }
@@ -118,6 +123,7 @@ public abstract class GUISettings extends BasketballMain {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setPreferredSize(new Dimension(SCREENWIDTH, SCREENHEIGHT));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setBorder(null);
         // Set Default View position to start at the top of the panel
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -248,39 +254,49 @@ public abstract class GUISettings extends BasketballMain {
     	frame.setTitle(text);
     	frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     	Color background = (Color) settings.getSetting(Setting.BACKGROUND_COLOR);
-        JPanel confirmPanel = new JPanel();
-        confirmPanel.setBackground(background);
 
         JLabel doneMessage = formatLabel("   " + text, FONT_SIZE, settings);
         setIcon(doneMessage, imageName);
-        confirmPanel.add(doneMessage);
-        confirmPanel.setBorder(new MatteBorder(BORDER_SIZE * 8, BORDER_SIZE, BORDER_SIZE * 8, BORDER_SIZE, background));
+        JPanel confirmPanel = panelfy(doneMessage, background, null, 
+        		                      new MatteBorder(BORDER_SIZE * 8, BORDER_SIZE, BORDER_SIZE * 8, BORDER_SIZE, background));
         
-        JPanel yesPanel = new JPanel();
         JButton yes = new JButton("Yes");
         formatButton(yes, BUTTON_HEIGHT * 3, BUTTON_HEIGHT, FONT_SIZE * 3 / 4, settings);
         yes.setBorder(null);
         yes.addActionListener(yesButton);
-        yesPanel.setBackground(background);
-        yesPanel.add(yes);
-        yesPanel.setBorder(new MatteBorder(BORDER_SIZE * 3, 0, BORDER_SIZE * 3, 0, background));
+        JPanel yesPanel = panelfy(yes, background, null, new MatteBorder(BORDER_SIZE * 3, 0, BORDER_SIZE * 3, 0, background));
+        frame.getRootPane().setDefaultButton(yes);
         
-        JPanel noPanel = new JPanel();
-        noPanel.setBackground(background);
         JButton no = new JButton("No");
         formatButton(no, BUTTON_HEIGHT * 3, BUTTON_HEIGHT, FONT_SIZE * 3 / 4, settings);
         no.setBorder(null);
         no.addActionListener(noButton);
-        noPanel.add(no);
+        setButtonKey(no, KeyEvent.VK_ESCAPE, 0);
+        JPanel noPanel = panelfy(no, background, null, null);
         
         JPanel panels = new JPanel();
-		formatPanel(panels, new Component[] {confirmPanel, yesPanel, noPanel}, null, null, null, background);
+		formatPanel(panels, new Component[] {confirmPanel, yesPanel, noPanel}, null, null, background);
 
-		JPanel total = new JPanel(new FlowLayout(1, 100, 100));
-		total.add(panels);
-		total.setBackground(background);
+		JPanel total = panelfy(panels, background, new FlowLayout(1, 100, 100), null);
 		pane.add(total);
 		pane.repaint();
 		pane.revalidate();
+    }
+    
+    // Post: Adds the 'component' to a JPanel with the background color 'background' with the given
+    //       'layout' and 'border'.
+    protected static JPanel panelfy(Component component, Color background, LayoutManager layout, Border border) {
+    	JPanel panel = new JPanel();
+    	if (layout != null) {
+    		panel.setLayout(layout);
+    	}
+    	if (border != null) {
+    		panel.setBorder(border);
+    	}
+    	if (background != null) {
+        	panel.setBackground(background);
+    	}
+    	panel.add(component);
+    	return panel;
     }
 }

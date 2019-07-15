@@ -34,6 +34,16 @@ public class GetPlayersPanel extends GUISettings {
 	private static final int SETTINGS_BUTTON = 6;
 	private static final int HOME_BUTTON = 7;
 	
+	// Key Bindings for each button in 'buttonArray'
+	// Submit button uses the enter key -- It is set to be the default button for the frame.
+	private static final int UNDO_BUTTON_KEY = KeyEvent.VK_BACK_SPACE;
+	private static final int START_BUTTON_KEY = KeyEvent.VK_F4;
+	private static final int OLDGAMES_BUTTON_KEY = KeyEvent.VK_F2;
+	private static final int INSTRUCTIONS_BUTTON_KEY = KeyEvent.VK_F1;
+	private static final int SETTINGS_BUTTON_KEY = KeyEvent.VK_F9;
+	private static final int HOME_BUTTON_KEY = KeyEvent.VK_ESCAPE;
+
+	
 	// Whether a file is being scanned in or not
 	private static final boolean IS_SCAN = true;
 	
@@ -41,7 +51,6 @@ public class GetPlayersPanel extends GUISettings {
     private String fileName; // The name of the file the game's data will be stored in
     private JButton[] buttonArray; // All the buttons on the GetPlayersPanel
     private JTextField name; // The text field used to enter player names
-    // JLabel title; // The large header seen at the top of the panel
     private JFrame frame; // The frame that opens when the program is started
     private JFrame settingsFrame; // The frame that opens when the 'Settings' button is pressed
     private JPanel pane; // Frames all elements in GetPlayersPanel into a single JPanel used for display in the InstructionsPanel
@@ -63,14 +72,7 @@ public class GetPlayersPanel extends GUISettings {
         this.panels = new ArrayList<JPanel>();
         this.displayNames = new Stack<String>();
         this.name = new JTextField(FONT_SIZE / 3);
-        // Create all buttons used in the GetPlayersPanel
-        String[] buttonNames = {" Add Player", " Undo", " Start Game", " Old Games", " Instructions", " Close", " Settings", " Main Menu"};
-        int size = FONT_SIZE / 2;
-        int[] sizes = {size, size, FONT_SIZE * 2 / 3, size, 
-        			     size, size, size, size, size};
-        this.buttonArray = createButtonArray(buttonNames, sizes, SETTINGS);
-        this.buttonArray[UNDO_BUTTON].setEnabled(false);
-        this.buttonArray[START_BUTTON].setEnabled(false);
+        initializeButtons();
         this.settingsFrame = new JFrame("Settings");
         this.playerNames = new JPanel();
         this.pane = new JPanel();
@@ -80,13 +82,25 @@ public class GetPlayersPanel extends GUISettings {
         this.panels.add(this.pane);
 		this.instructionsPanel = new InstructionPanel(SETTINGS);
         this.frame = new JFrame("Basketball Statistics Tracking");
+    	updatePlayerList();
+    }
+    
+    // Post: Creates and formats all buttons used in the GetPlayersPanel.
+    private void initializeButtons() {
+        // Create all buttons used in the GetPlayersPanel
+        String[] buttonNames = {" Add Player", " Undo", " Start Game", " Old Games", " Instructions", " Close", " Settings", " Main Menu"};
+        int size = FONT_SIZE / 2;
+        int[] sizes = {size, size, FONT_SIZE * 2 / 3, size, 
+        			     size, size, size, size, size};
+        this.buttonArray = createButtonArray(buttonNames, sizes, SETTINGS);
+        this.buttonArray[UNDO_BUTTON].setEnabled(false);
+        this.buttonArray[START_BUTTON].setEnabled(false);
         // Add icons to all buttons
         int[] indices = {INSTRUCTIONS_BUTTON, SETTINGS_BUTTON, OLDGAMES_BUTTON, 
         		         CLOSE_BUTTON, UNDO_BUTTON, SUBMIT_BUTTON, START_BUTTON, HOME_BUTTON};
     	String[] icons = {INSTRUCTIONS_BUTTON_ICON, SETTINGS_BUTTON_ICON, OLDGAMES_BUTTON_ICON, 
     			          CLOSE_BUTTON_ICON, UNDO_BUTTON_ICON, SUBMIT_BUTTON_ICON, START_BUTTON_ICON, MAINMENU_BUTTON_ICON};
     	formatIcons(this.buttonArray, indices, icons);
-    	updatePlayerList();
     }
     
     // Post: Formats the text field used to enter player names.
@@ -134,7 +148,7 @@ public class GetPlayersPanel extends GUISettings {
     //       Players with the same name cannot be included. The minimum number of players
     //       required is the number of starters set by the user or by default (5).
     public void createSubmitButton() {
-        this.buttonArray[SUBMIT_BUTTON].addActionListener(new ActionListener() {
+        this.buttonArray[SUBMIT_BUTTON].addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
             	// Search for a valid player name (First [Space] Last) using regular expressions
             	Pattern pattern = Pattern.compile(".+(\\s){1}.+");
@@ -175,7 +189,7 @@ public class GetPlayersPanel extends GUISettings {
     
     // Post: Removes the most recently added player from the 'labelList' and the 'players' list.
     public void createUndoButton() {
-    	this.buttonArray[UNDO_BUTTON].addActionListener(new ActionListener() {
+    	this.buttonArray[UNDO_BUTTON].addActionListener(new AbstractAction() {
     		public void actionPerformed(ActionEvent e) {
     			int index = players.size() - 1;
 		        displayNames.pop();
@@ -187,15 +201,16 @@ public class GetPlayersPanel extends GUISettings {
 				updatePlayerList();
     		}
     	});
+    	setButtonKey(this.buttonArray[UNDO_BUTTON], UNDO_BUTTON_KEY, 0);
     }
     
     // Post: Allows the user to start tracking statistics for their players once
     //       enough players are on the team. If not enough players are in the players ArrayList,
     //       the user will be prompted to add more players.
     public void createStartButton() {
-    	this.buttonArray[START_BUTTON].addActionListener(new ActionListener() {
+    	this.buttonArray[START_BUTTON].addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) { 
-                ActionListener button = new ActionListener() {
+                AbstractAction button = new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {                 	
                         String result = "Boxscore_" + DAYNUM + "." + MONTH + "." + YEAR;
                         fileName = getFileName(result) + "." + FILETYPE;
@@ -212,12 +227,14 @@ public class GetPlayersPanel extends GUISettings {
             			pane.repaint();
             			frame.setTitle("Basketball Statistics Tracking");
             			frame.getRootPane().setDefaultButton(buttonArray[SUBMIT_BUTTON]);
+            			buttonArray[START_BUTTON].setEnabled(false);
                     }
                 };
             	confirmPane(pane, frame, buttonArray[HOME_BUTTON].getActionListeners()[0], button, 
             			    "Confirm Team?", TEAM_ICON, SETTINGS);
             }
         });
+    	setButtonKey(this.buttonArray[START_BUTTON], START_BUTTON_KEY, 0);
     }
     
     // Post: Returns a file name for a new game so that there are no duplicate file names.
@@ -264,7 +281,7 @@ public class GetPlayersPanel extends GUISettings {
     
     // Post: Opens the Instructions window when pressed.
     public void createInstructionButton() {
-    	this.buttonArray[INSTRUCTIONS_BUTTON].addActionListener(new ActionListener() {
+    	this.buttonArray[INSTRUCTIONS_BUTTON].addActionListener(new AbstractAction() {
     		public void actionPerformed(ActionEvent e) {
     			pane.removeAll();
     			frame.setTitle("Instructions");
@@ -275,10 +292,11 @@ public class GetPlayersPanel extends GUISettings {
     			pane.repaint();
     		}
     	});
+    	setButtonKey(this.buttonArray[INSTRUCTIONS_BUTTON], INSTRUCTIONS_BUTTON_KEY, 0);
     }
     
     public void createHomeButton() {
-    	this.buttonArray[HOME_BUTTON].addActionListener(new ActionListener() {
+    	this.buttonArray[HOME_BUTTON].addActionListener(new AbstractAction() {
     		public void actionPerformed(ActionEvent e) {
     			pane.removeAll();
     			pane.add(mainPanel);
@@ -289,13 +307,14 @@ public class GetPlayersPanel extends GUISettings {
             	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     		}
     	});
+    	setButtonKey(this.buttonArray[HOME_BUTTON], HOME_BUTTON_KEY, 0);
     }
     
     // Post: The "Load Old Game" button allows the user to load any previous game they have.
     //       This feature was implemented in case the program were to close during a game. This way,
     //       the user could easily resume their tracking from where they left off.
     public void createLoadGameButton() {
-    	this.buttonArray[OLDGAMES_BUTTON].addActionListener(new ActionListener() {
+    	this.buttonArray[OLDGAMES_BUTTON].addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
             	Color background = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);
             	File actual = new File(FILE_PATH + "\\" + GAMEFILESFOLDER);
@@ -303,27 +322,21 @@ public class GetPlayersPanel extends GUISettings {
             	pane.removeAll();
             	frame.setTitle("Load Old Games");
             	pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
-            	JPanel title = new JPanel(new GridBagLayout());
             	JLabel header = formatLabel("  Load Old Games", FONT_SIZE, SETTINGS);
             	setIcon(header, OLDGAMES_BUTTON_ICON);
-            	title.add(header);
-            	title.setBackground(background);
-            	title.setBorder(new MatteBorder(BORDER_SIZE * 2, 0, BORDER_SIZE * 2, 0, background));
-            	pane.add(title);
+            	pane.add(panelfy(header, background, new GridBagLayout(), 
+            			 new MatteBorder(BORDER_SIZE * 2, 0, BORDER_SIZE * 2, 0, background)));
                 // If there are no old games available, the user is notified.
                 if (countCopy == 0) {
-                	JPanel noGames = new JPanel(new GridBagLayout());
-                	noGames.setBackground(background);
-                	noGames.setBorder(new MatteBorder(BORDER_SIZE * 5, 0, BORDER_SIZE * 2, 0, background));
-                	noGames.add(formatTextPane("There are no Old Games Available", FONT_SIZE * 5 / 6, SETTINGS));
-                	pane.add(noGames);
+                	pane.add(panelfy(formatTextPane("There are no Old Games Available", FONT_SIZE * 5 / 6, SETTINGS),
+			                 background, new GridBagLayout(),
+			                 new MatteBorder(BORDER_SIZE * 5, 0, BORDER_SIZE * 2, 0, background)));
                 } else { // countCopy > 0
                     JPanel oldGamePanel = new JPanel(new GridLayout(countCopy, 1));
-                    oldGamePanel.setBackground((Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR));
+                    oldGamePanel.setBackground(background);
                     JScrollPane scrollPane = addScrollPane(oldGamePanel);
                     scrollPane.setBorder(new LineBorder(DEFAULT_TEXT_BORDER_COLOR, 5, ROUNDED_BORDERS));
-                    JPanel panePanel = new JPanel(new GridLayout(1, 1));
-                    panePanel.add(scrollPane);
+                    JPanel panePanel = panelfy(scrollPane, background, new GridLayout(1, 1), null);
                     panePanel.setMaximumSize(new Dimension(SCREENWIDTH * 2 / 3, SCREENHEIGHT * 2 / 3));
                     panePanel.setPreferredSize(new Dimension(SCREENWIDTH * 2 / 3, countCopy * BUTTON_HEIGHT * 2));
                     pane.add(panePanel);
@@ -359,7 +372,7 @@ public class GetPlayersPanel extends GUISettings {
                             	}
                             }
                             oldGameButton.setEnabled(checkFile);
-                            oldGameButton.addActionListener(new ActionListener() {
+                            oldGameButton.addActionListener(new AbstractAction() {
                                 // When the user clicks the game they want to load, the file is read.
                                 @SuppressWarnings("unchecked")
 								public void actionPerformed(ActionEvent e) {
@@ -372,20 +385,18 @@ public class GetPlayersPanel extends GUISettings {
                         }
                     }
                 }
-                JPanel home = new JPanel(new GridBagLayout());
-                home.setBackground(background);
-                home.setBorder(new MatteBorder(BORDER_SIZE * 2, 0, BORDER_SIZE * 2, 0, background));
-                home.add(buttonArray[HOME_BUTTON]);
-                pane.add(home);
+                pane.add(panelfy(buttonArray[HOME_BUTTON], background, new GridBagLayout(),
+  		              new MatteBorder(BORDER_SIZE * 2, 0, BORDER_SIZE * 2, 0, background)));
                 pane.revalidate();
                 pane.repaint();
             }
         });
+    	setButtonKey(this.buttonArray[OLDGAMES_BUTTON], OLDGAMES_BUTTON_KEY, 0);
     }
     
     // Post: Adds function to the 'Close' button. Closes the program entirely.
     public void createCloseButton() {
-    	this.buttonArray[CLOSE_BUTTON].addActionListener(new ActionListener() {
+    	this.buttonArray[CLOSE_BUTTON].addActionListener(new AbstractAction() {
     		public void actionPerformed(ActionEvent e) {
     			frame.dispose();
     			settingsFrame.dispose();
@@ -397,7 +408,7 @@ public class GetPlayersPanel extends GUISettings {
     // Post: Adds function to the 'Settings' buttons. Allows the user to configure the game settings however 
     //       they like. Includes actual game settings (Quarters/Halves, Fouls allowed, etc.) and background color.
     public void createSettingsButton() {  	
-    	this.buttonArray[SETTINGS_BUTTON].addActionListener(new ActionListener() {
+    	this.buttonArray[SETTINGS_BUTTON].addActionListener(new AbstractAction() {
     		public void actionPerformed(ActionEvent e) {
     			buttonArray[SETTINGS_BUTTON].setEnabled(false);
     		    JPanel colorPanel = new JPanel(new GridLayout(COLOR_NAMES.length, 1));
@@ -406,7 +417,7 @@ public class GetPlayersPanel extends GUISettings {
     		    	JButton btn = new JButton(COLOR_NAMES[i]);
     		    	formatButton(btn, BUTTON_HEIGHT, BUTTON_HEIGHT, FONT_SIZE * 5 / 12, SETTINGS);
     		    	btn.setBackground(COLORS[i]);
-    		    	btn.addActionListener(new ActionListener() {
+    		    	btn.addActionListener(new AbstractAction() {
     		    		public void actionPerformed(ActionEvent e) {
     		    			Color bck = btn.getBackground();
 	    					SETTINGS.setSetting(bck, Setting.BACKGROUND_COLOR);
@@ -465,11 +476,11 @@ public class GetPlayersPanel extends GUISettings {
     		    setRadioButtonBorder(timings, thirdRow, "Game Timings", fontSize + 5);
     		    enableButtons(hO, false);	    
     		 		    
-    		    JPanel settingsButtons = new JPanel(new GridLayout(1, 3));
+    		    JPanel settingsButtons = new JPanel(new GridLayout(1, 2));
     		    JButton close = new JButton("Apply");
-    		    formatButton(close, 260, 50, 20, SETTINGS);
+    		    formatButton(close, BUTTON_HEIGHT, BUTTON_HEIGHT / 3, FONT_SIZE / 4, SETTINGS);
     		    close.setBackground(DEFAULT_BACKGROUND_COLOR);
-    		    close.addActionListener(new ActionListener() {
+    		    close.addActionListener(new AbstractAction() {
     		    	public void actionPerformed(ActionEvent e) {
     		    		settingsFrame.dispose();
     		    		updatePlayerList();
@@ -477,9 +488,9 @@ public class GetPlayersPanel extends GUISettings {
     		    });
     		    
     		    JButton defaultBtn = new JButton("Set Default");
-    		    formatButton(defaultBtn, 200, 50, 20, SETTINGS);
+    		    formatButton(defaultBtn, BUTTON_HEIGHT, BUTTON_HEIGHT / 3, FONT_SIZE / 4, SETTINGS);
     		    defaultBtn.setBackground(DEFAULT_BACKGROUND_COLOR);
-    		    defaultBtn.addActionListener(new ActionListener() {
+    		    defaultBtn.addActionListener(new AbstractAction() {
     		    	public void actionPerformed(ActionEvent e) {
     		    		SETTINGS = new GameSettings();
     		    		for (JPanel p : panels) {
@@ -493,8 +504,7 @@ public class GetPlayersPanel extends GUISettings {
     		    		updatePlayerList();
     		    		settingsFrame.dispose();
     		    	}
-    		    });
-    		    
+    		    });   		    
     		    settingsButtons.add(close);
     		    settingsButtons.add(defaultBtn);
     		    
@@ -514,8 +524,9 @@ public class GetPlayersPanel extends GUISettings {
     		    JPanel panels = new JPanel();
     		    panels.add(pane1);
     		    panels.setLayout(new BoxLayout(panels, BoxLayout.Y_AXIS));
-    		    formatFrame(settingsFrame, panels, SCREENWIDTH - (BUTTON_HEIGHT * 3), SCREENHEIGHT - BUTTON_HEIGHT); 
-    		    
+    		    settingsFrame.setVisible(true);
+    		    settingsFrame.add(panels);
+    		    settingsFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);    		    
     		    settingsFrame.addWindowListener(new WindowAdapter() {
     		        @Override
     		        public void windowClosing(WindowEvent windowEvent) {
@@ -527,6 +538,8 @@ public class GetPlayersPanel extends GUISettings {
     		    });
     		}
     	});
+    	//this.settingsFrame.getRootPane().setDefaultButton(close);
+    	setButtonKey(this.buttonArray[SETTINGS_BUTTON], SETTINGS_BUTTON_KEY, 0);
     }
     
     // Post: Returns a String of numbers in the range of 'min' to 'max'.
@@ -559,11 +572,7 @@ public class GetPlayersPanel extends GUISettings {
     	vertical.setPreferredSize(new Dimension(0, 0));
         pane.setPreferredSize(new Dimension(SCREENWIDTH / 6, SCREENHEIGHT / 4));
         pane.setBackground(background);
-        pane.setBorder(null);
-    	JPanel framePane = new JPanel(new GridLayout(1, 1));
-    	framePane.add(pane);
-    	framePane.setBackground(background);
-    	this.panels.add(framePane);
+    	this.panels.add(panelfy(pane, background, new GridLayout(1, 1), null));
     	this.playerNames.setLayout(new BoxLayout(this.playerNames, BoxLayout.Y_AXIS));
     	this.playerNames.removeAll();
     	JLabel players = formatLabel("   Players: " + this.players.size(), FONT_SIZE * 4 / 7, SETTINGS);
@@ -629,7 +638,7 @@ public class GetPlayersPanel extends GUISettings {
 				select.setSelected(Integer.valueOf(selectText + "") == (int) SETTINGS.getSetting(gameSetting));
 				break;
 			}
-	    	select.addActionListener(new ActionListener() {
+	    	select.addActionListener(new AbstractAction() {
 	    		public void actionPerformed(ActionEvent e) {
 	    			for (int i = 0; i < names.length; i++) {
 	    				if (select.getText().equals(names[i])) {
@@ -641,20 +650,16 @@ public class GetPlayersPanel extends GUISettings {
 	    					}
 	    					int selection = i + 1;
 	    					switch (gameSetting) {
-	    					case NUMBER_OF_STARTERS:
-	        					SETTINGS.setSetting(selection, gameSetting);
-	        					buttonArray[START_BUTTON].setEnabled(players.size() >= selection);
-	    						break;
 	    					case PERSONAL_FOULS:
 	        					SETTINGS.setSetting(value, gameSetting);
 	    						break;
+	    					case NUMBER_OF_STARTERS:
+	        					buttonArray[START_BUTTON].setEnabled(players.size() >= selection);
 	    					case TECHNICAL_FOULS:
-	        					SETTINGS.setSetting(selection, gameSetting);
-	    						break;
 	    					case FLAGRANT_I:
-	        					SETTINGS.setSetting(selection, gameSetting);
-	        					break;
 	    					case FLAGRANT_II:
+	    					case OT_TIMEOUTS:
+	    					case TIMEOUTS:
 	        					SETTINGS.setSetting(selection, gameSetting);
 	        					break;
 	    					case PERIOD_TYPE:
@@ -666,12 +671,6 @@ public class GetPlayersPanel extends GUISettings {
 	        					SETTINGS.setSetting((double) value, Setting.GAME_LENGTH);
 	        		    		SETTINGS.setSetting((double) value, Setting.TIME_REMAINING);
 		    					break;
-	    					case TIMEOUTS:
-	    						SETTINGS.setSetting(value, gameSetting);
-	    						break;
-	    					case OT_TIMEOUTS:
-	    						SETTINGS.setSetting(selection, gameSetting);
-	    						break;
 	    					case OVERTIME_LENGTH:
 	    						SETTINGS.setSetting((double) value, gameSetting);
 	    						break;
@@ -733,59 +732,41 @@ public class GetPlayersPanel extends GUISettings {
     public void addElements() {
     	Color background = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);
     	this.pane.setLayout(new FlowLayout());
-
-    	// The panel that stores the header of the GetPlayerPanel ('BasketBall Statistics Tracking').
-        JPanel header = new JPanel();
-        header.add(formatLabel("Basketball Statistics Tracking", FONT_SIZE, SETTINGS));
-        header.setBackground(background);
-        header.setBorder(new MatteBorder(BORDER_SIZE * 3, 0, BORDER_SIZE * 4, 0, background));
-        this.panels.add(header);
-        
-        // The panel that stores the text field where the player names are entered.
-        JPanel textBox = new JPanel();
-        textBox.add(this.name);
-        textBox.setBackground(background);
-        this.panels.add(textBox);
         
         // The panel that stores the 'Add Player' and 'Undo' buttons.
         JPanel buttonArray = new JPanel();
         formatPanel(buttonArray, new Component[] {this.buttonArray[SUBMIT_BUTTON], this.buttonArray[UNDO_BUTTON]}, 
-        		    null, buttonArray.getLayout(), null, background);
+        		    null, buttonArray.getLayout(), background);
         this.panels.add(buttonArray);
-        
-        // The panel that stores the 'Start Game' button.
-        JPanel startGame = new JPanel();
-        startGame.add(this.buttonArray[START_BUTTON]);
-        startGame.setBackground(background);
-        this.panels.add(startGame);
         
         // The panel that stores the 'Old Games', 'Instructions', 'Settings', and 'Close' buttons.
         JPanel instructSettingPanel = new JPanel(new GridLayout(4, 1));
-        instructSettingPanel.add(this.buttonArray[OLDGAMES_BUTTON]);
-        instructSettingPanel.add(this.buttonArray[INSTRUCTIONS_BUTTON]);
-        instructSettingPanel.add(this.buttonArray[SETTINGS_BUTTON]);
-        instructSettingPanel.add(this.buttonArray[CLOSE_BUTTON]);
-        instructSettingPanel.setBackground(background);
+        formatPanel(instructSettingPanel, new Component[] {this.buttonArray[OLDGAMES_BUTTON],
+        												   this.buttonArray[INSTRUCTIONS_BUTTON],
+        												   this.buttonArray[SETTINGS_BUTTON],
+        												   this.buttonArray[CLOSE_BUTTON]},
+        			null, instructSettingPanel.getLayout(), background);
         this.panels.add(instructSettingPanel);
-        
-        // The panel that frames the 'instructSettingsPanel'.
-        JPanel iSPPanel = new JPanel();
-        iSPPanel.add(instructSettingPanel);
-        iSPPanel.setBackground(background);
-        this.panels.add(iSPPanel);
         
         // The panel that frames the lower portion of the GetPlayersPanel that includes the four buttons
         // and the list of players that is updated as players are entered.
-        JPanel frame = new JPanel(new FlowLayout());
-        frame.add(iSPPanel);
-        frame.add(this.playerNames);
-        frame.setBackground(background);
+        JPanel[] frameComponents = {panelfy(instructSettingPanel, background, null, null), this.playerNames};
+        this.panels.addAll(Arrays.asList(frameComponents));
+        JPanel frame = new JPanel();
+        formatPanel(frame, frameComponents, 
+        		    null, new FlowLayout(), background);
         this.panels.add(frame);
 
         // All the elements in the GetPlayersPanel.
+        JPanel[] totalComponents = {panelfy(formatLabel("Basketball Statistics Tracking", FONT_SIZE, SETTINGS), background,
+                                    null, new MatteBorder(BORDER_SIZE * 3, 0, BORDER_SIZE * 4, 0, background)), 
+        		                    panelfy(this.name, background, null, null), 
+        		                    buttonArray,  
+        		               panelfy(this.buttonArray[START_BUTTON], background, null, null)};
+        this.panels.addAll(Arrays.asList(totalComponents));
         JPanel total = new JPanel();
-        formatPanel(total, new Component[] {header, textBox, buttonArray, startGame}, 
-        		    new int[] {BORDER_SIZE * 2, BORDER_SIZE * 6, BORDER_SIZE * 6, BORDER_SIZE * 6}, null, background, background);
+        formatPanel(total, totalComponents, new MatteBorder(BORDER_SIZE * 2, BORDER_SIZE * 6, BORDER_SIZE * 6, BORDER_SIZE * 6, background), 
+        		    null, background);
         total.add(frame, BorderLayout.SOUTH);
         this.panels.add(total);
         this.mainPanel = total;

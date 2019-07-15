@@ -60,7 +60,12 @@ public class Player extends Constants implements Comparable<Player> {
     }			
     
     public int compareTo(Player other) {
-    	return (this.name + this.lastName).toLowerCase().compareTo((other.getName() + other.getLastName()).toLowerCase());
+    	int firstNames = this.name.compareTo(other.getName());
+    	if (firstNames == 0) {
+    		return this.lastName.compareTo(other.getLastName());
+    	} else {
+    		return firstNames;
+    	}
     }
     
     // Pre:  'statistic' is a key in either the 'data' or 'statMap' map, otherwise an 
@@ -152,6 +157,14 @@ public class Player extends Constants implements Comparable<Player> {
     public String getStat(String statistic) {
     	boolean isForTable = statistic.contains("*");
     	statistic = statistic.replace("*", "");
+    	switch (statistic) {
+    	case "Missed FG":
+    		return Integer.toString(this.data.get("FGA") - this.data.get("FGM"));
+    	case "Missed 3pt FG":
+    		return Integer.toString(this.data.get("3PA") - this.data.get("3PM"));
+    	case "Missed Free Throw":
+    		return Integer.toString(this.data.get("FTA") - this.data.get("FTM"));
+    	}
     	String stat = mapStat(statistic);
     	switch (stat) {
     	case "Player":
