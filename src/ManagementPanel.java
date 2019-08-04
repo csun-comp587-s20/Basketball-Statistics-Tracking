@@ -372,6 +372,7 @@ public class ManagementPanel extends GUISettings {
     public void createTeamButtons() {
     	int fontSize = FONT_SIZE * 5 / 7;
     	int height = BUTTON_HEIGHT * 6 / 5;
+	this.playersOnBenchPanel.setLayout(new GridLayout(this.numberStarters, 1));
     	for (int i = 0; i < this.total.size(); i++) {
     		Player player = this.total.get(i);
             JButton playerButton = new JButton("[" + (i + 1) + "]  " + player.toString());
