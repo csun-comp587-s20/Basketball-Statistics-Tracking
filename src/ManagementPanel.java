@@ -372,23 +372,21 @@ public class ManagementPanel extends GUISettings {
     public void createTeamButtons() {
     	int fontSize = FONT_SIZE * 5 / 7;
     	int height = BUTTON_HEIGHT * 6 / 5;
-	this.playersOnBenchPanel.setLayout(new GridLayout(this.numberStarters, 1));
+    	this.playersOnBenchPanel.setLayout(new GridLayout(this.numberStarters, 1));
     	for (int i = 0; i < this.total.size(); i++) {
     		Player player = this.total.get(i);
             JButton playerButton = new JButton("[" + (i + 1) + "]  " + player.toString());
             boolean isOut = !player.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII);
             playerButton.setEnabled(isOut);
-            if (isOut) {
-            	playerButton.setBackground(FOULED_OUT_BUTTON_COLOR);
-            }
             int width = (int) getDimension(formatLabel(playerButton.getText(), fontSize, SETTINGS)).getWidth();
             formatButton(playerButton, width * 2, height, fontSize, SETTINGS);
+            if (!isOut) {
+            	playerButton.setBackground(FOULED_OUT_BUTTON_COLOR);
+            }
             this.playersOnBenchPanel.add(playerButton);
             playerButton.addActionListener(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
-                	if (!isOut) {
-                        addStatButton(player, playerButton);
-                	}
+                    addStatButton(player, playerButton);
                 }
             });
             setButtonKey(playerButton, this.playerKeys.get(i + 1), 0);
