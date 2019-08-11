@@ -111,19 +111,14 @@ Some statistics increment several other statistics when they are incremented:
 
 For example, if a Made 3pt FG is selected, then **Points, Made FG, FGA, Made 3pt FG, and 3PA** are all incremented as well.
 
-The program incorporates several features to make statistical tracking quicker during actual game play. The following features highlight this.
+The program incorporates several features to make statistical tracking quicker during actual game play. Hotkeys are shown in square brackets for quicker statistic entries and several statistics have built in functionality to avoid redundancy. **Made Shots**, **Missed Shots** and **Blocks** will ask the user if the shot was **Assisted**, **Offensive Rebounded**, or **Defensive Rebounded** respectively. 
 
-If the statistic is a made shot, then the user is asked if the shot was assisted, if that is the case, then the user will be asked who else on the court assisted the shot. These windows are shown below:
-  
-Was the shot Assisted? | Who got the Assist?
---- | ---
-<img src = "Screenshots/AssistedFG.PNG" width = "410" alt = "Assisted Field Goal Question Frame"> | <img src = "Screenshots/WhoGotTheAssist.PNG" width = "410" alt = "Who got the assist?">
-
-If the statistic is a missed shot, then the user is asked if someone on their team got the Offensive Rebound. As with the shot assist, the user will then be asked who on the team actually got the rebound.
+**For Example:** If the statistic is a missed shot, then the user is asked if the shot was rebounded by a teammate, if that is the case, then the user will be asked who got the reboudn. These windows are shown below:
 
 Did a team member get the Offensive Rebound? | Who got the Rebound?
 :---: | :---:
 <img src = "Screenshots/OffensiveRebounded.PNG" width = "410" alt = "Offensive Rebound Question Frame"> | <img src = "Screenshots/WhoGotTheOffensiveRebound.PNG" width = "410" alt = "Who got the offensive rebound?">
+
 
 If the **Roster Management** window has a bench panel on it, then clicking on one of the players on the bench will open a window that will ask the user to substitute the player that was clicked into the game. The window is shown below:
 
