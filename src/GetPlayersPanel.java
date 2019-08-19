@@ -327,7 +327,7 @@ public class GetPlayersPanel extends GUISettings {
             	pane.add(panelfy(header, background, new GridBagLayout(), 
             			 new MatteBorder(BORDER_SIZE * 2, 0, BORDER_SIZE * 2, 0, background)));
                 // If there are no old games available, the user is notified.
-                if (countCopy == 0) {
+                if (countCopy <= 0) {
                 	pane.add(panelfy(formatTextPane("There are no Old Games Available", FONT_SIZE * 5 / 6, SETTINGS),
 			                 background, new GridBagLayout(),
 			                 new MatteBorder(BORDER_SIZE * 5, 0, BORDER_SIZE * 2, 0, background)));
@@ -478,7 +478,7 @@ public class GetPlayersPanel extends GUISettings {
     		 		    
     		    JPanel settingsButtons = new JPanel(new GridLayout(1, 2));
     		    JButton close = new JButton("Apply");
-    		    formatButton(close, BUTTON_HEIGHT, BUTTON_HEIGHT / 3, FONT_SIZE / 4, SETTINGS);
+    		    formatButton(close, BUTTON_HEIGHT, BUTTON_HEIGHT / 3, FONT_SIZE * 2 / 5, SETTINGS);
     		    close.setBackground(DEFAULT_BACKGROUND_COLOR);
     		    close.addActionListener(new AbstractAction() {
     		    	public void actionPerformed(ActionEvent e) {
@@ -488,7 +488,7 @@ public class GetPlayersPanel extends GUISettings {
     		    });
     		    
     		    JButton defaultBtn = new JButton("Set Default");
-    		    formatButton(defaultBtn, BUTTON_HEIGHT, BUTTON_HEIGHT / 3, FONT_SIZE / 4, SETTINGS);
+    		    formatButton(defaultBtn, BUTTON_HEIGHT, BUTTON_HEIGHT / 3, FONT_SIZE * 2 / 5, SETTINGS);
     		    defaultBtn.setBackground(DEFAULT_BACKGROUND_COLOR);
     		    defaultBtn.addActionListener(new AbstractAction() {
     		    	public void actionPerformed(ActionEvent e) {
@@ -644,7 +644,7 @@ public class GetPlayersPanel extends GUISettings {
 	    				if (select.getText().equals(names[i])) {
 	    					int value;
 	    					try {
-		    					value = Integer.valueOf(names[i]);
+		    					value = Integer.valueOf(names[i].replace("mins", "").replace("min", "").trim());
 	    					} catch (NumberFormatException nfe) {
 	    						value = -1;
 	    					}
