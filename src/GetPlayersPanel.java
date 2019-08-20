@@ -74,6 +74,7 @@ public class GetPlayersPanel extends GUISettings {
         this.name = new JTextField(FONT_SIZE / 3);
         initializeButtons();
         this.settingsFrame = new JFrame("Settings");
+	    this.settingsFrame.setMinimumSize(new Dimension(SCREENWIDTH * 4 / 5, SCREENHEIGHT * 4 / 5));
         this.playerNames = new JPanel();
         this.pane = new JPanel();
         this.mainPanel = new JPanel();
@@ -228,6 +229,9 @@ public class GetPlayersPanel extends GUISettings {
             			frame.setTitle("Basketball Statistics Tracking");
             			frame.getRootPane().setDefaultButton(buttonArray[SUBMIT_BUTTON]);
             			buttonArray[START_BUTTON].setEnabled(false);
+            			Color bckgrnd = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);
+            			SETTINGS = new GameSettings();
+            			SETTINGS.setSetting(bckgrnd, Setting.BACKGROUND_COLOR);
                     }
                 };
             	confirmPane(pane, frame, buttonArray[HOME_BUTTON].getActionListeners()[0], button, 
@@ -526,7 +530,7 @@ public class GetPlayersPanel extends GUISettings {
     		    panels.setLayout(new BoxLayout(panels, BoxLayout.Y_AXIS));
     		    settingsFrame.setVisible(true);
     		    settingsFrame.add(panels);
-    		    settingsFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);    		    
+    		    settingsFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);  
     		    settingsFrame.addWindowListener(new WindowAdapter() {
     		        @Override
     		        public void windowClosing(WindowEvent windowEvent) {
