@@ -953,7 +953,6 @@ public class ManagementPanel extends GUISettings {
         formatButton(yes, BUTTON_HEIGHT, BUTTON_HEIGHT, FONT_SIZE * 2 / 3, SETTINGS);
         yes.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = new JFrame(frameHeader);
                 int size = players.size();
                 if (!allPlayers) {
                 	size -= 1;
@@ -961,16 +960,20 @@ public class ManagementPanel extends GUISettings {
                 JPanel panel = new JPanel(new GridLayout(size, 1));
                 JButton assistPlayerButton;
                 int fontSize = FONT_SIZE / 2;
-                if (players.size() == 2) {
+                if (players.size() == 2 && stat != "Offensive Rebound" && stat != "Defensive Rebound") {
                 	int index = players.indexOf(play);
                 	int newIndex = 0;
                 	if (index == 0) {
                 		newIndex = 1;
                 	}
                 	if (!allPlayers) {
+                        score.setText("Score: " + getTotal("PTS") + "    ");
                 		players.get(newIndex).add(true, stat);
+                    	recent.setAstPlayer(players.get(newIndex));
                 	}
+                    updateFile(players);
                 } else {
+                    JFrame frame = new JFrame(frameHeader);
                 	int playerNumber = 1;
                     for (Player assistPlayer : players) {
                     	boolean check = assistPlayer != play;
