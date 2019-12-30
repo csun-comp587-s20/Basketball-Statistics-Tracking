@@ -960,7 +960,7 @@ public class ManagementPanel extends GUISettings {
                 JPanel panel = new JPanel(new GridLayout(size, 1));
                 JButton assistPlayerButton;
                 int fontSize = FONT_SIZE / 2;
-                if (players.size() == 2 && stat != "Offensive Rebound" && stat != "Defensive Rebound") {
+                if (players.size() == 2 && !stat.equals("Offensive Rebound") && !stat.equals("Defensive Rebound")) {
                 	int index = players.indexOf(play);
                 	int newIndex = 0;
                 	if (index == 0) {
