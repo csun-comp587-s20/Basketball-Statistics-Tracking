@@ -38,7 +38,55 @@ public class GameClockTest{
 		String output_string = "2:25";
 		assertEquals(output_string, clock_test.getTime());
 	}
+
+	// @Test(expected = IllegalArgumentException.class)
+	// public void testCheckTime(){
+
+	// }
+
+	// @Test
+	// public void testAddTime(){
+	// 	GameClock clock = new GameClock();
+	// 	int originalTime = clock.time;
+	// 	clock.addTime(5);
+	// 	assertEquals(clock.time, originalTime + 5);
+	// }
+
 	// Figure out how to test private, boolean, and void functions
+	// To test private functions -> make them public (sol 1)
+	// Another solution is to use reflection -> at run-time the program can say give me this private method on game clock and call it 
+	// Advantage to reflection -> dont have to modify original code
+
+	// To test void functions -> 
+	// Might need to mock Timer, implement (interface) something that satisfies same interface that timer/timertask has
+	// 
+	// Need to make an interface for time
+	// public interface TimerFactory{
+	// 	public TimerInterface makeTimer();
+	// }
+	// public class RealTimerFactory implements TimerFactory{
+	// 	public TimerInterface makeTimer(){
+	// 		return new Timer();
+	// 	}
+	// // }
+	// public class TestingTimerFactory implements TimerFactory{
+	// 	public TimerInterface makeTimer(){
+	// 		return new TestingTimer();
+	// 	}
+	// }
+	// public GameClock(int duration, TimerFactory factory){
+
+	// }
+	// GameClock testingCLock = new GameClock(5, new TestingTimerFactory());
+	// GameClock realClock = new GameClock(5, new RealTimerFactory());
+	// can set the timer to a specific start/stop time
+
+	// everytime you need a timer you ask for one from factory, which returns real timers
+	// factory would return a timer from the factory everytime we need to run the test
+
+	// https://www.oracle.com/technical-resources/articles/java/javareflection.html
+	// https://en.wikipedia.org/wiki/Factory_method_pattern
+
 
 	// @Test
 	// public void addTimeTest0(){

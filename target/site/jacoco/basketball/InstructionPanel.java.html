@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InstructionPanel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">basketball</a> &gt; <a href="index.source.html" class="el_package">basketball</a> &gt; <span class="el_source">InstructionPanel.java</span></div><h1>InstructionPanel.java</h1><pre class="source lang-java linenums">// Alex Eidt
+// Basketball Statistics Tracking Program
+// InstructionPanel Class
+// Opens a window that shows the documentation of the program in a user friendly way.
+// Paragraphs accompany sample windows that are user interactive and allow the user
+// to understand how to use the program before they begin tracking their own game.
+package basketball;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.border.*;
+
+public class InstructionPanel extends GUISettings {
+
+	private static final long serialVersionUID = 1L;
+	
+	// Indices of buttons in the 'buttonArray'
+	private static final int ABBREVIATIONS_BUTTON = 0;
+		
+	private static final String PARAGRAPH_SPLITTER = &quot;*-*&quot;;
+	// Name of the text file that contains the game data for the simulated games
+	private static final String STARTER_KEY = &quot;STARTER_KEY&quot;;
+	// Used to convert numbers to letters for the sample players used
+<span class="nc" id="L27">	private static final String[] NUMBER_NAMES = {&quot;One&quot;, &quot;Two&quot;, &quot;Three&quot;, &quot;Four&quot;, &quot;Five&quot;, &quot;Six&quot;, &quot;Seven&quot;, &quot;Eight&quot;,</span>
+			                                      &quot;Nine&quot;, &quot;Ten&quot;, &quot;Eleven&quot;, &quot;Twelve&quot;, &quot;Thirteen&quot;, &quot;Fourteen&quot;, &quot;Fifteen&quot;};
+	
+	private JFrame abbFrame; // The frame that opens when the 'Abbreviations' button is pressed
+	private JFrame explainFrame; // The frame that opens when a statistic in the 'abbFrame' is pressed
+    private JButton[] buttonArray; // All the buttons on the InstructionPanel
+    private List&lt;JTextArea&gt; textFields; // All paragraphs used for the explanation/documentation text
+    private GameSettings SETTINGS; // The settings used to configure the simulated games and the InstructionPanel
+    
+    // Post: Constructs a InstructionPanel with the given 'settings'.
+<span class="nc" id="L37">    public InstructionPanel(GameSettings settings) {</span>
+<span class="nc" id="L38">    	this.SETTINGS = settings;</span>
+<span class="nc" id="L39">    	initalizeButtons();</span>
+<span class="nc" id="L40">		this.abbFrame = new JFrame(&quot;Abbreviations Explanations&quot;);</span>
+<span class="nc" id="L41">		this.abbFrame.setResizable(false);</span>
+<span class="nc" id="L42">		this.explainFrame = new JFrame(&quot;Explanation&quot;);</span>
+<span class="nc" id="L43">		this.explainFrame.setResizable(false);</span>
+<span class="nc" id="L44">		this.textFields = new ArrayList&lt;JTextArea&gt;();</span>
+<span class="nc" id="L45">		scanFile();</span>
+<span class="nc" id="L46">    }</span>
+    
+    private void initalizeButtons() {
+<span class="nc" id="L49">		String[] buttonNames = {&quot; Abbreviations&quot;};</span>
+<span class="nc" id="L50">		int[] sizes = {FONT_SIZE * 2 / 3};</span>
+<span class="nc" id="L51">		this.buttonArray = createButtonArray(buttonNames, sizes, SETTINGS);</span>
+<span class="nc" id="L52">		addButtonFunctions();</span>
+<span class="nc" id="L53">		int[] indices = {ABBREVIATIONS_BUTTON};</span>
+<span class="nc" id="L54">		String[] icons = {ABBREVIATIONS_BUTTON_ICON};</span>
+<span class="nc" id="L55">		formatIcons(this.buttonArray, indices, icons);</span>
+<span class="nc" id="L56">    }</span>
+    
+    // Post: Changes the current settings to the 'settings' parameter.
+    public void setSettings(GameSettings settings) {
+<span class="nc" id="L60">    	this.SETTINGS = settings;</span>
+<span class="nc" id="L61">    }</span>
+    
+    // Post: Scans the Instructions file with all the text that appears in the InstructionPanel.
+    @SuppressWarnings(&quot;static-access&quot;)
+	private void scanFile() {
+<span class="nc" id="L66">    	Scanner scan = null;</span>
+<span class="nc" id="L67">    	Scanner lineScan = null;</span>
+		try {
+<span class="nc" id="L69">			File file = new File(super.FILE_PATH + &quot;\\&quot; + INSTRUCTIONS_FOLDER + &quot;\\&quot; + TEXT_FILE_NAME);</span>
+<span class="nc" id="L70">			scan = new Scanner(file);</span>
+<span class="nc" id="L71">			lineScan = new Scanner(file);</span>
+			// Count the number of paragraphs separated by the PARAGRAPH_SPLITTER
+<span class="nc" id="L73">	    	int textAreas = 0;</span>
+<span class="nc" id="L74">	    	int totalLines = 0;</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">			while (lineScan.hasNextLine()) {</span>
+<span class="nc" id="L76">				totalLines++;</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">				if (lineScan.nextLine().contains(PARAGRAPH_SPLITTER)) {</span>
+<span class="nc" id="L78">					textAreas++;</span>
+				}
+			}
+			// Format each text area for each paragraph
+<span class="nc bnc" id="L82" title="All 2 branches missed.">			for (int i = 0; i &lt; textAreas; i++) {</span>
+<span class="nc" id="L83">				JTextArea area = formatTextArea(SCREENWIDTH - 400, BUTTON_HEIGHT * 2, SETTINGS);</span>
+<span class="nc" id="L84">				area.setFont(new Font(DEFAULT_FONT_TYPE, Font.PLAIN, FONT_SIZE * 4 / 7));</span>
+<span class="nc" id="L85">				this.textFields.add(area);</span>
+			}
+			// Scan in the text from the input file
+<span class="nc" id="L88">			List&lt;String&gt; fileLines = new ArrayList&lt;String&gt;(totalLines);</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">			while (scan.hasNextLine()) {</span>
+<span class="nc" id="L90">				fileLines.add(scan.nextLine());</span>
+			}
+<span class="nc" id="L92">			List&lt;String&gt; text = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L93">			String paragraph = &quot;&quot;;</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">			for (String line : fileLines) {</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">				if (!line.contains(PARAGRAPH_SPLITTER)) {</span>
+<span class="nc" id="L96">					paragraph += (line + &quot; &quot;);</span>
+				} else {
+<span class="nc" id="L98">					paragraph = paragraph.replaceAll(STARTER_KEY, (int) (SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS)) + &quot;&quot;);</span>
+<span class="nc" id="L99">					text.add(paragraph);</span>
+<span class="nc" id="L100">					paragraph = &quot;&quot;;</span>
+				}
+<span class="nc" id="L102">			}	</span>
+			// Set the text of each text area in the InstructionsPanel
+<span class="nc" id="L104">			int index = 0;</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">			for (JTextArea area : this.textFields) {</span>
+<span class="nc" id="L106">				area.setText(text.get(index));</span>
+<span class="nc" id="L107">				index++;</span>
+<span class="nc" id="L108">			}</span>
+<span class="nc" id="L109">		} catch (FileNotFoundException e) {</span>
+<span class="nc" id="L110">			System.out.println(TEXT_FILE_NAME + &quot; was not found&quot;);</span>
+<span class="nc" id="L111">		}</span>
+<span class="nc" id="L112">    }</span>
+    
+    // Post: Adds functions to each button in the 'buttonArray'.
+    private void addButtonFunctions() {
+        // Abbreviations button shows the user a list of all abbreviations used for statistics in
+        // basketball and allows the user to press a button to learn more about that statistic
+<span class="nc" id="L118">        this.buttonArray[ABBREVIATIONS_BUTTON].addActionListener(new ActionListener() {</span>
+        	public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L120">        		Color secondaryColor = DEFAULT_BACKGROUND_COLOR;</span>
+<span class="nc" id="L121">        		Color textBorderColor = DEFAULT_TEXT_BORDER_COLOR;</span>
+<span class="nc" id="L122">        		Border border = new MatteBorder(5, 5, 5, 5, textBorderColor);</span>
+        		// STATISTIC ABBREVIATIONS COLUMN
+        		// ****************************************************************************************
+<span class="nc" id="L125">        		JLabel labelColumn = formatLabel(&quot;Statistic Name&quot;, 30, SETTINGS);</span>
+<span class="nc" id="L126">        		JPanel abbreviations = panelfy(labelColumn, null, new GridLayout(STATISTIC_ABBREVIATIONS.length + 1, 1), null);</span>
+<span class="nc" id="L127">        		labelColumn.setBackground(secondaryColor);</span>
+<span class="nc" id="L128">    			labelColumn.setBorder(border);</span>
+<span class="nc" id="L129">    			labelColumn.setOpaque(true);</span>
+        		// Add all abbreviated statistic names to the abbreviations column
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        		for (String s : STATISTIC_ABBREVIATIONS) {</span>
+<span class="nc" id="L132">        			JLabel label = formatLabel(s, 25, SETTINGS);</span>
+<span class="nc" id="L133">        			label.setBackground(secondaryColor);</span>
+<span class="nc" id="L134">        			label.setOpaque(true);</span>
+<span class="nc" id="L135">        			label.setBorder(border);</span>
+<span class="nc" id="L136">        			abbreviations.add(label);</span>
+        		}
+        		// STATISTIC EXPLANATIONS COLUMN
+        		// ****************************************************************************************
+<span class="nc" id="L140">        		JLabel descriptionColumn = formatLabel(&quot;Explanation&quot;, FONT_SIZE / 2, SETTINGS);</span>
+<span class="nc" id="L141">        		JPanel fullStatWords = panelfy(descriptionColumn, null, new GridLayout(STATISTIC_ENTIRE_WORDS.length + 1, 1), null);</span>
+<span class="nc" id="L142">        		descriptionColumn.setBackground(secondaryColor);</span>
+<span class="nc" id="L143">    			descriptionColumn.setBorder(border);</span>
+<span class="nc" id="L144">    			descriptionColumn.setOpaque(true);</span>
+<span class="nc" id="L145">				scanExplanationsFile(fullStatWords);</span>
+				
+<span class="nc" id="L147">        		JPanel total = new JPanel();</span>
+<span class="nc" id="L148">        		formatPanel(total, new Component[] {abbreviations, fullStatWords}, null, new GridLayout(1, 2), null);</span>
+<span class="nc" id="L149">        		JScrollPane abbScrollPane = addScrollPane(total);</span>
+<span class="nc" id="L150">        		abbScrollPane.setPreferredSize(new Dimension(SCREENWIDTH / 2, abbFrame.getHeight()));</span>
+<span class="nc" id="L151">        		formatFrame(abbFrame, abbScrollPane, SCREENWIDTH / 2, 800);</span>
+<span class="nc" id="L152">        	}</span>
+        });
+<span class="nc" id="L154">    }</span>
+    
+    // Post: Adds a JButton with the full-length name of the statistic that corresponds to the abbreviated
+    //       statistic name on the other column. 
+    //       Adds an actionListener to the JButton that opens a new frame with a detailed explanation of 
+    //       what that statistic is.
+    @SuppressWarnings(&quot;static-access&quot;)
+	private void scanExplanationsFile(JPanel panel) {
+<span class="nc" id="L162">    	Scanner scanner = null;</span>
+<span class="nc" id="L163">		List&lt;String&gt; data = new ArrayList&lt;String&gt;(STATISTIC_ENTIRE_WORDS.length * 2);</span>
+		try {
+<span class="nc" id="L165">			scanner = new Scanner(new File(super.FILE_PATH + &quot;\\&quot; + INSTRUCTIONS_FOLDER + &quot;\\&quot; + STAT_EXPLANATIONS_FILE));</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">			while (scanner.hasNextLine()) {</span>
+<span class="nc" id="L167">				data.add(scanner.nextLine());</span>
+			}
+			// Add a JButton for each entire statistic word
+<span class="nc bnc" id="L170" title="All 2 branches missed.">			for (String fullStatWord : STATISTIC_ENTIRE_WORDS) {</span>
+<span class="nc" id="L171">				JButton label = new JButton(fullStatWord);</span>
+<span class="nc" id="L172">				formatButton(label, BUTTON_HEIGHT * 4, BUTTON_HEIGHT, FONT_SIZE * 5 / 12, SETTINGS);</span>
+				// When the button is pressed, a new window opens with a explanation from the 'data' list
+<span class="nc" id="L174">				label.addActionListener(new ActionListener() {</span>
+					public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L176">						int index = data.indexOf(label.getText());</span>
+<span class="nc" id="L177">						String explanationText = data.get(index + 1);</span>
+<span class="nc" id="L178">						JPanel explainPanel = new JPanel(new GridLayout(2, 1));</span>
+<span class="nc" id="L179">						JLabel explainLabel = formatLabel(data.get(index), FONT_SIZE * 4 / 7, SETTINGS);</span>
+<span class="nc" id="L180">						explainLabel.setOpaque(true);</span>
+<span class="nc" id="L181">						explainLabel.setBackground((Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR));</span>
+<span class="nc" id="L182">						explainPanel.add(explainLabel);</span>
+<span class="nc" id="L183">						JTextPane explain = formatTextPane(explanationText, FONT_SIZE / 3, SETTINGS);</span>
+<span class="nc" id="L184">						explainPanel.add(explain);</span>
+<span class="nc" id="L185">						formatFrame(explainFrame, explainPanel, SCREENWIDTH / 3, SCREENHEIGHT * 3 / 5);</span>
+<span class="nc" id="L186">					}</span>
+				});
+<span class="nc" id="L188">				panel.add(label);</span>
+			}
+<span class="nc" id="L190">		} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L191">			System.out.println(STAT_EXPLANATIONS_FILE + &quot; does not exist.&quot;);</span>
+<span class="nc" id="L192">		}</span>
+<span class="nc" id="L193">    }</span>
+    
+    // Indices of paragraphs in 'textFields'
+    private static final int PARAGRAPH1 = 0;
+    private static final int PARAGRAPH2 = 1;
+    private static final int PARAGRAPH3 = 2;
+    private static final int PARAGRAPH4 = 3;
+    private static final int PARAGRAPH5 = 4;
+    private static final int PARAGRAPH6 = 5;
+    private static final int PARAGRAPH7 = 6;    
+    private static final int PARAGRAPH8 = 7;
+    private static final int MAX_SAMPLE_PLAYERS = 10;
+    
+    // Post: Adds all the Components in the Instructions Panel into one Frame
+    public JPanel addElements(JButton homeButton) {
+<span class="nc" id="L208">    	int numberOfStarters = (int) SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS);</span>
+<span class="nc" id="L209">    	Color background = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);</span>
+
+<span class="nc" id="L211">    	JPanel[] textPanels = new JPanel[this.textFields.size()];</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">		for (int i = 0; i &lt; textPanels.length; i++) {</span>
+<span class="nc" id="L213">			JPanel textPanel = new JPanel();</span>
+<span class="nc" id="L214">			textPanel.add(this.textFields.get(i));</span>
+<span class="nc" id="L215">			this.textFields.get(i).setBackground(background);</span>
+<span class="nc" id="L216">			textPanel.setBorder(new MatteBorder(30, 30, 30, 30, background));</span>
+<span class="nc" id="L217">	        textPanel.setBackground(background);</span>
+<span class="nc" id="L218">	        textPanels[i] = textPanel;</span>
+		}	
+    	
+<span class="nc" id="L221">		List&lt;Player&gt; samplePlayers = new ArrayList&lt;Player&gt;(MAX_SAMPLE_PLAYERS);</span>
+		// Add players to 'samplePlayers'
+<span class="nc bnc" id="L223" title="All 2 branches missed.">		for (int i = 1; i &lt;= numberOfStarters; i++) {</span>
+<span class="nc" id="L224">			Player player = new Player(&quot;Player&quot;, NUMBER_NAMES[i - 1], &quot;Player &quot; + i + &quot;.&quot;);</span>
+<span class="nc" id="L225">			player.setOnFloor();</span>
+<span class="nc" id="L226">			samplePlayers.add(player);</span>
+		}
+        
+		// Panel that stores the 'Main Menu' button
+<span class="nc" id="L230">        JPanel menuPanel = panelfy(homeButton, background, null, null);</span>
+        
+        // Panel that stores the 'Abbreviations' button
+<span class="nc" id="L233">        JPanel abbreviate = panelfy(this.buttonArray[ABBREVIATIONS_BUTTON], background, null, null);</span>
+<span class="nc" id="L234">        this.buttonArray[ABBREVIATIONS_BUTTON].setBackground(background);</span>
+
+        // List of sample players that start on the bench
+<span class="nc" id="L237">		List&lt;Player&gt; bench = new ArrayList&lt;Player&gt;();</span>
+		// The first ManagementPanel window showing what a ManagementPanel window looks like when the number of players
+		// entered equals the number of starters selected by the user.
+		// In this case, the bench is empty
+<span class="nc" id="L241">        ManagementPanel mPanel = new ManagementPanel(samplePlayers, bench, new ArrayList&lt;Undo&gt;(), GAMEDATA_FILE_NAME, SETTINGS);</span>
+<span class="nc" id="L242">        mPanel.createTeamButtons();</span>
+<span class="nc" id="L243">        mPanel.createTableButton();</span>
+<span class="nc" id="L244">        mPanel.createStartStopButton();</span>
+<span class="nc" id="L245">        mPanel.createTimeoutButton();</span>
+<span class="nc" id="L246">        mPanel.createUndoButton();</span>
+<span class="nc" id="L247">        mPanel.addElements();</span>
+        
+        // The panel that stores the first Management Panel constructed above ^
+<span class="nc" id="L250">        JPanel frameMP = panelfy(mPanel.getManagementPanel(), background, null, null);</span>
+        
+        // The bench is filled up with sample players numbered 6-10
+<span class="nc bnc" id="L253" title="All 2 branches missed.">        for (int i = numberOfStarters + 1; i &lt;= MAX_SAMPLE_PLAYERS; i++) {</span>
+<span class="nc" id="L254">        	Player player = new Player(&quot;Player&quot;, NUMBER_NAMES[i - 1], &quot;Player &quot; + i + &quot;.&quot;);</span>
+<span class="nc" id="L255">        	player.setOffFloor();</span>
+<span class="nc" id="L256">        	bench.add(player);</span>
+        }
+        
+        // For instructional purposes, the 6th player (first player off the bench) is fouled out by default to show the 
+        // user what a fouled out player looks like
+<span class="nc" id="L261">        bench.get(0).setStat(&quot;TF&quot;, (int) SETTINGS.getSetting(Setting.TECHNICAL_FOULS) + &quot;&quot;);</span>
+        
+        // The second version of the ManagementPanel showing what a ManagementPanel looks like when more players than starters
+        // are entered
+<span class="nc" id="L265">        ManagementPanel mPanelBench = new ManagementPanel(samplePlayers, bench, new ArrayList&lt;Undo&gt;(), GAMEDATA_FILE_NAME, SETTINGS);</span>
+<span class="nc" id="L266">        mPanelBench.createTableButton();</span>
+<span class="nc" id="L267">        mPanelBench.createUndoButton();</span>
+<span class="nc" id="L268">        mPanelBench.createPlayerButtons();</span>
+<span class="nc" id="L269">        mPanelBench.createTimeoutButton();</span>
+<span class="nc" id="L270">        mPanelBench.createStartStopButton();</span>
+<span class="nc" id="L271">        mPanelBench.addElements();      </span>
+        
+        // The panel that stores the ManagementPanel constructed above ^
+        // MPB (Management Panel w/ Bench)
+<span class="nc" id="L275">        JPanel frameMPB = panelfy(mPanelBench.getManagementPanel(), background, null, null);</span>
+        
+        // The GetPlayersPanel. Appears when the program is opened. Serves as a 'Main Menu'
+<span class="nc" id="L278">        GetPlayersPanel gPPanel = new GetPlayersPanel(SETTINGS);</span>
+<span class="nc" id="L279">        gPPanel.createTextField();</span>
+<span class="nc" id="L280">        gPPanel.createSubmitButton();</span>
+<span class="nc" id="L281">        gPPanel.createUndoButton();</span>
+<span class="nc" id="L282">        gPPanel.addElements();</span>
+        
+        // The panel that stores the GetPlayersPanel constructed above ^
+<span class="nc" id="L285">        JPanel frameGPPanel = panelfy(gPPanel.getPlayersPanel(), background, null, null);</span>
+        
+        // Puts all players into one list
+<span class="nc" id="L288">        List&lt;Player&gt; totalSamplePlayers = new ArrayList&lt;Player&gt;(samplePlayers.size() + bench.size());</span>
+<span class="nc" id="L289">        totalSamplePlayers.addAll(samplePlayers);</span>
+<span class="nc" id="L290">        totalSamplePlayers.addAll(bench);</span>
+        
+        // The StartersPanel that appears when more players are entered than starters
+<span class="nc" id="L293">        StartersPanel startersPanel = new StartersPanel(totalSamplePlayers, GAMEDATA_FILE_NAME, SETTINGS);</span>
+<span class="nc" id="L294">        startersPanel.createPlayerButtons();</span>
+<span class="nc" id="L295">        startersPanel.createUndoButton();</span>
+<span class="nc" id="L296">        startersPanel.addElements();</span>
+        
+        // The panel that stores the StartersPanel constructed above ^
+<span class="nc" id="L299">        JPanel frameSP = panelfy(startersPanel.getStartersPanel(), background, null, null);</span>
+        
+        // The panel that stores the header for the InstructionsPanel
+<span class="nc" id="L302">		JPanel header = new JPanel();</span>
+<span class="nc" id="L303">		JLabel label = formatLabel(&quot;  Instructions&quot;, FONT_SIZE * 10 / 9, SETTINGS);</span>
+<span class="nc" id="L304">		setIcon(label, INSTRUCTIONS_BUTTON_ICON);</span>
+<span class="nc" id="L305">		header.add(label);</span>
+<span class="nc" id="L306">		header.setBackground(background);</span>
+		
+		// The panel that stores all panels in the InstructionsPanel
+<span class="nc" id="L309">		JPanel panels = new JPanel();</span>
+		// All elements in 'panels' in descending order (BoxLayout.Y_AXIS used)
+<span class="nc" id="L311">		Component[] components = {header, textPanels[PARAGRAPH1], frameGPPanel, textPanels[PARAGRAPH2], frameSP,</span>
+						          textPanels[PARAGRAPH3], frameMP, textPanels[PARAGRAPH4], abbreviate, 
+						          textPanels[PARAGRAPH5], frameMPB, textPanels[PARAGRAPH6], 
+						          textPanels[PARAGRAPH7], textPanels[PARAGRAPH8], menuPanel, textPanels[PARAGRAPH8]};
+<span class="nc" id="L315">		formatPanel(panels, components, null, null, background);</span>
+        
+		// Add a scroll bar for the InstructionsPanel     
+<span class="nc" id="L318">        return panelfy(addScrollPane(panels), background, new GridLayout(1, 1), null);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

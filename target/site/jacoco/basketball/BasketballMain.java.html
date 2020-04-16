@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BasketballMain.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">basketball</a> &gt; <a href="index.source.html" class="el_package">basketball</a> &gt; <span class="el_source">BasketballMain.java</span></div><h1>BasketballMain.java</h1><pre class="source lang-java linenums">// Alex Eidt
+// Basketball Statistics Tracking Program
+// Basketball Main
+// Starts the Basketball Statistics Tracking Program.
+package basketball;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
+
+@SuppressWarnings(&quot;serial&quot;)
+<span class="nc" id="L13">public abstract class BasketballMain extends Constants {</span>
+	
+	protected static final String GAMEFILESFOLDER = &quot;GameFiles&quot;;
+	protected static final String ICON_FOLDER = &quot;Image&quot;;
+	protected static final String SOURCE_FOLDER = &quot;src&quot;;
+	protected static final String INSTRUCTIONS_FOLDER = &quot;Instructions&quot;;
+<span class="nc" id="L19">	protected static String FILE_PATH = &quot;&quot;;</span>
+
+	public static void main(String[] args) throws InterruptedException {
+		// Make Folder to store all Game Files created by the program
+<span class="nc" id="L23">		Path pathToDirectory = Paths.get(&quot;&quot;);</span>
+<span class="nc" id="L24">		String path = pathToDirectory.toAbsolutePath().toString();</span>
+<span class="nc" id="L25">		FILE_PATH = path;</span>
+<span class="nc" id="L26">		File f = new File(path + &quot;\\&quot; + GAMEFILESFOLDER);</span>
+<span class="nc" id="L27">		boolean folderCreated = false;</span>
+		try {
+<span class="nc" id="L29">		    folderCreated = f.mkdir();</span>
+<span class="nc" id="L30">		} catch (Exception e){</span>
+<span class="nc" id="L31">		    System.out.println(&quot;Error in creating folder&quot;);</span>
+<span class="nc" id="L32">		    System.out.println(e.getMessage());</span>
+<span class="nc" id="L33">		} </span>
+		// Checks if this run is the first time the program is being run
+		// If so, gives the user an introduction to get all files in order
+		// Otherwise proceeds right to starting the program.
+<span class="nc bnc" id="L37" title="All 2 branches missed.">		if (folderCreated) {</span>
+<span class="nc" id="L38">			intro(path);</span>
+		} else {
+			// Default settings of an NBA Game used for initial tracking
+<span class="nc" id="L41">	    	GameSettings settings = new GameSettings(); </span>
+	    	// The main menu panel used when the program launches
+<span class="nc" id="L43">	        GetPlayersPanel mainMenu = new GetPlayersPanel(settings);</span>
+<span class="nc" id="L44">	        mainMenu.createTextField();</span>
+<span class="nc" id="L45">	        mainMenu.createAllButtons();</span>
+<span class="nc" id="L46">	        mainMenu.addElements();</span>
+<span class="nc" id="L47">	        mainMenu.frame();</span>
+		}
+<span class="nc" id="L49">    }</span>
+	
+
+	// Post: Gives the user the necessary information to correctly run the program
+	private static void intro(String path) {
+<span class="nc" id="L54">		System.out.println(&quot;Basketball Statisitcs Tracking Program&quot;);</span>
+<span class="nc" id="L55">		System.out.println();</span>
+<span class="nc" id="L56">		System.out.println(&quot;A folder to store Game Files has been created under: &quot;);</span>
+<span class="nc" id="L57">		System.out.println(&quot;\t&quot; + path);</span>
+<span class="nc" id="L58">		System.out.println();</span>
+<span class="nc" id="L59">	}</span>
+    
+	// Parameters:
+	// 'list': List of players that are part of the game
+	// 'undo': List of Undos (only used for scanned in games), otherwise this is empty for new games
+	// 'fileName': The file name of the file where the game data is stored
+	// 'scan': Whether a file is being scanned in or not
+	// 'settings': The settings used for this game
+    protected static void run(List&lt;Player&gt; list, List&lt;Undo&gt; undo, String fileName, 
+    					   boolean scan, GameSettings settings) {  
+<span class="nc" id="L69">    	int numStarters = (int) settings.getSetting(Setting.NUMBER_OF_STARTERS);</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">    	if (!scan) { // If a brand new game is being started</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">    		if (list.size() &gt; numStarters) { // If the number of players exceeds the number of starters</span>
+    			// Open up the Starters Selection Panel to select starters
+<span class="nc" id="L73">            	StartersPanel getStarters = new StartersPanel(list, fileName, settings);</span>
+<span class="nc" id="L74">            	getStarters.createAllButtons();</span>
+<span class="nc" id="L75">            	getStarters.addElements();</span>
+<span class="nc" id="L76">            	getStarters.frame();</span>
+<span class="nc" id="L77">        	} else { // If number of players equals number of starters</span>
+<span class="nc" id="L78">        		startTracking(list, new ArrayList&lt;Player&gt;(0), undo, fileName, settings);</span>
+        	}
+    	} else { // If a game is being scanned in from a file
+<span class="nc bnc" id="L81" title="All 2 branches missed.">    		if (list.size() == numStarters) { // If number of players equals number of starters</span>
+<span class="nc" id="L82">        		startTracking(list, new ArrayList&lt;Player&gt;(0), undo, fileName, settings);</span>
+    		} else { // If the number of players exceeds the number of starters
+<span class="nc" id="L84">        		List&lt;Player&gt; bench = new ArrayList&lt;Player&gt;(list.size() - numStarters);</span>
+<span class="nc" id="L85">        		List&lt;Player&gt; starters = new ArrayList&lt;Player&gt;(numStarters);       		</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        		for (Player player : list) {</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        			if (player.isStarter()) {</span>
+<span class="nc" id="L88">        				starters.add(player);</span>
+        			} else {
+<span class="nc" id="L90">        				bench.add(player);</span>
+        			}
+<span class="nc" id="L92">        		}</span>
+<span class="nc" id="L93">        		startTracking(starters, bench, undo, fileName, settings);</span>
+    		}
+    	}  	
+<span class="nc" id="L96">    }</span>
+    
+    // Parameters:
+	// 'starters': List of players that are starting the game
+    // 'bench': List of players that are starting the game on the bench
+	// 'undo': List of Undos (only used for scanned in games), otherwise this is empty for new games
+	// 'fileName': The file name of the file where the game data is stored
+    // 'settings': The settings used for this game
+    protected static void startTracking(List&lt;Player&gt; starters, List&lt;Player&gt; bench, 
+    								    List&lt;Undo&gt; undo, String fileName, GameSettings settings) {
+<span class="nc" id="L106">        ManagementPanel manageGame = new ManagementPanel(starters, bench, undo, fileName, settings);</span>
+<span class="nc" id="L107">        manageGame.createTableButton();</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (bench.isEmpty()) {</span>
+<span class="nc" id="L109">            manageGame.createTeamButtons();</span>
+        } else {
+<span class="nc" id="L111">            manageGame.createPlayerButtons();</span>
+        }
+<span class="nc" id="L113">        manageGame.createUndoButton();</span>
+<span class="nc" id="L114">        manageGame.createDoneButton();</span>
+<span class="nc" id="L115">        manageGame.createStartStopButton();</span>
+<span class="nc" id="L116">        manageGame.createTimeoutButton();</span>
+<span class="nc" id="L117">        manageGame.createHomeButton();</span>
+        //manageGame.createSettingsButton();
+<span class="nc" id="L119">        manageGame.addElements();</span>
+<span class="nc" id="L120">        manageGame.frame();</span>
+<span class="nc" id="L121">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
