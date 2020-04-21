@@ -59,7 +59,7 @@ basketball,basketball,ManagementPanel.new WindowAdapter() {...},44,0,2,0,8,0,3,0
 basketball,basketball,Constants.Setting,164,0,0,0,17,0,1,0,1,0
 basketball,basketball,CreateFile,86,0,2,0,18,0,7,0,6,0
 basketball,basketball,ManagementPanel.14.new AbstractAction() {...},77,0,2,0,10,0,3,0,2,0
-basketball,basketball,Player,638,89,69,4,100,20,56,8,15,6
+basketball,basketball,Player,569,158,60,13,83,37,46,18,8,13
 basketball,basketball,GetPlayersPanel,1403,0,47,0,214,0,47,0,23,0
 basketball,basketball,ManagementPanel.10.new AbstractAction() {...},36,0,0,0,7,0,2,0,2,0
 basketball,basketball,ManagementPanel.10.new AbstractAction() {...},119,0,0,0,14,0,2,0,2,0

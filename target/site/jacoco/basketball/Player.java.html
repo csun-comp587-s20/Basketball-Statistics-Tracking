@@ -49,22 +49,22 @@ public class Player extends Constants implements Comparable&lt;Player&gt; {
     // Post: Returns true if the two players being compared have the exact same first and last name (case sensitive)
     //       Otherwise returns false
     public boolean equals(Object obj){
-<span class="nc bnc" id="L52" title="All 2 branches missed.">    	if (obj == null) {</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">    	if (obj == null) {</span>
 <span class="nc" id="L53">    		return false;</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">    	} else if (obj == this) {</span>
-<span class="nc" id="L55">    		return true;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">    	} else if (obj == this) {</span>
+<span class="fc" id="L55">    		return true;</span>
     	} else {
-<span class="nc" id="L57">    		Player player = (Player) obj;</span>
-<span class="nc bnc" id="L58" title="All 6 branches missed.">        	return (player.getName().equals(this.name) &amp;&amp; player.getLastName().equals(this.lastName) &amp;&amp; player.getDisplayName().equals(this.displayName));</span>
+<span class="fc" id="L57">    		Player player = (Player) obj;</span>
+<span class="pc bpc" id="L58" title="2 of 6 branches missed.">        	return (player.getName().equals(this.name) &amp;&amp; player.getLastName().equals(this.lastName) &amp;&amp; player.getDisplayName().equals(this.displayName));</span>
     	}     
     }			
     
     public int compareTo(Player other) {
-<span class="nc" id="L63">    	int firstNames = this.name.compareTo(other.getName());</span>
-<span class="nc bnc" id="L64" title="All 2 branches missed.">    	if (firstNames == 0) {</span>
-<span class="nc" id="L65">    		return this.lastName.compareTo(other.getLastName());</span>
+<span class="fc" id="L63">    	int firstNames = this.name.compareTo(other.getName());</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">    	if (firstNames == 0) {</span>
+<span class="fc" id="L65">    		return this.lastName.compareTo(other.getLastName());</span>
     	} else {
-<span class="nc" id="L67">    		return firstNames;</span>
+<span class="fc" id="L67">    		return firstNames;</span>
     	}
     }
     
@@ -251,7 +251,7 @@ public class Player extends Constants implements Comparable&lt;Player&gt; {
     
     // Post: Returns the players first and last name separated by a space
     public String toString() {
-<span class="nc" id="L254">    	return this.name + &quot; &quot; + this.lastName;</span>
+<span class="fc" id="L254">    	return this.name + &quot; &quot; + this.lastName;</span>
     }
     
     // Post: Returns the First Name of the Player.
@@ -272,7 +272,7 @@ public class Player extends Constants implements Comparable&lt;Player&gt; {
     // Post: Returns true if the player is currently on the court.
     //       Returns false if not.
     public boolean isStarter() {
-<span class="nc" id="L275">    	return this.isOnFloor;</span>
+<span class="fc" id="L275">    	return this.isOnFloor;</span>
     }
     
     // Post: Sets the players first name to be 'name'.
@@ -282,17 +282,17 @@ public class Player extends Constants implements Comparable&lt;Player&gt; {
     
     // Post: Sets the players display name to be 'name'.
     public void setDisplayName(String name) {
-<span class="nc" id="L285">        this.displayName = name;</span>
-<span class="nc" id="L286">    }</span>
+<span class="fc" id="L285">        this.displayName = name;</span>
+<span class="fc" id="L286">    }</span>
     
     // Post: Player is on court.
     public void setOnFloor() {
-<span class="nc" id="L290">    	this.isOnFloor = true;</span>
-<span class="nc" id="L291">    }</span>
+<span class="fc" id="L290">    	this.isOnFloor = true;</span>
+<span class="fc" id="L291">    }</span>
     
     // Post: Player if off court.
     public void setOffFloor() {
-<span class="nc" id="L295">    	this.isOnFloor = false;</span>
-<span class="nc" id="L296">    }</span>
+<span class="fc" id="L295">    	this.isOnFloor = false;</span>
+<span class="fc" id="L296">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

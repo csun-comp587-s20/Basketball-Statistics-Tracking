@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="basketball.GameClockTest" time="0.214" tests="6" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="basketball.GameClockTest" time="0.114" tests="6" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="14"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-14\bin"/>
-    <property name="sun.java.command" value="C:\Users\JC\AppData\Local\Temp\surefire10537301873605337656\surefirebooter2387677624179403066.jar C:\Users\JC\AppData\Local\Temp\surefire10537301873605337656 2020-04-16T16-18-28_262-jvmRun1 surefire7884240267589620715tmp surefire_02906482004817798938tmp"/>
+    <property name="sun.java.command" value="C:\Users\JC\AppData\Local\Temp\surefire13507232964735386198\surefirebooter13125557724705387146.jar C:\Users\JC\AppData\Local\Temp\surefire13507232964735386198 2020-04-16T19-40-00_259-jvmRun1 surefire9433022945773069199tmp surefire_08305235783452579047tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\JC\Documents\CSUN\COMP-587\Basketball-Statistics-Tracking\target\test-classes;C:\Users\JC\Documents\CSUN\COMP-587\Basketball-Statistics-Tracking\target\classes;C:\Users\JC\.m2\repository\junit\junit\4.13\junit-4.13.jar;C:\Users\JC\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\JC\AppData\Local\Temp\surefire10537301873605337656\surefirebooter2387677624179403066.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\JC\AppData\Local\Temp\surefire13507232964735386198\surefirebooter13125557724705387146.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="14+36-1461"/>
@@ -55,10 +55,10 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="58.0"/>
   </properties>
-  <testcase name="gameClockGetTimeTest0" classname="basketball.GameClockTest" time="0.001"/>
+  <testcase name="gameClockGetTimeTest0" classname="basketball.GameClockTest" time="0.015"/>
   <testcase name="gameClockGetTimeTest1" classname="basketball.GameClockTest" time="0"/>
-  <testcase name="gameClockGetTimeTest2" classname="basketball.GameClockTest" time="0"/>
-  <testcase name="gameClockGetTenthsTimeTest0" classname="basketball.GameClockTest" time="0.002"/>
+  <testcase name="gameClockGetTimeTest2" classname="basketball.GameClockTest" time="0.001"/>
+  <testcase name="gameClockGetTenthsTimeTest0" classname="basketball.GameClockTest" time="0"/>
   <testcase name="gameClockGetPeriodTest0" classname="basketball.GameClockTest" time="0"/>
   <testcase name="gameClockGetPeriodTest1" classname="basketball.GameClockTest" time="0"/>
 </testsuite>
