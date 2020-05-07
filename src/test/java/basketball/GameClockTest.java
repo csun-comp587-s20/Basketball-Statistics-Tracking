@@ -14,10 +14,6 @@ public class GameClockTest{
 		assertEquals(1, clock_test.getPeriod());
 	}
 	@Test
-	public void gameClockGetPeriodTest1(){
-
-	}
-	@Test
 	public void gameClockGetTenthsTimeTest0(){
 		GameClock clock_test = new GameClock(100);
 		assertEquals(100, clock_test.getTenthsTime());

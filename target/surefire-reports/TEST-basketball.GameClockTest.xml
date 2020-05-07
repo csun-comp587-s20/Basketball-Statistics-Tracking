@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="basketball.GameClockTest" time="0.272" tests="25" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="basketball.GameClockTest" time="0.209" tests="24" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="14"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-14\bin"/>
-    <property name="sun.java.command" value="C:\Users\JC\AppData\Local\Temp\surefire15710733661612941571\surefirebooter10015507235668572429.jar C:\Users\JC\AppData\Local\Temp\surefire15710733661612941571 2020-05-07T15-22-03_778-jvmRun1 surefire2237303034253410878tmp surefire_0440101068972319281tmp"/>
+    <property name="sun.java.command" value="C:\Users\JC\AppData\Local\Temp\surefire5623909666913172229\surefirebooter5400559451696634970.jar C:\Users\JC\AppData\Local\Temp\surefire5623909666913172229 2020-05-07T15-30-01_794-jvmRun1 surefire17456395908101584349tmp surefire_016282678111602518205tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\JC\Documents\CSUN\COMP-587\Basketball-Statistics-Tracking\target\test-classes;C:\Users\JC\Documents\CSUN\COMP-587\Basketball-Statistics-Tracking\target\classes;C:\Users\JC\.m2\repository\junit\junit\4.13\junit-4.13.jar;C:\Users\JC\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\JC\AppData\Local\Temp\surefire15710733661612941571\surefirebooter10015507235668572429.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\JC\AppData\Local\Temp\surefire5623909666913172229\surefirebooter5400559451696634970.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="14+36-1461"/>
@@ -56,28 +56,27 @@
     <property name="java.class.version" value="58.0"/>
   </properties>
   <testcase name="gameClockIsRunningTestTrue" classname="basketball.GameClockTest" time="0.014"/>
-  <testcase name="gameClockStopTimerTest" classname="basketball.GameClockTest" time="0.043"/>
-  <testcase name="gameClockSubtractTimeTest0" classname="basketball.GameClockTest" time="0.016"/>
-  <testcase name="gameClockSubtractTimeTest1" classname="basketball.GameClockTest" time="0.001"/>
-  <testcase name="gameClockSubtractTimeTest2" classname="basketball.GameClockTest" time="0.005"/>
-  <testcase name="gameClockGetTenthsTimeAutomatedTest" classname="basketball.GameClockTest" time="0.001"/>
+  <testcase name="gameClockStopTimerTest" classname="basketball.GameClockTest" time="0.011"/>
+  <testcase name="gameClockSubtractTimeTest0" classname="basketball.GameClockTest" time="0.01"/>
+  <testcase name="gameClockSubtractTimeTest1" classname="basketball.GameClockTest" time="0"/>
+  <testcase name="gameClockSubtractTimeTest2" classname="basketball.GameClockTest" time="0.007"/>
+  <testcase name="gameClockGetTenthsTimeAutomatedTest" classname="basketball.GameClockTest" time="0"/>
   <testcase name="gameClockPrivateGetTimeTest0" classname="basketball.GameClockTest" time="0"/>
   <testcase name="gameClockPrivateGetTimeTest1" classname="basketball.GameClockTest" time="0"/>
   <testcase name="gameClockPrivateGetTimeTest2" classname="basketball.GameClockTest" time="0"/>
   <testcase name="gameClockPrivateGetTimeTest3" classname="basketball.GameClockTest" time="0.001"/>
-  <testcase name="gameClockPrivateGetTimeTest4" classname="basketball.GameClockTest" time="0"/>
-  <testcase name="gameClockAddTimeTest0" classname="basketball.GameClockTest" time="0.001"/>
+  <testcase name="gameClockPrivateGetTimeTest4" classname="basketball.GameClockTest" time="0.001"/>
+  <testcase name="gameClockAddTimeTest0" classname="basketball.GameClockTest" time="0"/>
   <testcase name="gameClockAddTimeTest1" classname="basketball.GameClockTest" time="0"/>
   <testcase name="gameClockGetTimeTest0" classname="basketball.GameClockTest" time="0"/>
   <testcase name="gameClockGetTimeTest1" classname="basketball.GameClockTest" time="0.001"/>
-  <testcase name="gameClockGetTimeTest2" classname="basketball.GameClockTest" time="0.001"/>
-  <testcase name="gameClockAddTimeAutomatedTest" classname="basketball.GameClockTest" time="0.001"/>
+  <testcase name="gameClockGetTimeTest2" classname="basketball.GameClockTest" time="0.002"/>
+  <testcase name="gameClockAddTimeAutomatedTest" classname="basketball.GameClockTest" time="0"/>
   <testcase name="gameClockSetTimeTest" classname="basketball.GameClockTest" time="0"/>
   <testcase name="gameClockCheckTimeTest" classname="basketball.GameClockTest" time="0.001"/>
   <testcase name="gameClockIsRunningTestFalse" classname="basketball.GameClockTest" time="0"/>
-  <testcase name="gameClockStartTimerTest0" classname="basketball.GameClockTest" time="0.001"/>
-  <testcase name="gameClockStartTimerTest1" classname="basketball.GameClockTest" time="0.001"/>
-  <testcase name="gameClockGetTenthsTimeTest0" classname="basketball.GameClockTest" time="0.001"/>
+  <testcase name="gameClockStartTimerTest0" classname="basketball.GameClockTest" time="0.002"/>
+  <testcase name="gameClockStartTimerTest1" classname="basketball.GameClockTest" time="0.002"/>
+  <testcase name="gameClockGetTenthsTimeTest0" classname="basketball.GameClockTest" time="0"/>
   <testcase name="gameClockGetPeriodTest0" classname="basketball.GameClockTest" time="0"/>
-  <testcase name="gameClockGetPeriodTest1" classname="basketball.GameClockTest" time="0.001"/>
 </testsuite>

@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: basketball.GameClockTest
 -------------------------------------------------------------------------------
-Tests run: 25, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.272 s - in basketball.GameClockTest
+Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.209 s - in basketball.GameClockTest
