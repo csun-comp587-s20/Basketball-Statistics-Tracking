@@ -11,7 +11,7 @@ public class GameClock {
 	private TimerTask task;		// Updates the time
 	private int time;			// The current time of the timer measured in tenths-seconds
 	private int period;			// The current period of the game (1st, 2nd, 3rd ... quarter/half)
-	public boolean running;	// If the clock is currently on/off
+	public boolean running;	// If the clock is currently on/off | **Switched to public by JCH**
 	
 	// Pre:        'duration' is greater than 0, otherwise throws an IllegalArgumentException.
 	// Parameters: 'duration' is an integer giving the length of one period in tenths-seconds.
@@ -118,9 +118,9 @@ public class GameClock {
 	}
     
 	// Post: Returns a String representation of the given 'time'.
-	// changed to public by JCH
+	// changed to public by JCH***
 	public String getTime(int time) {
-		// Added the '&& time >= 0' JCH
+		// Added the '&& time >= 0' JCH***
 		if(time < 600 && time >= 0) {
 			if(time < 100) {
 				return "00:0" + time;
