@@ -120,7 +120,8 @@ public class GameClock {
 	// Post: Returns a String representation of the given 'time'.
 	// changed to public by JCH
 	public String getTime(int time) {
-		if(time < 600) {
+		// Added the '&& time >= 0' JCH
+		if(time < 600 && time >= 0) {
 			if(time < 100) {
 				return "00:0" + time;
 			} else {
@@ -131,7 +132,7 @@ public class GameClock {
 				if(time % 60 < 100) {
 					return "0" + (time / 60) + ":0" + (time % 60); 
 				} else {
-					return "0" + (time / 60) + ":" + (time % 60); 
+					return "0" + (time / 60) + ":" + (time % 60);
 				}
 			} else {
 				if(time % 600 < 100) {

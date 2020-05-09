@@ -121,4 +121,9 @@ public class PlayerTest{
 		String output_string = "Michael Jordan";
 		assertEquals(output_string, player_one.toString());
 	}
+	@Test
+	public void playerEqualsNullTest(){
+		Player player_one = new Player("Karl");
+		assertFalse(player_one.equals(null));
+	}
 }

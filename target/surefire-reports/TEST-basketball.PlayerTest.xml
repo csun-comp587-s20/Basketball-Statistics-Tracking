@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="basketball.PlayerTest" time="0.199" tests="18" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="basketball.PlayerTest" time="0.28" tests="19" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="14"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-14\bin"/>
-    <property name="sun.java.command" value="C:\Users\JC\AppData\Local\Temp\surefire5623909666913172229\surefirebooter5400559451696634970.jar C:\Users\JC\AppData\Local\Temp\surefire5623909666913172229 2020-05-07T15-30-01_794-jvmRun1 surefire17456395908101584349tmp surefire_016282678111602518205tmp"/>
+    <property name="sun.java.command" value="C:\Users\JC\AppData\Local\Temp\surefire7591559122244400700\surefirebooter12123786251004777487.jar C:\Users\JC\AppData\Local\Temp\surefire7591559122244400700 2020-05-08T19-34-17_279-jvmRun1 surefire7323563023151779672tmp surefire_09262680075979233722tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\JC\Documents\CSUN\COMP-587\Basketball-Statistics-Tracking\target\test-classes;C:\Users\JC\Documents\CSUN\COMP-587\Basketball-Statistics-Tracking\target\classes;C:\Users\JC\.m2\repository\junit\junit\4.13\junit-4.13.jar;C:\Users\JC\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\JC\AppData\Local\Temp\surefire5623909666913172229\surefirebooter5400559451696634970.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\JC\AppData\Local\Temp\surefire7591559122244400700\surefirebooter12123786251004777487.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="14+36-1461"/>
@@ -55,22 +55,23 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="58.0"/>
   </properties>
-  <testcase name="playerGetLastNameTest" classname="basketball.PlayerTest" time="0.179"/>
-  <testcase name="playerSetOnFloorTest" classname="basketball.PlayerTest" time="0.001"/>
+  <testcase name="playerGetLastNameTest" classname="basketball.PlayerTest" time="0.259"/>
+  <testcase name="playerSetOnFloorTest" classname="basketball.PlayerTest" time="0"/>
   <testcase name="playerAlternateConstructorTest0" classname="basketball.PlayerTest" time="0.002"/>
   <testcase name="playerAlternateConstructorTest1" classname="basketball.PlayerTest" time="0"/>
-  <testcase name="playerAlternateConstructorTest2" classname="basketball.PlayerTest" time="0.001"/>
-  <testcase name="playerToString" classname="basketball.PlayerTest" time="0.002"/>
+  <testcase name="playerAlternateConstructorTest2" classname="basketball.PlayerTest" time="0"/>
+  <testcase name="playerToString" classname="basketball.PlayerTest" time="0"/>
   <testcase name="playerSetOffFloorTest" classname="basketball.PlayerTest" time="0.001"/>
   <testcase name="playerGetDisplayNameTest" classname="basketball.PlayerTest" time="0.001"/>
   <testcase name="playerEqualsTest0" classname="basketball.PlayerTest" time="0.001"/>
   <testcase name="playerEqualsTest1" classname="basketball.PlayerTest" time="0.001"/>
-  <testcase name="playerEqualsTest2" classname="basketball.PlayerTest" time="0.001"/>
-  <testcase name="playerSetNameTest0" classname="basketball.PlayerTest" time="0"/>
-  <testcase name="playerSetNameTest1" classname="basketball.PlayerTest" time="0.001"/>
+  <testcase name="playerEqualsTest2" classname="basketball.PlayerTest" time="0"/>
+  <testcase name="playerSetNameTest0" classname="basketball.PlayerTest" time="0.001"/>
+  <testcase name="playerSetNameTest1" classname="basketball.PlayerTest" time="0"/>
+  <testcase name="playerEqualsNullTest" classname="basketball.PlayerTest" time="0.001"/>
   <testcase name="playerGetNameTest" classname="basketball.PlayerTest" time="0.001"/>
-  <testcase name="playerSetDisplayNameTest0" classname="basketball.PlayerTest" time="0"/>
-  <testcase name="playerSetDisplayNameTest1" classname="basketball.PlayerTest" time="0.001"/>
+  <testcase name="playerSetDisplayNameTest0" classname="basketball.PlayerTest" time="0.001"/>
+  <testcase name="playerSetDisplayNameTest1" classname="basketball.PlayerTest" time="0"/>
   <testcase name="playerCompareToTest0" classname="basketball.PlayerTest" time="0.001"/>
-  <testcase name="playerCompareToTest1" classname="basketball.PlayerTest" time="0.001"/>
+  <testcase name="playerCompareToTest1" classname="basketball.PlayerTest" time="0"/>
 </testsuite>

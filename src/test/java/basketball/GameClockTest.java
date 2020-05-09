@@ -164,6 +164,11 @@ public class GameClockTest{
 		clock_test.stopTimer();
 		assertFalse(clock_test.running);
 	}
+	@Test
+	public void gameClockGetTimeNullTest(){
+		GameClock clock_test = new GameClock(0);
+		assertEquals("", clock_test.getTime(-1));
+	}
 	// @Test(expected = IllegalArgumentException.class)
 	// public void testCheckTime(){
 

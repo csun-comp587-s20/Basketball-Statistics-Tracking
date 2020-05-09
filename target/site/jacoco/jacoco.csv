@@ -49,7 +49,7 @@ basketball,basketball,ManagementPanel.new AbstractAction() {...},20,0,0,0,3,0,2,
 basketball,basketball,ManagementPanel.new AbstractAction() {...},312,0,20,0,57,0,12,0,2,0
 basketball,basketball,ManagementPanel.new AbstractAction() {...},221,0,22,0,34,0,13,0,2,0
 basketball,basketball,ManagementPanel.new KeyListener() {...},19,0,2,0,6,0,5,0,4,0
-basketball,basketball,GameClock,10,193,2,18,2,47,2,21,0,13
+basketball,basketball,GameClock,8,197,1,21,1,48,1,23,0,13
 basketball,basketball,ManagementPanel.new AbstractAction() {...},88,0,8,0,13,0,6,0,2,0
 basketball,basketball,Undo,308,0,34,0,58,0,29,0,12,0
 basketball,basketball,ManagementPanel.new AbstractAction() {...},44,0,2,0,8,0,3,0,2,0
@@ -59,7 +59,7 @@ basketball,basketball,ManagementPanel.new WindowAdapter() {...},44,0,2,0,8,0,3,0
 basketball,basketball,Constants.Setting,164,0,0,0,17,0,1,0,1,0
 basketball,basketball,CreateFile,86,0,2,0,18,0,7,0,6,0
 basketball,basketball,ManagementPanel.14.new AbstractAction() {...},77,0,2,0,10,0,3,0,2,0
-basketball,basketball,Player,569,158,60,13,83,37,46,18,8,13
+basketball,basketball,Player,567,160,59,14,82,38,45,19,8,13
 basketball,basketball,GetPlayersPanel,1403,0,47,0,214,0,47,0,23,0
 basketball,basketball,ManagementPanel.10.new AbstractAction() {...},36,0,0,0,7,0,2,0,2,0
 basketball,basketball,ManagementPanel.10.new AbstractAction() {...},119,0,0,0,14,0,2,0,2,0
