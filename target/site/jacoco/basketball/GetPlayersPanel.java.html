@@ -1,0 +1,800 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GetPlayersPanel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">basketball</a> &gt; <a href="index.source.html" class="el_package">basketball</a> &gt; <span class="el_source">GetPlayersPanel.java</span></div><h1>GetPlayersPanel.java</h1><pre class="source lang-java linenums">// Alex Eidt
+// Basketball Statistics Tracking Progam
+// GetPlayersPanel Class
+// The window that opens when the program is started. Allows the user to create their team by entering
+// player names or reloading old games.
+package basketball;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import java.util.List;
+import java.util.regex.*;
+import javax.swing.*;
+import javax.swing.border.*;
+
+/*
+* The GetPlayersPanel&quot; class opens a window for the user to either create a new team or to load an old game
+* that they want to continue.
+* The user can either &quot;Submit&quot; new players by entering their first name into a text field and press &quot;Done&quot;
+* when they enough players (Determined by the class constant &quot;ROSTER_SIZE&quot;), or they can &quot;Load an Old Game&quot;.
+*/
+
+public class GetPlayersPanel extends GUISettings {
+	
+    private static final long serialVersionUID = 1L;
+    
+	// Indices of buttons in the 'buttonArray'
+	private static final int SUBMIT_BUTTON = 0;
+	private static final int UNDO_BUTTON = 1;
+	private static final int START_BUTTON = 2;
+	private static final int OLDGAMES_BUTTON = 3;
+	private static final int INSTRUCTIONS_BUTTON = 4;
+	private static final int CLOSE_BUTTON = 5;
+	private static final int SETTINGS_BUTTON = 6;
+	private static final int HOME_BUTTON = 7;
+	
+	// Key Bindings for each button in 'buttonArray'
+	// Submit button uses the enter key -- It is set to be the default button for the frame.
+	private static final int UNDO_BUTTON_KEY = KeyEvent.VK_BACK_SPACE;
+	private static final int START_BUTTON_KEY = KeyEvent.VK_F4;
+	private static final int OLDGAMES_BUTTON_KEY = KeyEvent.VK_F2;
+	private static final int INSTRUCTIONS_BUTTON_KEY = KeyEvent.VK_F1;
+	private static final int SETTINGS_BUTTON_KEY = KeyEvent.VK_F9;
+	private static final int HOME_BUTTON_KEY = KeyEvent.VK_ESCAPE;
+
+	
+	// Whether a file is being scanned in or not
+	private static final boolean IS_SCAN = true;
+	
+    private List&lt;Player&gt; players; // The list of players on the team inputted by the user
+    private String fileName; // The name of the file the game's data will be stored in
+    private JButton[] buttonArray; // All the buttons on the GetPlayersPanel
+    private JTextField name; // The text field used to enter player names
+    private JFrame frame; // The frame that opens when the program is started
+    private JFrame settingsFrame; // The frame that opens when the 'Settings' button is pressed
+    private JPanel pane; // Frames all elements in GetPlayersPanel into a single JPanel used for display in the InstructionsPanel
+    private JPanel mainPanel; // The panel that stores the Home Screen
+    private GameSettings SETTINGS; // The settings used to configure the current game
+    private List&lt;JPanel&gt; panels; // All the panels in the GetPlayersPanel, used to quickly change background color in Settings
+    private Stack&lt;String&gt; displayNames; // The player names as they appear in the 'labelList'
+    private JPanel playerNames; // The dynamic list of player names updated whenever a player is entered or removed
+    private InstructionPanel instructionsPanel; // The instructions window that opens when the 'Instructions' button is pressed
+    
+    private final Color background; // The background color as determined by the user in the settings.
+    
+    // Parameters:
+    // 'settings': The settings used for the game. Can be changed in the settings window.
+<span class="nc" id="L68">    public GetPlayersPanel(GameSettings settings) {</span>
+<span class="nc" id="L69">    	this.SETTINGS = settings;</span>
+<span class="nc" id="L70">    	this.background = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);</span>
+<span class="nc" id="L71">        this.players = new ArrayList&lt;Player&gt;();</span>
+<span class="nc" id="L72">        this.panels = new ArrayList&lt;JPanel&gt;();</span>
+<span class="nc" id="L73">        this.displayNames = new Stack&lt;String&gt;();</span>
+<span class="nc" id="L74">        this.name = new JTextField(FONT_SIZE / 3);</span>
+<span class="nc" id="L75">        initializeButtons();</span>
+<span class="nc" id="L76">        this.settingsFrame = new JFrame(&quot;Settings&quot;);</span>
+<span class="nc" id="L77">	    this.settingsFrame.setMinimumSize(new Dimension(SCREENWIDTH * 4 / 5, SCREENHEIGHT * 4 / 5));</span>
+<span class="nc" id="L78">        this.playerNames = new JPanel();</span>
+<span class="nc" id="L79">        this.pane = new JPanel();</span>
+<span class="nc" id="L80">        this.mainPanel = new JPanel();</span>
+<span class="nc" id="L81">        this.pane.setBackground(this.background);</span>
+<span class="nc" id="L82">        this.pane.setBorder(new MatteBorder(BORDER_SIZE, 0, 0, 0, this.background));</span>
+<span class="nc" id="L83">        this.panels.add(this.pane);</span>
+<span class="nc" id="L84">		this.instructionsPanel = new InstructionPanel(SETTINGS);</span>
+<span class="nc" id="L85">        this.frame = new JFrame(&quot;Basketball Statistics Tracking&quot;);</span>
+<span class="nc" id="L86">    	updatePlayerList();</span>
+<span class="nc" id="L87">    }</span>
+    
+    // Post: Creates and formats all buttons used in the GetPlayersPanel.
+    private void initializeButtons() {
+        // Create all buttons used in the GetPlayersPanel
+<span class="nc" id="L92">        String[] buttonNames = {&quot; Add Player&quot;, &quot; Undo&quot;, &quot; Start Game&quot;, &quot; Old Games&quot;, &quot; Instructions&quot;, &quot; Close&quot;, &quot; Settings&quot;, &quot; Main Menu&quot;};</span>
+<span class="nc" id="L93">        int size = FONT_SIZE / 2;</span>
+<span class="nc" id="L94">        int[] sizes = {size, size, FONT_SIZE * 2 / 3, size, </span>
+        			     size, size, size, size, size};
+<span class="nc" id="L96">        this.buttonArray = createButtonArray(buttonNames, sizes, SETTINGS);</span>
+<span class="nc" id="L97">        this.buttonArray[UNDO_BUTTON].setEnabled(false);</span>
+<span class="nc" id="L98">        this.buttonArray[START_BUTTON].setEnabled(false);</span>
+        // Add icons to all buttons
+<span class="nc" id="L100">        int[] indices = {INSTRUCTIONS_BUTTON, SETTINGS_BUTTON, OLDGAMES_BUTTON, </span>
+        		         CLOSE_BUTTON, UNDO_BUTTON, SUBMIT_BUTTON, START_BUTTON, HOME_BUTTON};
+<span class="nc" id="L102">    	String[] icons = {INSTRUCTIONS_BUTTON_ICON, SETTINGS_BUTTON_ICON, OLDGAMES_BUTTON_ICON, </span>
+    			          CLOSE_BUTTON_ICON, UNDO_BUTTON_ICON, SUBMIT_BUTTON_ICON, START_BUTTON_ICON, MAINMENU_BUTTON_ICON};
+<span class="nc" id="L104">    	formatIcons(this.buttonArray, indices, icons);</span>
+<span class="nc" id="L105">    }</span>
+    
+    // Post: Formats the text field used to enter player names.
+    public void createTextField() {
+<span class="nc" id="L109">        this.name.setToolTipText(&quot;Enter Player name here:&quot;);</span>
+<span class="nc" id="L110">        SwingUtilities.invokeLater(new Runnable() {</span>
+            public void run() {
+<span class="nc" id="L112">                name.requestFocusInWindow();</span>
+<span class="nc" id="L113">            }</span>
+        });       
+<span class="nc" id="L115">        this.name.setHorizontalAlignment(JTextField.CENTER);</span>
+<span class="nc" id="L116">        this.name.setFont(new Font(DEFAULT_FONT_TYPE, Font.BOLD, FONT_SIZE * 2 / 3));       </span>
+<span class="nc" id="L117">        this.name.addFocusListener(new FocusListener() {</span>
+        	// When text field is clicked
+        	public void focusGained(FocusEvent e) {
+<span class="nc" id="L120">        		name.setText(null);</span>
+<span class="nc" id="L121">        		name.setForeground(Color.BLACK);</span>
+<span class="nc" id="L122">				buttonArray[SUBMIT_BUTTON].setEnabled(true);</span>
+<span class="nc" id="L123">        	}</span>
+        	// Default setting for text field
+        	public void focusLost(FocusEvent e) {
+<span class="nc bnc" id="L126" title="All 2 branches missed.">				if (name.getText().length() == 0) {</span>
+<span class="nc" id="L127">					name.setText(&quot;Enter a Player Name&quot;);</span>
+<span class="nc" id="L128">					name.setFont(new Font(DEFAULT_FONT_TYPE, Font.BOLD, FONT_SIZE * 2 / 3));</span>
+<span class="nc" id="L129">					name.setForeground(new Color(100, 100, 100));</span>
+<span class="nc" id="L130">					buttonArray[SUBMIT_BUTTON].setEnabled(false);</span>
+				}
+<span class="nc" id="L132">			}</span>
+        });
+<span class="nc" id="L134">    }</span>
+    
+    // Post: Adds actionListeners to each button in the GetPlayersPanel frame
+    public void createAllButtons() {
+<span class="nc" id="L138">    	createSubmitButton();</span>
+<span class="nc" id="L139">    	createUndoButton();</span>
+<span class="nc" id="L140">    	createStartButton();</span>
+<span class="nc" id="L141">    	createLoadGameButton();</span>
+<span class="nc" id="L142">    	createInstructionButton();</span>
+<span class="nc" id="L143">        createSettingsButton();</span>
+<span class="nc" id="L144">        createHomeButton();</span>
+<span class="nc" id="L145">    	createCloseButton();</span>
+<span class="nc" id="L146">    }</span>
+
+    // Post: Adds a player with a first name given by the user to the ArrayList of Players.
+    //       Players with the same name cannot be included. The minimum number of players
+    //       required is the number of starters set by the user or by default (5).
+    public void createSubmitButton() {
+<span class="nc" id="L152">        this.buttonArray[SUBMIT_BUTTON].addActionListener(new AbstractAction() {</span>
+            public void actionPerformed(ActionEvent e) {
+            	// Search for a valid player name (First [Space] Last) using regular expressions
+<span class="nc" id="L155">            	Pattern pattern = Pattern.compile(&quot;.+(\\s){1}.+&quot;);</span>
+<span class="nc" id="L156">                Matcher match = pattern.matcher(name.getText().trim());</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">                if (match.find()) {</span>
+<span class="nc" id="L158">                	String[] playerNameData = name.getText().trim().split(&quot; &quot;);</span>
+<span class="nc" id="L159">                	String firstName = playerNameData[0];</span>
+<span class="nc" id="L160">                	String lastName = playerNameData[1];</span>
+                	// Auto capitalize names
+<span class="nc" id="L162">                	firstName = Character.toUpperCase(firstName.charAt(0)) + firstName.substring(1);</span>
+<span class="nc" id="L163">                	lastName = Character.toUpperCase(lastName.charAt(0)) + lastName.substring(1);</span>
+                	// Create the new Player object
+<span class="nc" id="L165">                	String display = firstName + &quot; &quot; + lastName.charAt(0) + &quot;.&quot;;</span>
+<span class="nc" id="L166">                	Player newPlayer = new Player(firstName, lastName, display);</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">                    if (!players.contains(newPlayer)) {</span>
+<span class="nc" id="L168">                        players.add(newPlayer);</span>
+<span class="nc" id="L169">                        name.setText(null);</span>
+<span class="nc" id="L170">                        int size = players.size() - 1;</span>
+                        // Check to see if the players display name is already used.
+                        // If yes, then the last initial is replaced by the full last name.
+<span class="nc" id="L173">                        Player check = players.get(size);</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">                        if (displayNames.contains(check.getDisplayName())) {</span>
+<span class="nc" id="L175">                        	Player player = check;</span>
+<span class="nc" id="L176">                        	String newName = player.getName() + &quot;. &quot; + player.getLastName();</span>
+<span class="nc" id="L177">                        	check.setDisplayName(newName);</span>
+                        }
+<span class="nc" id="L179">                        displayNames.push(check.getDisplayName()); </span>
+<span class="nc" id="L180">                        updatePlayerList();</span>
+<span class="nc" id="L181">                        buttonArray[UNDO_BUTTON].setEnabled(true);</span>
+                    } 
+                }            
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                if (players.size() &gt;= (int) SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS)) {</span>
+<span class="nc" id="L185">                	buttonArray[START_BUTTON].setEnabled(true);</span>
+                }
+<span class="nc" id="L187">            }</span>
+        });
+<span class="nc" id="L189">    }</span>
+    
+    // Post: Removes the most recently added player from the 'labelList' and the 'players' list.
+    public void createUndoButton() {
+<span class="nc" id="L193">    	this.buttonArray[UNDO_BUTTON].addActionListener(new AbstractAction() {</span>
+    		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L195">    			int index = players.size() - 1;</span>
+<span class="nc" id="L196">		        displayNames.pop();</span>
+<span class="nc" id="L197">				players.remove(players.get(index));</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">				buttonArray[UNDO_BUTTON].setEnabled(!players.isEmpty());</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">				if (players.size() &lt; (int) SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS)) {</span>
+<span class="nc" id="L200">					buttonArray[START_BUTTON].setEnabled(false);</span>
+				}
+<span class="nc" id="L202">				updatePlayerList();</span>
+<span class="nc" id="L203">    		}</span>
+    	});
+<span class="nc" id="L205">    	setButtonKey(this.buttonArray[UNDO_BUTTON], UNDO_BUTTON_KEY, 0);</span>
+<span class="nc" id="L206">    }</span>
+    
+    // Post: Allows the user to start tracking statistics for their players once
+    //       enough players are on the team. If not enough players are in the players ArrayList,
+    //       the user will be prompted to add more players.
+    public void createStartButton() {
+<span class="nc" id="L212">    	this.buttonArray[START_BUTTON].addActionListener(new AbstractAction() {</span>
+            public void actionPerformed(ActionEvent e) { 
+<span class="nc" id="L214">                AbstractAction button = new AbstractAction() {</span>
+                    public void actionPerformed(ActionEvent e) {                 	
+<span class="nc" id="L216">                        String result = &quot;Boxscore_&quot; + DAYNUM + &quot;.&quot; + MONTH + &quot;.&quot; + YEAR;</span>
+<span class="nc" id="L217">                        fileName = getFileName(result) + &quot;.&quot; + FILETYPE;</span>
+<span class="nc" id="L218">                        List&lt;Player&gt; list = new ArrayList&lt;Player&gt;(players.size());</span>
+<span class="nc" id="L219">                        list.addAll(players);</span>
+<span class="nc" id="L220">                        Collections.sort(list);</span>
+<span class="nc" id="L221">                        run(list, new ArrayList&lt;Undo&gt;(), fileName, !IS_SCAN, SETTINGS);</span>
+<span class="nc" id="L222">                        pane.removeAll();</span>
+<span class="nc" id="L223">            			pane.add(mainPanel);</span>
+<span class="nc" id="L224">            			players.clear();</span>
+<span class="nc" id="L225">            			displayNames.clear();</span>
+<span class="nc" id="L226">            			updatePlayerList();</span>
+<span class="nc" id="L227">            			pane.revalidate();</span>
+<span class="nc" id="L228">            			pane.repaint();</span>
+<span class="nc" id="L229">            			frame.setTitle(&quot;Basketball Statistics Tracking&quot;);</span>
+<span class="nc" id="L230">            			frame.getRootPane().setDefaultButton(buttonArray[SUBMIT_BUTTON]);</span>
+<span class="nc" id="L231">            			buttonArray[START_BUTTON].setEnabled(false);</span>
+<span class="nc" id="L232">            			Color bckgrnd = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);</span>
+<span class="nc" id="L233">            			SETTINGS = new GameSettings();</span>
+<span class="nc" id="L234">            			SETTINGS.setSetting(bckgrnd, Setting.BACKGROUND_COLOR);</span>
+<span class="nc" id="L235">                    }</span>
+                };
+<span class="nc" id="L237">            	confirmPane(pane, frame, buttonArray[HOME_BUTTON].getActionListeners()[0], button, </span>
+<span class="nc" id="L238">            			    &quot;Confirm Team?&quot;, TEAM_ICON, SETTINGS);</span>
+<span class="nc" id="L239">            }</span>
+        });
+<span class="nc" id="L241">    	setButtonKey(this.buttonArray[START_BUTTON], START_BUTTON_KEY, 0);</span>
+<span class="nc" id="L242">    }</span>
+    
+    // Post: Returns a file name for a new game so that there are no duplicate file names.
+    public static String getFileName(String name) {
+<span class="nc" id="L246">    	File file = new File(FILE_PATH + &quot;\\&quot; + GAMEFILESFOLDER);</span>
+<span class="nc" id="L247">    	List&lt;String&gt; names = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L248">    	boolean found = false;</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">    	for (File f : file.listFiles()) {</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">    		if (f.getName().contains(name)) {</span>
+<span class="nc" id="L251">    			found = true;</span>
+<span class="nc" id="L252">    			break;</span>
+    		}
+    	}
+<span class="nc bnc" id="L255" title="All 2 branches missed.">    	if (!found) {</span>
+<span class="nc" id="L256">    		return name;</span>
+    	} else {
+<span class="nc bnc" id="L258" title="All 2 branches missed.">    		for (File f : file.listFiles()) {</span>
+<span class="nc" id="L259">        		String n = f.getName().trim();</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">        		if (n.contains(FILETYPE)) {</span>
+<span class="nc" id="L261">        			n = n.replace(&quot;.&quot; + FILETYPE, &quot;&quot;);</span>
+<span class="nc" id="L262">        			char[] c = n.toCharArray();</span>
+<span class="nc" id="L263">        			int l = c.length;</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">        			if (c[l - 2] == '_') {</span>
+<span class="nc" id="L265">                		names.add(c[l - 1] + &quot;&quot;);</span>
+        			} else {
+<span class="nc" id="L267">        				names.add(null);</span>
+        			}
+        		}
+        	}
+<span class="nc bnc" id="L271" title="All 2 branches missed.">        	if (!names.contains(null)) {</span>
+<span class="nc" id="L272">        		return name;</span>
+        	} else {
+<span class="nc bnc" id="L274" title="All 2 branches missed.">        		for (int i = 1; i &lt;= names.size(); i++) {</span>
+<span class="nc bnc" id="L275" title="All 2 branches missed.">        			if (names.contains(i + &quot;&quot;)) {</span>
+<span class="nc" id="L276">        				continue;</span>
+        			} else {
+<span class="nc" id="L278">        				return name + &quot;_&quot; + i;</span>
+        			}
+        		}
+        	}
+    	}    	
+<span class="nc" id="L283">    	return null;</span>
+    }
+    
+    // Post: Opens the Instructions window when pressed.
+    public void createInstructionButton() {
+<span class="nc" id="L288">    	this.buttonArray[INSTRUCTIONS_BUTTON].addActionListener(new AbstractAction() {</span>
+    		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L290">    			pane.removeAll();</span>
+<span class="nc" id="L291">    			frame.setTitle(&quot;Instructions&quot;);</span>
+<span class="nc" id="L292">    			pane.setLayout(new GridLayout(1, 1));</span>
+<span class="nc" id="L293">    			instructionsPanel.setSettings(SETTINGS);</span>
+<span class="nc" id="L294">    			pane.add(instructionsPanel.addElements(buttonArray[HOME_BUTTON]));</span>
+<span class="nc" id="L295">    			pane.revalidate();</span>
+<span class="nc" id="L296">    			pane.repaint();</span>
+<span class="nc" id="L297">    		}</span>
+    	});
+<span class="nc" id="L299">    	setButtonKey(this.buttonArray[INSTRUCTIONS_BUTTON], INSTRUCTIONS_BUTTON_KEY, 0);</span>
+<span class="nc" id="L300">    }</span>
+    
+    public void createHomeButton() {
+<span class="nc" id="L303">    	this.buttonArray[HOME_BUTTON].addActionListener(new AbstractAction() {</span>
+    		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L305">    			pane.removeAll();</span>
+<span class="nc" id="L306">    			pane.add(mainPanel);</span>
+<span class="nc" id="L307">    			pane.revalidate();</span>
+<span class="nc" id="L308">    			pane.repaint();</span>
+<span class="nc" id="L309">    			frame.setTitle(&quot;Basketball Statistics Tracking&quot;);</span>
+<span class="nc" id="L310">    			frame.getRootPane().setDefaultButton(buttonArray[SUBMIT_BUTTON]);</span>
+<span class="nc" id="L311">            	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</span>
+<span class="nc" id="L312">    		}</span>
+    	});
+<span class="nc" id="L314">    	setButtonKey(this.buttonArray[HOME_BUTTON], HOME_BUTTON_KEY, 0);</span>
+<span class="nc" id="L315">    }</span>
+    
+    // Post: The &quot;Load Old Game&quot; button allows the user to load any previous game they have.
+    //       This feature was implemented in case the program were to close during a game. This way,
+    //       the user could easily resume their tracking from where they left off.
+    public void createLoadGameButton() {
+<span class="nc" id="L321">    	this.buttonArray[OLDGAMES_BUTTON].addActionListener(new AbstractAction() {</span>
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L323">            	Color background = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);</span>
+<span class="nc" id="L324">            	File actual = new File(FILE_PATH + &quot;\\&quot; + GAMEFILESFOLDER);</span>
+<span class="nc" id="L325">            	int countCopy = countFiles();</span>
+<span class="nc" id="L326">            	pane.removeAll();</span>
+<span class="nc" id="L327">            	frame.setTitle(&quot;Load Old Games&quot;);</span>
+<span class="nc" id="L328">            	pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L329">            	JLabel header = formatLabel(&quot;  Load Old Games&quot;, FONT_SIZE, SETTINGS);</span>
+<span class="nc" id="L330">            	setIcon(header, OLDGAMES_BUTTON_ICON);</span>
+<span class="nc" id="L331">            	pane.add(panelfy(header, background, new GridBagLayout(), </span>
+            			 new MatteBorder(BORDER_SIZE * 2, 0, BORDER_SIZE * 2, 0, background)));
+                // If there are no old games available, the user is notified.
+<span class="nc bnc" id="L334" title="All 2 branches missed.">                if (countCopy &lt;= 0) {</span>
+<span class="nc" id="L335">                	pane.add(panelfy(formatTextPane(&quot;There are no Old Games Available&quot;, FONT_SIZE * 5 / 6, SETTINGS),</span>
+			                 background, new GridBagLayout(),
+			                 new MatteBorder(BORDER_SIZE * 5, 0, BORDER_SIZE * 2, 0, background)));
+                } else { // countCopy &gt; 0
+<span class="nc" id="L339">                    JPanel oldGamePanel = new JPanel(new GridLayout(countCopy, 1));</span>
+<span class="nc" id="L340">                    oldGamePanel.setBackground(background);</span>
+<span class="nc" id="L341">                    JScrollPane scrollPane = addScrollPane(oldGamePanel);</span>
+<span class="nc" id="L342">                    scrollPane.setBorder(new LineBorder(DEFAULT_TEXT_BORDER_COLOR, 5, ROUNDED_BORDERS));</span>
+<span class="nc" id="L343">                    JPanel panePanel = panelfy(scrollPane, background, new GridLayout(1, 1), null);</span>
+<span class="nc" id="L344">                    panePanel.setMaximumSize(new Dimension(SCREENWIDTH * 2 / 3, SCREENHEIGHT * 2 / 3));</span>
+<span class="nc" id="L345">                    panePanel.setPreferredSize(new Dimension(SCREENWIDTH * 2 / 3, countCopy * BUTTON_HEIGHT * 2));</span>
+<span class="nc" id="L346">                    pane.add(panePanel);</span>
+                    /*
+                    * If there is at least one old game available to load, every available game is
+                    * displayed for the user to choose from. When the user clicks on the game they want,
+                    * the program will automatically start up with all the players and their statistics
+                    * from the last time the user left off.
+                    */
+<span class="nc bnc" id="L353" title="All 2 branches missed.">                    for (File f : actual.listFiles()){</span>
+<span class="nc" id="L354">                    	String name = f.getName();</span>
+<span class="nc bnc" id="L355" title="All 4 branches missed.">                        if (name.contains(FILETYPE) &amp;&amp; !name.contains(GAMEDATA_FILE_NAME)) {</span>
+                            // Cuts out the FILETYPE at the end of the file name.
+<span class="nc" id="L357">                            JButton oldGameButton = new JButton(&quot;   &quot; + name.substring(0, name.length() - (FILETYPE.length() + 1)));</span>
+<span class="nc" id="L358">                            formatButton(oldGameButton, (int) BUTTON_HEIGHT * 5 / 2, BUTTON_HEIGHT * 2, FONT_SIZE * 5 / 12, SETTINGS);</span>
+<span class="nc" id="L359">                            oldGamePanel.add(oldGameButton);</span>
+<span class="nc" id="L360">                            oldGameButton.setBorder(null);</span>
+<span class="nc" id="L361">                            ReadFile gameFile = new ReadFile(name, SETTINGS);</span>
+<span class="nc" id="L362">                            boolean checkFile = gameFile.checkFile();</span>
+<span class="nc" id="L363">                            boolean gameOver = gameFile.isGameOver();</span>
+<span class="nc bnc" id="L364" title="All 4 branches missed.">                            if (!checkFile &amp;&amp; !gameOver) {</span>
+<span class="nc" id="L365">                            	setIcon(new JButton[] {oldGameButton}, 0, FILE_WARNING_ICON);</span>
+<span class="nc bnc" id="L366" title="All 4 branches missed.">                            } else if (checkFile &amp;&amp; gameOver) {</span>
+<span class="nc" id="L367">                            	setIcon(new JButton[] {oldGameButton}, 0, GAME_OVER_ICON);</span>
+<span class="nc bnc" id="L368" title="All 4 branches missed.">                            } else if (gameOver &amp;&amp; !checkFile) {</span>
+                            	try {
+<span class="nc" id="L370">                                	Image icon = new ImageIcon(this.getClass().getResource(GAMEOVER_WARNING_ICON)).getImage();</span>
+<span class="nc" id="L371">                                	Image newImage = icon.getScaledInstance(ICON_SIZE * 25 / 11, ICON_SIZE, java.awt.Image.SCALE_SMOOTH);  </span>
+<span class="nc" id="L372">                                	oldGameButton.setIcon(new ImageIcon(newImage));</span>
+<span class="nc" id="L373">                            	} catch (Exception except) {</span>
+<span class="nc" id="L374">                            		System.out.println(GAMEOVER_WARNING_ICON + &quot; is not in the directory.&quot;);</span>
+<span class="nc" id="L375">                            		System.out.println(&quot;Make sure to store all icons in a source folder called 'Image'.&quot;);</span>
+<span class="nc" id="L376">                            	}</span>
+                            }
+<span class="nc" id="L378">                            oldGameButton.setEnabled(checkFile);</span>
+<span class="nc" id="L379">                            oldGameButton.addActionListener(new AbstractAction() {</span>
+                                // When the user clicks the game they want to load, the file is read.
+                                @SuppressWarnings(&quot;unchecked&quot;)
+								public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L383">                                	ReadFile gameFile = new ReadFile(name, SETTINGS);</span>
+<span class="nc" id="L384">                                	Object[] data = gameFile.getFileData();</span>
+<span class="nc" id="L385">                                    GameSettings settings = (GameSettings) data[0];</span>
+<span class="nc" id="L386">                                    run((List&lt;Player&gt;) data[1], (List&lt;Undo&gt;) data[2], name, IS_SCAN, settings);</span>
+<span class="nc" id="L387">                                }</span>
+                            });
+                        }
+                    }
+                }
+<span class="nc" id="L392">                pane.add(panelfy(buttonArray[HOME_BUTTON], background, new GridBagLayout(),</span>
+  		              new MatteBorder(BORDER_SIZE * 2, 0, BORDER_SIZE * 2, 0, background)));
+<span class="nc" id="L394">                pane.revalidate();</span>
+<span class="nc" id="L395">                pane.repaint();</span>
+<span class="nc" id="L396">            }</span>
+        });
+<span class="nc" id="L398">    	setButtonKey(this.buttonArray[OLDGAMES_BUTTON], OLDGAMES_BUTTON_KEY, 0);</span>
+<span class="nc" id="L399">    }</span>
+    
+    // Post: Adds function to the 'Close' button. Closes the program entirely.
+    public void createCloseButton() {
+<span class="nc" id="L403">    	this.buttonArray[CLOSE_BUTTON].addActionListener(new AbstractAction() {</span>
+    		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L405">    			frame.dispose();</span>
+<span class="nc" id="L406">    			settingsFrame.dispose();</span>
+<span class="nc" id="L407">    			System.exit(1);</span>
+<span class="nc" id="L408">    		}</span>
+    	});
+<span class="nc" id="L410">    }</span>
+    
+    // Post: Adds function to the 'Settings' buttons. Allows the user to configure the game settings however 
+    //       they like. Includes actual game settings (Quarters/Halves, Fouls allowed, etc.) and background color.
+    public void createSettingsButton() {  	
+<span class="nc" id="L415">    	this.buttonArray[SETTINGS_BUTTON].addActionListener(new AbstractAction() {</span>
+    		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L417">    			buttonArray[SETTINGS_BUTTON].setEnabled(false);</span>
+<span class="nc" id="L418">    		    JPanel colorPanel = new JPanel(new GridLayout(COLOR_NAMES.length, 1));</span>
+<span class="nc" id="L419">    		    JScrollPane scrollPane = addScrollPane(colorPanel);</span>
+<span class="nc bnc" id="L420" title="All 2 branches missed.">    		    for (int i = 0; i &lt; COLOR_NAMES.length; i++) {</span>
+<span class="nc" id="L421">    		    	JButton btn = new JButton(COLOR_NAMES[i]);</span>
+<span class="nc" id="L422">    		    	formatButton(btn, BUTTON_HEIGHT, BUTTON_HEIGHT, FONT_SIZE * 5 / 12, SETTINGS);</span>
+<span class="nc" id="L423">    		    	btn.setBackground(COLORS[i]);</span>
+<span class="nc" id="L424">    		    	btn.addActionListener(new AbstractAction() {</span>
+    		    		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L426">    		    			Color bck = btn.getBackground();</span>
+<span class="nc" id="L427">	    					SETTINGS.setSetting(bck, Setting.BACKGROUND_COLOR);</span>
+<span class="nc bnc" id="L428" title="All 2 branches missed.">    		    			for (JPanel panel : panels) {</span>
+<span class="nc" id="L429">    		    				panel.setBackground(bck);</span>
+<span class="nc" id="L430">    		    				addBorderPanel(panel);</span>
+<span class="nc" id="L431">    		    			}</span>
+<span class="nc bnc" id="L432" title="All 2 branches missed.">    		    			for (JButton btn : buttonArray) {</span>
+<span class="nc" id="L433">    		    				btn.setBackground(bck);</span>
+    		    			}
+<span class="nc" id="L435">    		    			updatePlayerList();</span>
+<span class="nc" id="L436">    		    		}</span>
+    		    	});
+<span class="nc" id="L438">    		    	colorPanel.add(btn);</span>
+    		    }
+<span class="nc" id="L440">    		    JPanel scrollPanel = new JPanel(new GridLayout(1, 1));</span>
+<span class="nc" id="L441">    		    scrollPanel.add(scrollPane);</span>
+    		    
+<span class="nc" id="L443">    		    JPanel firstRow = new JPanel(new GridLayout(1, 4));		    </span>
+<span class="nc" id="L444">    		    JPanel secondRow = new JPanel(new GridLayout(1, 4));  		  </span>
+<span class="nc" id="L445">    		    JPanel thirdRow = new JPanel(new GridLayout(1, 4));  		    </span>
+<span class="nc" id="L446">    		    JPanel total = new JPanel(new GridLayout(3, 1));</span>
+<span class="nc" id="L447">    		    total.add(firstRow);</span>
+<span class="nc" id="L448">    		    total.add(secondRow);</span>
+<span class="nc" id="L449">    		    total.add(thirdRow);</span>
+<span class="nc" id="L450">    		    int fontSize = FONT_SIZE / 3;</span>
+<span class="nc" id="L451">    		    createRadioButtons(null, null, new ButtonGroup(), getButtonOptions(1, MAX_STARTERS), </span>
+    		    		           firstRow, &quot;Starters&quot;, Setting.NUMBER_OF_STARTERS, fontSize);
+<span class="nc" id="L453">    		    JPanel timeouts = new JPanel(new GridLayout(1, 2));</span>
+<span class="nc" id="L454">    		    createRadioButtons(null, null, new ButtonGroup(), getButtonOptions(1, MAX_TIMEOUTS),</span>
+	    		                   timeouts, &quot;Regulation&quot;, Setting.TIMEOUTS, fontSize);
+<span class="nc" id="L456">    		    createRadioButtons(null, null, new ButtonGroup(), getButtonOptions(1, 4),</span>
+		                           timeouts, &quot;Overtime&quot;, Setting.OT_TIMEOUTS, fontSize);
+<span class="nc" id="L458">    		    setRadioButtonBorder(timeouts, firstRow, &quot;Timeouts&quot;, fontSize + 5);</span>
+<span class="nc" id="L459">    		    JPanel fouls = new JPanel(new GridLayout(1, 4));</span>
+<span class="nc" id="L460">    		    createRadioButtons(null, null, new ButtonGroup(), getButtonOptions(4, MAX_PERSONAL_FOULS), </span>
+	    		                   fouls, &quot;Personal&quot;, Setting.PERSONAL_FOULS, fontSize);   	
+<span class="nc" id="L462">	            createRadioButtons(null, null, new ButtonGroup(), getButtonOptions(1, MAX_TECHNICAL_FOULS), </span>
+	    		                   fouls, &quot;Technical&quot;, Setting.TECHNICAL_FOULS, fontSize);
+<span class="nc" id="L464">    		    createRadioButtons(null, null, new ButtonGroup(), new String[] {&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;},</span>
+    		    				   fouls, &quot;Flagrant I&quot;, Setting.FLAGRANT_I, fontSize);	
+<span class="nc" id="L466">    		    createRadioButtons(null, null, new ButtonGroup(), new String[] {&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;},</span>
+	    				           fouls, &quot;Flagrant II&quot;, Setting.FLAGRANT_II, fontSize);
+<span class="nc" id="L468">    		    setRadioButtonBorder(fouls, secondRow, &quot;Fouls Allowed&quot;, fontSize + 5);</span>
+<span class="nc" id="L469">    		    ButtonGroup hO = new ButtonGroup();</span>
+<span class="nc" id="L470">    		    ButtonGroup qO = new ButtonGroup();</span>
+<span class="nc" id="L471">    		    JPanel timings = new JPanel(new GridLayout(1, 4));</span>
+<span class="nc" id="L472">    		    createRadioButtons(qO, hO, new ButtonGroup(), new String[] {&quot;Quarters&quot;, &quot;Halves&quot;}, </span>
+    		    		           timings, &quot;Game Type&quot;, Setting.PERIOD_TYPE, fontSize);   	
+<span class="nc" id="L474">    		    createRadioButtons(null, null, qO, new String[] {&quot;6 mins&quot;, &quot;10 mins&quot;, &quot;12 mins&quot;, &quot;15 mins&quot;}, </span>
+    		    		           timings, &quot;Quarter Length&quot;, Setting.GAME_LENGTH, fontSize);
+<span class="nc" id="L476">    		    createRadioButtons(null, null, hO, new String[] {&quot;10 mins&quot;, &quot;20 mins&quot;, &quot;25 mins&quot;, &quot;30 mins&quot;}, </span>
+    		    		           timings, &quot;Half Length&quot;, Setting.GAME_LENGTH, fontSize);
+<span class="nc" id="L478">    		    createRadioButtons(null, null, new ButtonGroup(), new String[] {&quot;1 min&quot;, &quot;2 mins&quot;, &quot;3 mins&quot;, &quot;5 mins&quot;},</span>
+    		    		           timings, &quot;Overtime Length&quot;, Setting.OVERTIME_LENGTH, fontSize);
+<span class="nc" id="L480">    		    setRadioButtonBorder(timings, thirdRow, &quot;Game Timings&quot;, fontSize + 5);</span>
+<span class="nc" id="L481">    		    enableButtons(hO, false);	    </span>
+    		 		    
+<span class="nc" id="L483">    		    JPanel settingsButtons = new JPanel(new GridLayout(1, 2));</span>
+<span class="nc" id="L484">    		    JButton close = new JButton(&quot;Apply&quot;);</span>
+<span class="nc" id="L485">    		    formatButton(close, BUTTON_HEIGHT, BUTTON_HEIGHT / 3, FONT_SIZE * 2 / 5, SETTINGS);</span>
+<span class="nc" id="L486">    		    close.setBackground(DEFAULT_BACKGROUND_COLOR);</span>
+<span class="nc" id="L487">    		    close.addActionListener(new AbstractAction() {</span>
+    		    	public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L489">    		    		settingsFrame.dispose();</span>
+<span class="nc" id="L490">    		    		updatePlayerList();</span>
+<span class="nc" id="L491">    		    	}</span>
+    		    });
+    		    
+<span class="nc" id="L494">    		    JButton defaultBtn = new JButton(&quot;Set Default&quot;);</span>
+<span class="nc" id="L495">    		    formatButton(defaultBtn, BUTTON_HEIGHT, BUTTON_HEIGHT / 3, FONT_SIZE * 2 / 5, SETTINGS);</span>
+<span class="nc" id="L496">    		    defaultBtn.setBackground(DEFAULT_BACKGROUND_COLOR);</span>
+<span class="nc" id="L497">    		    defaultBtn.addActionListener(new AbstractAction() {</span>
+    		    	public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L499">    		    		SETTINGS = new GameSettings();</span>
+<span class="nc bnc" id="L500" title="All 2 branches missed.">    		    		for (JPanel p : panels) {</span>
+<span class="nc" id="L501">    		    			p.setBackground(DEFAULT_BACKGROUND_COLOR);</span>
+<span class="nc" id="L502">    		    			addBorderPanel(p);</span>
+<span class="nc" id="L503">    		    		}</span>
+<span class="nc bnc" id="L504" title="All 2 branches missed.">    		    		for (JButton btn : buttonArray) {</span>
+<span class="nc" id="L505">    		    			btn.setBackground(DEFAULT_BACKGROUND_COLOR);</span>
+<span class="nc" id="L506">    		    			btn.setForeground(DEFAULT_FONT_COLOR);</span>
+    		    		}
+<span class="nc" id="L508">    		    		updatePlayerList();</span>
+<span class="nc" id="L509">    		    		settingsFrame.dispose();</span>
+<span class="nc" id="L510">    		    	}</span>
+    		    });   		    
+<span class="nc" id="L512">    		    settingsButtons.add(close);</span>
+<span class="nc" id="L513">    		    settingsButtons.add(defaultBtn);</span>
+    		    
+<span class="nc" id="L515">    		    JScrollPane totalScrollPane = addScrollPane(total);</span>
+<span class="nc" id="L516">    		    totalScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);</span>
+<span class="nc" id="L517">    		    JPanel totalScrollPanel = new JPanel(new GridLayout(1, 1));</span>
+<span class="nc" id="L518">    		    totalScrollPanel.add(totalScrollPane);  </span>
+    		    
+<span class="nc" id="L520">    		    JSplitPane pane3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPanel, settingsButtons);</span>
+<span class="nc" id="L521">    		    pane3.setDividerLocation(SCREENHEIGHT / 2 + BUTTON_HEIGHT * 3);</span>
+<span class="nc" id="L522">    		    pane3.setEnabled(false);   </span>
+    		    
+<span class="nc" id="L524">    		    JSplitPane pane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, total, pane3);</span>
+<span class="nc" id="L525">    		    pane1.setDividerLocation(SCREENWIDTH / 2 + BUTTON_HEIGHT * 5 / 2);</span>
+<span class="nc" id="L526">    		    pane1.setEnabled(false);</span>
+    		    
+<span class="nc" id="L528">    		    JPanel panels = new JPanel();</span>
+<span class="nc" id="L529">    		    panels.add(pane1);</span>
+<span class="nc" id="L530">    		    panels.setLayout(new BoxLayout(panels, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L531">    		    settingsFrame.setVisible(true);</span>
+<span class="nc" id="L532">    		    settingsFrame.add(panels);</span>
+<span class="nc" id="L533">    		    settingsFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);  </span>
+<span class="nc" id="L534">    		    settingsFrame.addWindowListener(new WindowAdapter() {</span>
+    		        @Override
+    		        public void windowClosing(WindowEvent windowEvent) {
+<span class="nc" id="L537">    		            buttonArray[SETTINGS_BUTTON].setEnabled(true);</span>
+<span class="nc" id="L538">    		        }</span>
+    		        public void windowClosed(WindowEvent w) {
+<span class="nc" id="L540">    		            buttonArray[SETTINGS_BUTTON].setEnabled(true);</span>
+<span class="nc" id="L541">    		        }</span>
+    		    });
+<span class="nc" id="L543">    		}</span>
+    	});
+    	//this.settingsFrame.getRootPane().setDefaultButton(close);
+<span class="nc" id="L546">    	setButtonKey(this.buttonArray[SETTINGS_BUTTON], SETTINGS_BUTTON_KEY, 0);</span>
+<span class="nc" id="L547">    }</span>
+    
+    // Post: Returns a String of numbers in the range of 'min' to 'max'.
+    private String[] getButtonOptions(int min, int max) {
+<span class="nc" id="L551">    	String[] options = new String[max - min + 1];</span>
+<span class="nc bnc" id="L552" title="All 2 branches missed.">    	for (int i = min; i &lt;= max; i++) {</span>
+<span class="nc" id="L553">    		options[i - min] = i + &quot;&quot;;</span>
+    	}
+<span class="nc" id="L555">    	return options;</span>
+    }
+    
+    // Post: Updates the list of players at the bottom of the GetPlayersPanel every time a player name
+    //       is added or removed.
+    private void updatePlayerList() {
+<span class="nc" id="L561">    	Color background = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);</span>
+<span class="nc" id="L562">    	JPanel panel = new JPanel();</span>
+<span class="nc" id="L563">    	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));</span>
+<span class="nc bnc" id="L564" title="All 2 branches missed.">    	for (int i = this.displayNames.size() - 1; i &gt;= 0; i--) {</span>
+<span class="nc" id="L565">    		JLabel label = formatLabel(&quot; - &quot; + this.displayNames.get(i), FONT_SIZE / 2, SETTINGS);</span>
+<span class="nc" id="L566">    		label.setBackground(DEFAULT_BACKGROUND_COLOR);</span>
+<span class="nc" id="L567">    		label.setBorder(new MatteBorder(BORDER_SIZE * 3 / 2, BORDER_SIZE, BORDER_SIZE * 3 / 2, BORDER_SIZE, background));</span>
+<span class="nc" id="L568">    		label.setHorizontalTextPosition(JLabel.CENTER);</span>
+<span class="nc" id="L569">            panel.add(label);</span>
+    	}
+<span class="nc" id="L571">    	panel.setBackground(background);</span>
+<span class="nc" id="L572">    	this.panels.add(panel);</span>
+<span class="nc" id="L573">    	JScrollPane pane = addScrollPane(panel);</span>
+    	// Hide scroll bar
+<span class="nc" id="L575">    	JScrollBar vertical = pane.getVerticalScrollBar();</span>
+<span class="nc" id="L576">    	vertical.setPreferredSize(new Dimension(0, 0));</span>
+<span class="nc" id="L577">        pane.setPreferredSize(new Dimension(SCREENWIDTH / 6, SCREENHEIGHT / 4));</span>
+<span class="nc" id="L578">        pane.setBackground(background);</span>
+<span class="nc" id="L579">    	this.panels.add(panelfy(pane, background, new GridLayout(1, 1), null));</span>
+<span class="nc" id="L580">    	this.playerNames.setLayout(new BoxLayout(this.playerNames, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L581">    	this.playerNames.removeAll();</span>
+<span class="nc" id="L582">    	JLabel players = formatLabel(&quot;   Players: &quot; + this.players.size(), FONT_SIZE * 4 / 7, SETTINGS);</span>
+<span class="nc" id="L583">    	players.setBorder(new MatteBorder(0, 0, BORDER_SIZE * 3, 0, background));</span>
+<span class="nc" id="L584">    	setIcon(players, PLAYER_ICON);</span>
+<span class="nc" id="L585">    	this.playerNames.setBorder(new MatteBorder(0, BORDER_SIZE * 6, BORDER_SIZE * 3, 0, background));</span>
+<span class="nc" id="L586">    	this.playerNames.add(players);</span>
+<span class="nc" id="L587">    	this.playerNames.add(pane);</span>
+<span class="nc" id="L588">    	this.playerNames.setBackground(background);</span>
+<span class="nc" id="L589">    	this.playerNames.repaint();</span>
+<span class="nc" id="L590">    	this.playerNames.revalidate();</span>
+<span class="nc" id="L591">    	this.panels.add(this.playerNames);</span>
+<span class="nc" id="L592">    }</span>
+    
+    // Post: Re-Colors the border of the 'panel' given
+    private void addBorderPanel(JPanel panel) {
+<span class="nc bnc" id="L596" title="All 2 branches missed.">		if (panel.getBorder() != null) {</span>
+<span class="nc" id="L597">			String text = panel.getBorder().getBorderInsets(panel).toString().substring(15);</span>
+<span class="nc" id="L598">			String[] bordNums = text.replaceAll(&quot;[a-z]+=&quot;, &quot;&quot;).replaceAll(&quot;\\[&quot;, &quot;&quot;).replaceAll(&quot;\\]&quot;, &quot;&quot;).split(&quot;,&quot;);</span>
+<span class="nc" id="L599">			int[] border = new int[bordNums.length];</span>
+<span class="nc bnc" id="L600" title="All 2 branches missed.">			for (int i = 0; i &lt; bordNums.length; i++) {</span>
+<span class="nc" id="L601">				border[i] = Integer.valueOf(bordNums[i]);</span>
+			}
+<span class="nc" id="L603">			panel.setBorder(new MatteBorder(border[0], border[1], border[2], border[3], </span>
+<span class="nc" id="L604">					        (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR)));</span>
+		}
+<span class="nc" id="L606">    }</span>
+    
+    // Post: Creates a Group of Radio Buttons
+    // Parameters:
+    // 'first', 'second': Used for Quarters/Halves. Dis/enables those ButtonGroups.
+    // 'total': The ButtonGroup used to Group the given Radio Buttons.
+    // 'names': The text used for each Radio Button.
+    // 'panel': The panel the Radio Buttons will be added to.
+    // 'borderText': The text that appears in the border of the Radio Buttons.
+    // 'setting': The settings for the game.
+    // 'fontSize': The font size of the 'borderText'.
+    private void createRadioButtons(ButtonGroup first, ButtonGroup second, ButtonGroup total, String[] names, 
+    		                        JPanel panel, String borderText, Setting gameSetting, int fontSize) {
+<span class="nc" id="L619">    	JPanel buttonPanel = new JPanel(new GridLayout(names.length, 1));</span>
+<span class="nc bnc" id="L620" title="All 2 branches missed.">	    for (int i = 0; i &lt; names.length; i++) {</span>
+<span class="nc" id="L621">	    	JRadioButton select = new JRadioButton(names[i]);</span>
+<span class="nc" id="L622">	    	select.setFont(new Font(DEFAULT_FONT_TYPE, Font.PLAIN, fontSize)); 		    	</span>
+<span class="nc" id="L623">	    	buttonPanel.add(select);</span>
+<span class="nc" id="L624">	    	total.add(select);</span>
+	    	// Pre-select default options in settings
+<span class="nc" id="L626">	    	char selectText = names[i].charAt(0);</span>
+<span class="nc bnc" id="L627" title="All 3 branches missed.">	    	switch (gameSetting) {</span>
+			case PERIOD_TYPE:
+				char period;
+<span class="nc bnc" id="L630" title="All 2 branches missed.">				if ((boolean) SETTINGS.getSetting(gameSetting)) {</span>
+<span class="nc" id="L631">					period = 'Q';</span>
+				} else {
+<span class="nc" id="L633">					period = 'H';</span>
+				}
+<span class="nc bnc" id="L635" title="All 2 branches missed.">				select.setSelected(selectText == period);</span>
+<span class="nc" id="L636">				break;</span>
+			case GAME_LENGTH:
+			case OVERTIME_LENGTH:
+<span class="nc bnc" id="L639" title="All 2 branches missed.">				select.setSelected(Integer.valueOf(names[i].substring(0, 2).trim()) == (double) SETTINGS.getSetting(gameSetting));</span>
+<span class="nc" id="L640">				break;</span>
+			default:
+<span class="nc bnc" id="L642" title="All 2 branches missed.">				select.setSelected(Integer.valueOf(selectText + &quot;&quot;) == (int) SETTINGS.getSetting(gameSetting));</span>
+				break;
+			}
+<span class="nc" id="L645">	    	select.addActionListener(new AbstractAction() {</span>
+	    		public void actionPerformed(ActionEvent e) {
+<span class="nc bnc" id="L647" title="All 2 branches missed.">	    			for (int i = 0; i &lt; names.length; i++) {</span>
+<span class="nc bnc" id="L648" title="All 2 branches missed.">	    				if (select.getText().equals(names[i])) {</span>
+	    					int value;
+	    					try {
+<span class="nc" id="L651">		    					value = Integer.valueOf(names[i].replace(&quot;mins&quot;, &quot;&quot;).replace(&quot;min&quot;, &quot;&quot;).trim());</span>
+<span class="nc" id="L652">	    					} catch (NumberFormatException nfe) {</span>
+<span class="nc" id="L653">	    						value = -1;</span>
+<span class="nc" id="L654">	    					}</span>
+<span class="nc" id="L655">	    					int selection = i + 1;</span>
+<span class="nc bnc" id="L656" title="All 7 branches missed.">	    					switch (gameSetting) {</span>
+	    					case PERSONAL_FOULS:
+<span class="nc" id="L658">	        					SETTINGS.setSetting(value, gameSetting);</span>
+<span class="nc" id="L659">	    						break;</span>
+	    					case NUMBER_OF_STARTERS:
+<span class="nc bnc" id="L661" title="All 2 branches missed.">	        					buttonArray[START_BUTTON].setEnabled(players.size() &gt;= selection);</span>
+	    					case TECHNICAL_FOULS:
+	    					case FLAGRANT_I:
+	    					case FLAGRANT_II:
+	    					case OT_TIMEOUTS:
+	    					case TIMEOUTS:
+<span class="nc" id="L667">	        					SETTINGS.setSetting(selection, gameSetting);</span>
+<span class="nc" id="L668">	        					break;</span>
+	    					case PERIOD_TYPE:
+<span class="nc bnc" id="L670" title="All 2 branches missed.">		        		    	enableButtons(first, selection % 2 != 0);</span>
+<span class="nc bnc" id="L671" title="All 2 branches missed.">		        		    	enableButtons(second, selection % 2 == 0);</span>
+<span class="nc bnc" id="L672" title="All 2 branches missed.">	        					SETTINGS.setSetting(selection % 2 != 0, gameSetting);</span>
+<span class="nc" id="L673">		    					break;</span>
+	    					case GAME_LENGTH:
+<span class="nc" id="L675">	        					SETTINGS.setSetting((double) value, Setting.GAME_LENGTH);</span>
+<span class="nc" id="L676">	        		    		SETTINGS.setSetting((double) value, Setting.TIME_REMAINING);</span>
+<span class="nc" id="L677">		    					break;</span>
+	    					case OVERTIME_LENGTH:
+<span class="nc" id="L679">	    						SETTINGS.setSetting((double) value, gameSetting);</span>
+<span class="nc" id="L680">	    						break;</span>
+	    					default:
+<span class="nc" id="L682">	    						break;</span>
+	    					}
+	    					break;
+	    				}
+	    			}
+<span class="nc" id="L687">	    		}</span>
+	    	});
+	    }
+<span class="nc" id="L690">	    buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L691">	    setRadioButtonBorder(buttonPanel, panel, borderText, fontSize);</span>
+<span class="nc" id="L692">    }</span>
+    
+    // Post: If 'enable' is true, the buttons in the ButtonGroup 'buttons' are all enabled.
+    //       If 'enable' is false, the buttons in the ButtonGroup 'buttons' are all disabled.
+    private void enableButtons(ButtonGroup buttons, boolean enable) {
+<span class="nc" id="L697">    	Enumeration&lt;AbstractButton&gt; buttonGroup = buttons.getElements();</span>
+<span class="nc bnc" id="L698" title="All 2 branches missed.">    	while (buttonGroup.hasMoreElements()) {</span>
+<span class="nc" id="L699">    		AbstractButton button = buttonGroup.nextElement();</span>
+<span class="nc" id="L700">    		button.setSelected(false);</span>
+<span class="nc" id="L701">    		button.setEnabled(enable);</span>
+<span class="nc" id="L702">    	}</span>
+<span class="nc" id="L703">    }</span>
+    
+    // Post: Returns the number of .BBALL files in the directory.
+    @SuppressWarnings(&quot;static-access&quot;)
+	private int countFiles() {
+<span class="nc" id="L708">    	File file = new File(super.FILE_PATH + &quot;\\&quot; + GAMEFILESFOLDER);</span>
+<span class="nc" id="L709">        int countCopy = 0;</span>
+<span class="nc bnc" id="L710" title="All 2 branches missed.">        for (File f : file.listFiles()) {</span>
+<span class="nc bnc" id="L711" title="All 2 branches missed.">            if (f.getName().contains(FILETYPE)) {</span>
+<span class="nc" id="L712">            	countCopy++;</span>
+            }
+        }
+<span class="nc" id="L715">        return countCopy - 1;</span>
+    }
+    
+    // Post: Adds a border to a ButtonGroup of Radio Buttons.
+    // Parameters:
+    // 'buttonPanel': The panel that contains the ButtonGroup. 
+    // 'panel': The panel the ButtonGroup will be added to with the new border.
+    // 'borderText': The text that appears in the title of the border.
+    // 'fontSize': The font size of the text in the title of the border.
+    private void setRadioButtonBorder(JPanel buttonPanel, JPanel panel, String borderText, int fontSize) {
+<span class="nc" id="L725">	    Border line = BorderFactory.createMatteBorder(2, 2, 2, 2, DEFAULT_TEXT_BORDER_COLOR);</span>
+<span class="nc" id="L726">	    Border bord = BorderFactory.createTitledBorder(line, borderText);</span>
+<span class="nc" id="L727">	    ((TitledBorder) bord).setTitleJustification(TitledBorder.CENTER);</span>
+<span class="nc" id="L728">	    buttonPanel.setBorder(bord);</span>
+<span class="nc" id="L729">	    ((TitledBorder) buttonPanel.getBorder()).setTitleFont(new Font(DEFAULT_FONT_TYPE, Font.BOLD, fontSize));	    </span>
+<span class="nc bnc" id="L730" title="All 2 branches missed.">	    if (panel != null) {</span>
+<span class="nc" id="L731">		    panel.add(buttonPanel);</span>
+	    }
+<span class="nc" id="L733">    }</span>
+    
+    // Post: Adds all the Components created to the GetPlayersPanel and formats the GetPlayersPanel.
+    public void addElements() {
+<span class="nc" id="L737">    	Color background = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);</span>
+<span class="nc" id="L738">    	this.pane.setLayout(new FlowLayout());</span>
+        
+        // The panel that stores the 'Add Player' and 'Undo' buttons.
+<span class="nc" id="L741">        JPanel buttonArray = new JPanel();</span>
+<span class="nc" id="L742">        formatPanel(buttonArray, new Component[] {this.buttonArray[SUBMIT_BUTTON], this.buttonArray[UNDO_BUTTON]}, </span>
+<span class="nc" id="L743">        		    null, buttonArray.getLayout(), background);</span>
+<span class="nc" id="L744">        this.panels.add(buttonArray);</span>
+        
+        // The panel that stores the 'Old Games', 'Instructions', 'Settings', and 'Close' buttons.
+<span class="nc" id="L747">        JPanel instructSettingPanel = new JPanel(new GridLayout(4, 1));</span>
+<span class="nc" id="L748">        formatPanel(instructSettingPanel, new Component[] {this.buttonArray[OLDGAMES_BUTTON],</span>
+        												   this.buttonArray[INSTRUCTIONS_BUTTON],
+        												   this.buttonArray[SETTINGS_BUTTON],
+        												   this.buttonArray[CLOSE_BUTTON]},
+<span class="nc" id="L752">        			null, instructSettingPanel.getLayout(), background);</span>
+<span class="nc" id="L753">        this.panels.add(instructSettingPanel);</span>
+        
+        // The panel that frames the lower portion of the GetPlayersPanel that includes the four buttons
+        // and the list of players that is updated as players are entered.
+<span class="nc" id="L757">        JPanel[] frameComponents = {panelfy(instructSettingPanel, background, null, null), this.playerNames};</span>
+<span class="nc" id="L758">        this.panels.addAll(Arrays.asList(frameComponents));</span>
+<span class="nc" id="L759">        JPanel frame = new JPanel();</span>
+<span class="nc" id="L760">        formatPanel(frame, frameComponents, </span>
+        		    null, new FlowLayout(), background);
+<span class="nc" id="L762">        this.panels.add(frame);</span>
+
+        // All the elements in the GetPlayersPanel.
+<span class="nc" id="L765">        JPanel[] totalComponents = {panelfy(formatLabel(&quot;Basketball Statistics Tracking&quot;, FONT_SIZE, SETTINGS), background,</span>
+                                    null, new MatteBorder(BORDER_SIZE * 3, 0, BORDER_SIZE * 4, 0, background)), 
+<span class="nc" id="L767">        		                    panelfy(this.name, background, null, null), </span>
+        		                    buttonArray,  
+<span class="nc" id="L769">        		               panelfy(this.buttonArray[START_BUTTON], background, null, null)};</span>
+<span class="nc" id="L770">        this.panels.addAll(Arrays.asList(totalComponents));</span>
+<span class="nc" id="L771">        JPanel total = new JPanel();</span>
+<span class="nc" id="L772">        formatPanel(total, totalComponents, new MatteBorder(BORDER_SIZE * 2, BORDER_SIZE * 6, BORDER_SIZE * 6, BORDER_SIZE * 6, background), </span>
+        		    null, background);
+<span class="nc" id="L774">        total.add(frame, BorderLayout.SOUTH);</span>
+<span class="nc" id="L775">        this.panels.add(total);</span>
+<span class="nc" id="L776">        this.mainPanel = total;</span>
+<span class="nc" id="L777">        this.pane.add(this.mainPanel);</span>
+        try {
+<span class="nc" id="L779">            this.frame.getRootPane().setDefaultButton(this.buttonArray[SUBMIT_BUTTON]);</span>
+<span class="nc" id="L780">        } catch (NullPointerException nullE) {}</span>
+<span class="nc" id="L781">    }</span>
+    
+    // Post: Puts all the Components of the GetPlayersPanel into a window that opens when the user starts the program.
+    public void frame() {
+<span class="nc" id="L785">        this.frame.add(this.pane);</span>
+<span class="nc" id="L786">        this.frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</span>
+<span class="nc" id="L787">        this.frame.getRootPane().setDefaultButton(this.buttonArray[SUBMIT_BUTTON]);</span>
+<span class="nc" id="L788">        this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);</span>
+<span class="nc" id="L789">        this.frame.setVisible(true);</span>
+<span class="nc" id="L790">    }</span>
+    
+    // Post: Returns a JPanel with all the components of a GetPlayersPanel. Used in the InstructionsPanel.
+    public JPanel getPlayersPanel() {
+<span class="nc" id="L794">    	JPanel panel = this.pane;</span>
+<span class="nc" id="L795">    	panel.setPreferredSize(new Dimension(SCREENWIDTH - (BUTTON_HEIGHT * 5 / 2), (int) getDimension(this.pane).getHeight()));</span>
+<span class="nc" id="L796">		panel.setBorder(new MatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, DEFAULT_TEXT_BORDER_COLOR));</span>
+<span class="nc" id="L797">    	return panel;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

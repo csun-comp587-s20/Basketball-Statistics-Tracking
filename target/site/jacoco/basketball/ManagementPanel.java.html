@@ -1,0 +1,1108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ManagementPanel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">basketball</a> &gt; <a href="index.source.html" class="el_package">basketball</a> &gt; <span class="el_source">ManagementPanel.java</span></div><h1>ManagementPanel.java</h1><pre class="source lang-java linenums">// Alex Eidt
+// Basketball Statistics Tracking Program
+// ManagementPanel Class
+// The ManagementPanel is where the statistic tracking actually happens.
+// If the number of players entered equals the number of starters for the game, then the ManagementPanel
+// will show a button for each player entered.
+// If the number of players entered is greater than the number of starters for the game, then the
+// ManagementPanel will split into a list of player buttons showing players that are 'Currently on Court'
+// and another list showing players that are on the 'bench'.
+package basketball;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import java.util.List;
+import java.util.Timer;
+import javax.swing.*;
+import javax.swing.border.*;
+
+public class ManagementPanel extends GUISettings {
+    
+    private static final long serialVersionUID = 1L;
+    
+	// Indices of Buttons in the 'buttonArray'
+	private static final int BOXSCORE_BUTTON = 0;
+	private static final int UNDO_BUTTON = 1;
+	private static final int DONE_BUTTON = 2;
+	private static final int START_BUTTON = 3;
+	private static final int TIMEOUT_BUTTON = 4;
+	private static final int HOME_BUTTON = 5;
+	
+	// Key Bindings for each button in 'buttonArray'
+	private static final int UNDO_BUTTON_KEY = KeyEvent.VK_U;
+	private static final int BOXSCORE_BUTTON_KEY = KeyEvent.VK_B;
+	private static final int START_BUTTON_KEY = KeyEvent.VK_ENTER;
+	private static final int TIMEOUT_BUTTON_KEY = KeyEvent.VK_T;
+	private static final int HOME_BUTTON_KEY = KeyEvent.VK_ESCAPE;
+		
+    private String fileName; // Name of the file the game data is written to
+    private JButton[] buttonArray; // All the Buttons on the ManagementPanel
+    /*
+     * 'menuPanel' is the panel on the ManagementPanel frame that has all the player playerButtons.
+     *  If the number of starters entered by the user equals the number of players entered by
+     *  the user, then 'menuPanel' includes all player playerButtons in a FlowLayout
+     */
+    private JPanel playersOnBenchPanel; 
+    /*
+     * 'onFloorPanel' only is used when the number of starters entered by the user equals the number
+     * of players entered by the user. It stores a label of each player currently on the court.
+     */
+    private JPanel onFloorPanel;
+    /*
+     * 'headerPanel' is the panel that includes the label 'Roster Management' and the 'Score', 'Box Score',
+     *  'Undo', 'Done', 'Start/Stop', 'Settings' and the timer.
+     */
+    private JPanel headerPanel;
+    private List&lt;Player&gt; players, bench, total; // Player lists
+    private List&lt;JButton&gt; playerButtons; // List of player buttons.
+    private List&lt;Undo&gt; undo; // List of 'undo' representing every statistic tracked in chronological order.
+    private JFrame frame; // The frame used for the ManagementPanel.
+    private JLabel score; // The label showing the total points scored by the team.
+    private JLabel teamFouls; // The label showing the total team fouls.
+    private boolean splitPane; // If more players are entered than starters, then the lower panel is split.
+    private boolean startStop; // Alternates the function of the 'Start/Stop' button.
+    private boolean gameOver; // True if game is over, false if not.
+    private boolean isQuarters; // True if quarters is period type, false if Halves is period type.
+    private GameSettings SETTINGS; // Settings used for the game.
+    private JPanel managementPanel; // Used to frame the ManagementPanel in a JFrame.
+    private JPanel pane; // Panel used to switch between different windows.
+    private JPanel timePanel; // Panel used to store the timer.
+    private GameClock clock; // The timer used for the game.
+    private int period; // The current period of the game.
+    private int timeouts; // The number of timeouts for the team.
+    private int teamFoulsInPeriod; // The number of team fouls for the current period.
+    private Map&lt;String, Integer&gt; keyMap; // Maps keys pressed to their corresponding statistic.
+    private Map&lt;Integer, Integer&gt; playerKeys; // Maps numbers to corresponding players for each player button.
+    
+	private final int personalFouls; // The number of personal fouls allowed selected by the user in the settings.
+	private final int technicalFouls; // The number of technical fouls allowed selected by the user in the settings.
+	private final int flagrantI; // The number of Flagrant I fouls allowed selected by the user in the settings.
+	private final int flagrantII; // The number of Flagrant II fouls allowed selected by the user in the settings.
+	private final int numberStarters; // The number of starters for the game selected by the user in the settings.
+	private final Color background; // The background color selected by the user in the settings.
+    
+    // Parameters:
+    // 'players': List of players currently on the court (Starting if new game is being started).
+    // 'bench': List of players currently on the bench.
+    // 'undo': Statistical history of the game (empty if new game is being started).
+    // 'fileName': The name of the file the game data will be stored in.
+    // 'settings': The settings for the current game.
+    public ManagementPanel(List&lt;Player&gt; players, List&lt;Player&gt; bench, 
+<span class="nc" id="L91">    		               List&lt;Undo&gt; undo, String fileName, GameSettings settings) {</span>
+    	// Initialize fields with parameters
+<span class="nc" id="L93">        this.SETTINGS = settings;</span>
+<span class="nc" id="L94">        this.players = players;</span>
+<span class="nc" id="L95">        this.bench = bench;</span>
+<span class="nc" id="L96">        this.undo = undo;</span>
+<span class="nc" id="L97">        this.total = new ArrayList&lt;Player&gt;(players.size() + bench.size());</span>
+<span class="nc" id="L98">        this.total.addAll(players);</span>
+<span class="nc" id="L99">        this.total.addAll(bench);</span>
+<span class="nc" id="L100">        this.fileName = fileName;</span>
+        
+<span class="nc" id="L102">    	this.personalFouls = (int) SETTINGS.getSetting(Setting.PERSONAL_FOULS);</span>
+<span class="nc" id="L103">    	this.technicalFouls = (int) SETTINGS.getSetting(Setting.TECHNICAL_FOULS);</span>
+<span class="nc" id="L104">    	this.flagrantI = (int) SETTINGS.getSetting(Setting.FLAGRANT_I);</span>
+<span class="nc" id="L105">    	this.flagrantII = (int) SETTINGS.getSetting(Setting.FLAGRANT_II);</span>
+<span class="nc" id="L106">    	this.background = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);</span>
+<span class="nc" id="L107">        this.timeouts = (int) SETTINGS.getSetting(Setting.TIMEOUTS);</span>
+<span class="nc" id="L108">        this.period = (int) SETTINGS.getSetting(Setting.CURRENT_PERIOD);</span>
+<span class="nc" id="L109">        this.numberStarters = (int) SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS);</span>
+<span class="nc" id="L110">        this.isQuarters = (boolean) SETTINGS.getSetting(Setting.PERIOD_TYPE);</span>
+<span class="nc" id="L111">        this.playerButtons = new ArrayList&lt;JButton&gt;(this.total.size());</span>
+<span class="nc" id="L112">        this.keyMap = new HashMap&lt;String, Integer&gt;();</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">    	for (int i = 0; i &lt; STAT_KEYS.length; i++) {</span>
+<span class="nc" id="L114">        	this.keyMap.put(STAT_KEYS[i], KEY_EVENTS[i]);</span>
+    	}
+<span class="nc" id="L116">    	int[] playerKey = {KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, </span>
+    			           KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
+<span class="nc" id="L118">    	this.playerKeys = new HashMap&lt;Integer, Integer&gt;();</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">    	for (int i = 0; i &lt; playerKey.length; i++) {</span>
+<span class="nc" id="L120">    		this.playerKeys.put(i, playerKey[i]);</span>
+    	}
+<span class="nc" id="L122">        this.clock = new GameClock((int)((double) this.SETTINGS.getSetting(Setting.TIME_REMAINING) * 60 * 10));</span>
+<span class="nc" id="L123">        this.score = formatLabel(&quot;Score: &quot; + getTotal(&quot;PTS&quot;) + &quot;    &quot;, FONT_SIZE * 4 / 7, SETTINGS);</span>
+<span class="nc" id="L124">        format();</span>
+<span class="nc" id="L125">        getTeamFoulsInPeriod();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        this.gameOver = period == END_OF_GAME;</span>
+<span class="nc" id="L127">        this.playersOnBenchPanel.setBackground(background);</span>
+<span class="nc" id="L128">        initializeButtons();</span>
+<span class="nc" id="L129">    }</span>
+    
+    // Post: Correctly formats the UI for the ManagementPanel.
+    private void format() {
+<span class="nc" id="L133">        this.teamFouls = formatLabel(&quot;  Team Fouls: &quot; + this.teamFoulsInPeriod, FONT_SIZE * 4 / 7, SETTINGS);</span>
+<span class="nc" id="L134">        this.playersOnBenchPanel = new JPanel();</span>
+<span class="nc" id="L135">        this.headerPanel = new JPanel();  </span>
+<span class="nc" id="L136">        this.onFloorPanel = new JPanel(new GridLayout(this.players.size() + 1, 1));</span>
+<span class="nc" id="L137">        this.managementPanel = new JPanel();</span>
+<span class="nc" id="L138">        this.managementPanel.setBackground(this.background);</span>
+<span class="nc" id="L139">        this.pane = new JPanel();</span>
+<span class="nc" id="L140">        this.pane.setBackground(this.background);</span>
+<span class="nc" id="L141">        this.frame = new JFrame(&quot;Roster Management - &quot; + this.fileName);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">        if (this.total.size() != this.numberStarters) {</span>
+<span class="nc" id="L143">            this.playersOnBenchPanel.setLayout(new GridLayout(bench.size(), 1));</span>
+<span class="nc" id="L144">            this.splitPane = false;</span>
+<span class="nc" id="L145">            this.onFloorPanel.setBackground(DEFAULT_BACKGROUND_COLOR);</span>
+        } else {
+<span class="nc" id="L147">            this.playersOnBenchPanel.setLayout(new FlowLayout(1, 60, 40));</span>
+<span class="nc" id="L148">            this.splitPane = true;</span>
+        }
+<span class="nc" id="L150">    }</span>
+    
+    // Post: Creates and formats all buttons used in the ManagementPanel.
+    private void initializeButtons() {
+        // Create all buttons in the ManagementPanel
+<span class="nc" id="L155">        String[] buttonNames = {&quot; [B]ox Score&quot;, &quot; [U]ndo&quot;, &quot; Done&quot;, &quot;   Start&quot;, &quot; [T]imeouts: &quot; + this.timeouts, &quot;  Return to Game&quot;};</span>
+<span class="nc" id="L156">        int size = FONT_SIZE * 4 / 7;</span>
+<span class="nc" id="L157">        int[] sizes = {size, size, size, size, size, size}; </span>
+<span class="nc" id="L158">        this.buttonArray = createButtonArray(buttonNames, sizes, SETTINGS);</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">        this.buttonArray[UNDO_BUTTON].setEnabled(!this.undo.isEmpty());</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">		this.buttonArray[TIMEOUT_BUTTON].setEnabled(this.timeouts != 0);</span>
+<span class="nc" id="L161">		this.buttonArray[HOME_BUTTON].setBorder(null);</span>
+<span class="nc" id="L162">        setIcon(buttonArray, HOME_BUTTON, ROSTER_MANAGEMENT_ICON);</span>
+        // Add Icons to all buttons
+<span class="nc" id="L164">        int[] indices = {DONE_BUTTON, BOXSCORE_BUTTON, UNDO_BUTTON, START_BUTTON, TIMEOUT_BUTTON};</span>
+<span class="nc" id="L165">        String[] icons = {DONE_BUTTON_ICON, BOXSCORE_BUTTON_ICON, UNDO_BUTTON_ICON, </span>
+        		          PLAY_BUTTON_ICON, TIMEOUT_BUTTON_ICON};
+<span class="nc" id="L167">        formatIcons(this.buttonArray, indices, icons);</span>
+<span class="nc" id="L168">    }</span>
+    
+    // Post: Sets 'teamFoulsInPeriod' to the current team fouls in the period.
+    private void getTeamFoulsInPeriod() {
+<span class="nc bnc" id="L172" title="All 2 branches missed.">        for (Undo u : this.undo) {</span>
+<span class="nc" id="L173">        	char periodChar = u.getTimeOf().trim().charAt(0);</span>
+<span class="nc" id="L174">        	int adjust = 0;</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">        	if (periodChar == 'O') {</span>
+<span class="nc" id="L176">        		periodChar = u.getTimeOf().trim().charAt(2);</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">        		if (this.isQuarters) {</span>
+<span class="nc" id="L178">        			adjust = QUARTERS - 1;</span>
+        		} else {
+<span class="nc" id="L180">        			adjust = HALVES - 1;</span>
+        		}
+        	}
+<span class="nc bnc" id="L183" title="All 2 branches missed.">        	if (Integer.valueOf(periodChar + &quot;&quot;) + adjust == this.period + 1) {</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">        		if (u.getStatFromPlayer().equals(&quot;Personal Foul&quot;)) {</span>
+<span class="nc" id="L185">            		this.teamFoulsInPeriod++;</span>
+        		}
+        	}
+<span class="nc" id="L188">        }</span>
+<span class="nc" id="L189">    }</span>
+    
+    // Post: Adds function to the 'Box Score' button. Opens a new window with a table showing the
+    //       statistics for each player.
+    public void createTableButton() {
+<span class="nc" id="L194">        this.buttonArray[BOXSCORE_BUTTON].addActionListener(new AbstractAction() {</span>
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L196">            	pane.removeAll();</span>
+<span class="nc" id="L197">            	pane.setLayout(new BorderLayout());</span>
+<span class="nc" id="L198">            	JLabel title = formatLabel(&quot;  Box Score&quot;, FONT_SIZE * 5 / 6, SETTINGS);</span>
+<span class="nc" id="L199">            	setIcon(title, BOXSCORE_BUTTON_ICON);</span>
+<span class="nc" id="L200">            	JPanel header = panelfy(title, background, new GridLayout(1, 2), new MatteBorder(0, 0, BORDER_SIZE * 3, 0, background));</span>
+<span class="nc" id="L201">            	pane.add(header, BorderLayout.NORTH);</span>
+<span class="nc" id="L202">                Table table = new Table(total, getData(), FONT_SIZE / 3, FONT_SIZE / 3, SETTINGS);</span>
+<span class="nc" id="L203">            	JPanel allPanels = panelfy(table.getTable(), background, new GridLayout(1, 1), null);</span>
+<span class="nc" id="L204">                JScrollPane scrollTable = addScrollPane(allPanels);</span>
+<span class="nc" id="L205">                scrollTable.setBorder(null);</span>
+<span class="nc" id="L206">                scrollTable.setBackground(background);</span>
+<span class="nc" id="L207">                JPanel scroll = panelfy(scrollTable, background, new GridLayout(1, 1), null);</span>
+<span class="nc" id="L208">                frame.setTitle(&quot;Box Score&quot;);</span>
+<span class="nc" id="L209">                pane.add(scroll, BorderLayout.CENTER);</span>
+<span class="nc" id="L210">                pane.add(buttonArray[HOME_BUTTON], BorderLayout.SOUTH);</span>
+<span class="nc" id="L211">                pane.repaint();</span>
+<span class="nc" id="L212">                pane.revalidate();</span>
+<span class="nc" id="L213">            }</span>
+        });
+<span class="nc" id="L215">    	setButtonKey(this.buttonArray[BOXSCORE_BUTTON], BOXSCORE_BUTTON_KEY, 0);</span>
+<span class="nc" id="L216">    }</span>
+    
+    // Post: Adds functionality to the Home Button. Brings the user back to the Roster Management window.
+    public void createHomeButton() {
+<span class="nc" id="L220">    	this.buttonArray[HOME_BUTTON].addActionListener(new AbstractAction() {</span>
+    		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L222">    			pane.removeAll();</span>
+<span class="nc" id="L223">    			setPane();</span>
+<span class="nc" id="L224">    			frame.setTitle(&quot;Roster Management - &quot; + fileName);   </span>
+<span class="nc" id="L225">    			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</span>
+<span class="nc" id="L226">    		}</span>
+    	});
+<span class="nc" id="L228">    	setButtonKey(this.buttonArray[HOME_BUTTON], HOME_BUTTON_KEY, 0);</span>
+<span class="nc" id="L229">    }</span>
+    
+    // Post: Adds function to the 'Undo' button. Allows the user to select which period of the game
+    //       they want to eliminate a statistic from and shows a history of all statistics entered
+    //       during that period with the most recently entered statistic shown at the top.
+    public void createUndoButton() {
+<span class="nc" id="L235">        this.buttonArray[UNDO_BUTTON].addActionListener(new AbstractAction() {</span>
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L237">            	pane.removeAll();</span>
+<span class="nc" id="L238">            	pane.setLayout(new BorderLayout());</span>
+<span class="nc" id="L239">            	frame.setTitle(&quot;Undo Statistic&quot;);</span>
+                int numPeriods;
+                String periodType;
+<span class="nc" id="L242">                int periodNumbers = period;</span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">                if (gameOver) {</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">                	if (isQuarters) {</span>
+<span class="nc" id="L245">                		periodNumbers = QUARTERS;</span>
+                	} else {
+<span class="nc" id="L247">                		periodNumbers = HALVES;</span>
+                	}
+                }
+<span class="nc bnc" id="L250" title="All 2 branches missed.">                if (isQuarters) {</span>
+<span class="nc" id="L251">                	numPeriods = QUARTERS;</span>
+<span class="nc" id="L252">                	periodType = &quot;Quarter&quot;;</span>
+                } else {
+<span class="nc" id="L254">                	numPeriods = HALVES;</span>
+<span class="nc" id="L255">                	periodType = &quot;Half&quot;;</span>
+                }
+<span class="nc" id="L257">                boolean[] hasPeriod = new boolean[Math.max(periodNumbers + 1, numPeriods)];</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">                for (int i = 0; i &lt; hasPeriod.length; i++) {</span>
+<span class="nc bnc" id="L259" title="All 2 branches missed.">                	for (Undo u : undo) {</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">                		if (i &lt; GAME_PERIODS.length) {</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">                    		if (u.getTimeOf().contains(GAME_PERIODS[i])) {</span>
+<span class="nc" id="L262">                    			hasPeriod[i] = true;</span>
+<span class="nc" id="L263">                    			break;</span>
+                    		}
+                		} else {
+<span class="nc bnc" id="L266" title="All 2 branches missed.">                			if (u.getTimeOf().contains(&quot;OT&quot; + (i - GAME_PERIODS.length + 1))) {</span>
+<span class="nc" id="L267">                				hasPeriod[i] = true;</span>
+<span class="nc" id="L268">                				break;</span>
+                			}
+                		}
+<span class="nc" id="L271">                	}</span>
+                }
+<span class="nc" id="L273">                JPanel periods = new JPanel(new GridLayout(1, hasPeriod.length));</span>
+<span class="nc" id="L274">                JPanel undoPanel = new JPanel();</span>
+<span class="nc bnc" id="L275" title="All 2 branches missed.">                for (int i = 0; i &lt; hasPeriod.length; i++) {</span>
+                	String periodText;
+                	String check;
+<span class="nc bnc" id="L278" title="All 2 branches missed.">                	if (i &lt; GAME_PERIODS.length) {</span>
+<span class="nc" id="L279">                		periodText = GAME_PERIODS[i] + &quot; &quot; + periodType;</span>
+<span class="nc" id="L280">                		check = GAME_PERIODS[i];</span>
+            		} else {
+<span class="nc" id="L282">            			check = periodText = &quot;OT&quot; + (i - GAME_PERIODS.length + 1);</span>
+            		}
+<span class="nc" id="L284">                	JButton selectPeriod = new JButton(periodText);</span>
+<span class="nc" id="L285">                	selectPeriod.setEnabled(hasPeriod[i]);</span>
+<span class="nc" id="L286">                	formatButton(selectPeriod, BUTTON_HEIGHT, BUTTON_HEIGHT, FONT_SIZE / 3, SETTINGS);</span>
+<span class="nc" id="L287">                	periods.add(selectPeriod);</span>
+<span class="nc" id="L288">                	selectPeriod.addActionListener(new AbstractAction() {</span>
+                		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L290">                			undoPanel.removeAll();</span>
+<span class="nc" id="L291">                			int grid = 0;</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">                			for (int i = undo.size() - 1; i &gt;= 0; i--) {</span>
+<span class="nc" id="L293">                				Undo u = undo.get(i);</span>
+<span class="nc" id="L294">                            	Player play = u.getPlayer();</span>
+<span class="nc" id="L295">                            	String undoString = u.toString();</span>
+<span class="nc bnc" id="L296" title="All 2 branches missed.">                            	if (u.getTimeOf().contains(check)) {</span>
+<span class="nc" id="L297">                            		grid++;</span>
+<span class="nc" id="L298">                            		JButton undoButton = new JButton(play.toString() + &quot; &quot; + undoString);</span>
+<span class="nc" id="L299">                                    formatButton(undoButton, BUTTON_HEIGHT, BUTTON_HEIGHT, FONT_SIZE / 3, SETTINGS);</span>
+<span class="nc" id="L300">                                    undoPanel.add(undoButton);</span>
+<span class="nc" id="L301">                                    undoButton.addActionListener(new AbstractAction() {</span>
+                                    	public void actionPerformed(ActionEvent e) {
+<span class="nc bnc" id="L303" title="All 2 branches missed.">                                    		if (!u.getStatFromPlayer().equals(&quot;Substitution&quot;)) {</span>
+<span class="nc" id="L304">                                                Player astPlayer = u.getAstPlayer();</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">                                                if (u.hasAssistPlayer()) {</span>
+<span class="nc" id="L306">                                                	int index = total.indexOf(astPlayer);</span>
+<span class="nc" id="L307">                                                	Player player = total.get(index);</span>
+<span class="nc" id="L308">                                                	player.add(false, &quot;Assist&quot;);</span>
+                                                }
+<span class="nc" id="L310">                                                String stat = u.getStatFromPlayer();</span>
+<span class="nc" id="L311">                                                play.add(false, stat);</span>
+<span class="nc bnc" id="L312" title="All 3 branches missed.">                                                switch (stat) {</span>
+                                                case &quot;Personal Foul&quot;:
+                                                case &quot;PF&quot;:
+<span class="nc" id="L315">                                                	teamFoulsInPeriod--;</span>
+<span class="nc" id="L316">                                                	teamFouls.setText(&quot;  Team Fouls: &quot; + teamFoulsInPeriod);</span>
+                                                case &quot;Technical Foul&quot;:
+                                                case &quot;TF&quot;:
+                                                case &quot;Flagrant I Foul&quot;:
+                                                case &quot;FLGI&quot;:
+                                                case &quot;Flagrant II Foul&quot;:
+                                                case &quot;FLGII&quot;:
+<span class="nc" id="L323">                                                	updateOnFloorPanel();</span>
+                                                	break;
+                                                }
+                                            }
+<span class="nc" id="L327">                                            undo.remove(u);</span>
+<span class="nc" id="L328">                                            score.setText(&quot;Score: &quot; + getTotal(&quot;PTS&quot;) + &quot;    &quot;);</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">                                            buttonArray[UNDO_BUTTON].setEnabled(!undo.isEmpty());</span>
+<span class="nc" id="L330">                                			pane.removeAll();</span>
+<span class="nc" id="L331">                                			setPane();</span>
+<span class="nc" id="L332">                                			frame.setTitle(&quot;Roster Management - &quot; + fileName);   </span>
+<span class="nc" id="L333">                                			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</span>
+<span class="nc" id="L334">                                            buttonArray[HOME_BUTTON].setText(&quot;  Return to Game&quot;);</span>
+<span class="nc" id="L335">                                            setIcon(buttonArray, HOME_BUTTON, ROSTER_MANAGEMENT_ICON);</span>
+<span class="nc" id="L336">                                    	}</span>
+                                    });
+                            	}
+                            }
+<span class="nc" id="L340">                			undoPanel.setLayout(new GridLayout(grid, 1));</span>
+<span class="nc" id="L341">                			undoPanel.repaint();</span>
+<span class="nc" id="L342">                			undoPanel.revalidate();</span>
+<span class="nc" id="L343">                		}</span>
+                	});
+                };
+<span class="nc" id="L346">                undoPanel.setBackground(background);</span>
+<span class="nc" id="L347">                periods.setBackground(background);</span>
+<span class="nc" id="L348">                JLabel label = formatLabel(&quot;  Undo&quot;, FONT_SIZE * 3 / 4, SETTINGS);</span>
+<span class="nc" id="L349">                setIcon(label, UNDO_BUTTON_ICON);</span>
+<span class="nc" id="L350">                JScrollPane scrollPane = addScrollPane(undoPanel);</span>
+<span class="nc" id="L351">                scrollPane.setBorder(null);</span>
+<span class="nc" id="L352">                scrollPane.setBackground(background);</span>
+<span class="nc" id="L353">                JPanel panel = panelfy(label, background, null, new MatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE * 2, BORDER_SIZE, background));</span>
+<span class="nc" id="L354">                JPanel scroll = panelfy(scrollPane, background, new GridLayout(1, 1), null);</span>
+<span class="nc" id="L355">                JPanel total = new JPanel();</span>
+<span class="nc" id="L356">                total.add(panel);</span>
+<span class="nc" id="L357">                total.add(periods);</span>
+<span class="nc" id="L358">                total.add(scroll);</span>
+<span class="nc" id="L359">                total.setBackground(background);</span>
+<span class="nc" id="L360">                total.setLayout(new BoxLayout(total, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L361">                pane.add(total, BorderLayout.CENTER);</span>
+<span class="nc" id="L362">            	pane.add(buttonArray[HOME_BUTTON], BorderLayout.SOUTH);</span>
+<span class="nc" id="L363">                pane.revalidate();</span>
+<span class="nc" id="L364">                pane.repaint();</span>
+<span class="nc" id="L365">            }</span>
+        });
+<span class="nc" id="L367">    	setButtonKey(this.buttonArray[UNDO_BUTTON], UNDO_BUTTON_KEY, 0);</span>
+<span class="nc" id="L368">    }</span>
+    
+    // Post: Creates all the player buttons in the case that the number of players entered equals the
+    //       number of starters entered by the user.
+    public void createTeamButtons() {
+<span class="nc" id="L373">    	int fontSize = FONT_SIZE * 5 / 7;</span>
+<span class="nc" id="L374">    	int height = BUTTON_HEIGHT * 6 / 5;</span>
+<span class="nc" id="L375">    	this.playersOnBenchPanel.setLayout(new GridLayout(this.numberStarters, 1));</span>
+<span class="nc bnc" id="L376" title="All 2 branches missed.">    	for (int i = 0; i &lt; this.total.size(); i++) {</span>
+<span class="nc" id="L377">    		Player player = this.total.get(i);</span>
+<span class="nc" id="L378">            JButton playerButton = new JButton(&quot;[&quot; + (i + 1) + &quot;]  &quot; + player.toString());</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">            boolean isOut = !player.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII);</span>
+<span class="nc" id="L380">            playerButton.setEnabled(isOut);</span>
+<span class="nc" id="L381">            int width = (int) getDimension(formatLabel(playerButton.getText(), fontSize, SETTINGS)).getWidth();</span>
+<span class="nc" id="L382">            formatButton(playerButton, width * 2, height, fontSize, SETTINGS);</span>
+<span class="nc bnc" id="L383" title="All 2 branches missed.">            if (!isOut) {</span>
+<span class="nc" id="L384">            	playerButton.setBackground(FOULED_OUT_BUTTON_COLOR);</span>
+            }
+<span class="nc" id="L386">            this.playersOnBenchPanel.add(playerButton);</span>
+<span class="nc" id="L387">            playerButton.addActionListener(new AbstractAction() {</span>
+                public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L389">                    addStatButton(player, playerButton);</span>
+<span class="nc" id="L390">                }</span>
+            });
+<span class="nc" id="L392">            setButtonKey(playerButton, this.playerKeys.get(i + 1), 0);</span>
+<span class="nc" id="L393">            this.playerButtons.add(playerButton);</span>
+        }
+<span class="nc" id="L395">    }</span>
+    
+    // Post: Creates all the player buttons in the case that the number of players entered is greater
+    //       than the number of starters entered by the user.
+    public void createPlayerButtons() {
+<span class="nc" id="L400">    	int fontSize = FONT_SIZE * 2 / 3;</span>
+<span class="nc bnc" id="L401" title="All 2 branches missed.">        for (Player player : this.total) {</span>
+<span class="nc" id="L402">        	JButton playerButton = new JButton(player.toString());</span>
+<span class="nc" id="L403">            formatButton(playerButton, BUTTON_HEIGHT, BUTTON_HEIGHT, fontSize, SETTINGS);</span>
+<span class="nc" id="L404">            playerButton.addActionListener(new AbstractAction() {</span>
+                public void actionPerformed(ActionEvent e) {
+<span class="nc bnc" id="L406" title="All 2 branches missed.">                    if (player.isStarter()) {</span>
+<span class="nc" id="L407">                        addStatButton(player, playerButton);</span>
+                    } else {
+<span class="nc" id="L409">                    	subNewPlayer(player, players, bench, false);</span>
+                    }
+<span class="nc" id="L411">                }</span>
+            });
+<span class="nc" id="L413">            this.playerButtons.add(playerButton);</span>
+<span class="nc" id="L414">        }</span>
+<span class="nc" id="L415">        updateOnFloorPanel();</span>
+<span class="nc" id="L416">    }</span>
+   
+    // Post: Adds function to the 'Done' button. Closes the ManagementPanel.
+    public void createDoneButton() {
+<span class="nc" id="L420">        this.buttonArray[DONE_BUTTON].addActionListener(new AbstractAction() {</span>
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L422">                Player player = new Player(&quot;DONE&quot;, &quot;DONE&quot;, &quot;DONE&quot;);</span>
+<span class="nc" id="L423">                undo.add(new Undo(player, &quot;DONE&quot;, &quot;DONE&quot;));</span>
+<span class="nc" id="L424">                updateFile(total);</span>
+<span class="nc bnc" id="L425" title="All 2 branches missed.">                if (clock.isRunning()) {</span>
+<span class="nc" id="L426">                	clock.stopTimer();</span>
+                }
+<span class="nc" id="L428">                frame.dispose();</span>
+<span class="nc" id="L429">            }</span>
+        });
+<span class="nc" id="L431">	    this.frame.addWindowListener(new WindowAdapter() {</span>
+	        public void windowClosed(WindowEvent w) {
+<span class="nc" id="L433">                Player player = new Player(&quot;DONE&quot;, &quot;DONE&quot;, &quot;DONE&quot;);</span>
+<span class="nc" id="L434">                undo.add(new Undo(player, &quot;DONE&quot;, &quot;DONE&quot;));</span>
+<span class="nc" id="L435">                updateFile(total);</span>
+<span class="nc bnc" id="L436" title="All 2 branches missed.">                if (clock.isRunning()) {</span>
+<span class="nc" id="L437">                	clock.stopTimer();</span>
+                }
+<span class="nc" id="L439">                frame.dispose();</span>
+<span class="nc" id="L440">            }</span>
+	    });
+<span class="nc" id="L442">    }</span>
+    
+    // Post: Adds function to the 'Start/Stop' buttons used to manage the time.
+    public void createStartStopButton() {
+<span class="nc" id="L446">        this.buttonArray[START_BUTTON].addActionListener(new AbstractAction() {</span>
+            public void actionPerformed(ActionEvent e) {
+<span class="nc bnc" id="L448" title="All 2 branches missed.">                startStop = !startStop;</span>
+<span class="nc bnc" id="L449" title="All 2 branches missed.">                if (startStop) {</span>
+<span class="nc" id="L450">                    clock.startTimer();</span>
+<span class="nc" id="L451">                    setIcon(buttonArray, START_BUTTON, PAUSE_BUTTON_ICON);</span>
+<span class="nc" id="L452">                    buttonArray[START_BUTTON].setText(&quot;   Stop&quot;);</span>
+                } else {
+<span class="nc bnc" id="L454" title="All 2 branches missed.">                	if (clock.isRunning()) {</span>
+<span class="nc" id="L455">                		clock.stopTimer();</span>
+                	}
+<span class="nc" id="L457">                    setIcon(buttonArray, START_BUTTON, PLAY_BUTTON_ICON);</span>
+<span class="nc" id="L458">                    buttonArray[START_BUTTON].setText(&quot;   Start&quot;);</span>
+                }
+<span class="nc" id="L460">            }</span>
+        });
+<span class="nc" id="L462">        setButtonKey(buttonArray[START_BUTTON], START_BUTTON_KEY, 0);</span>
+<span class="nc" id="L463">    }</span>
+    
+    // Post: Adds function to the 'Timeouts' button. Decreases the number of timeouts by 1 every time 
+    //       it is pressed and stops the clock if it is running.
+    public void createTimeoutButton() {
+<span class="nc" id="L468">    	this.buttonArray[TIMEOUT_BUTTON].addActionListener(new AbstractAction() {</span>
+    		public void actionPerformed(ActionEvent e) {
+<span class="nc bnc" id="L470" title="All 2 branches missed.">    			if (timeouts &gt; 0) {</span>
+<span class="nc" id="L471">        			timeouts--;</span>
+<span class="nc bnc" id="L472" title="All 2 branches missed.">        			buttonArray[TIMEOUT_BUTTON].setEnabled(timeouts != 0);</span>
+<span class="nc bnc" id="L473" title="All 2 branches missed.">        			if (clock.isRunning()) {</span>
+<span class="nc" id="L474">        				clock.stopTimer();</span>
+<span class="nc bnc" id="L475" title="All 2 branches missed.">        				startStop = !startStop;</span>
+<span class="nc" id="L476">        				setIcon(buttonArray, START_BUTTON, PLAY_BUTTON_ICON);</span>
+<span class="nc" id="L477">                        buttonArray[START_BUTTON].setText(&quot;   Start&quot;);</span>
+        			}
+<span class="nc" id="L479">        			SETTINGS.setSetting(timeouts, Setting.TIMEOUTS);</span>
+<span class="nc" id="L480">        			updateFile(total);</span>
+    			} 
+<span class="nc" id="L482">    			buttonArray[TIMEOUT_BUTTON].setText(&quot; [T]imeouts: &quot; + timeouts);</span>
+<span class="nc" id="L483">    		}</span>
+    	});
+<span class="nc" id="L485">    	setButtonKey(this.buttonArray[TIMEOUT_BUTTON], TIMEOUT_BUTTON_KEY, 0);</span>
+<span class="nc" id="L486">    }</span>
+    
+    // Post: Adds all the Components created to the ManagementPanel and formats the ManagementPanel.
+    public void addElements() {
+    	// The panel that stores the header with 'Roster Management' that appears at the top of the
+    	// ManagementPanel.
+<span class="nc" id="L492">    	JLabel header = formatLabel(&quot;   Roster Management&quot;, FONT_SIZE * 5 / 6, SETTINGS);</span>
+<span class="nc" id="L493">    	setIcon(header, ROSTER_MANAGEMENT_ICON);</span>
+        
+<span class="nc" id="L495">        startTimerWindow();</span>
+        
+<span class="nc" id="L497">        FlowLayout layout = new FlowLayout(1, 20, 10);</span>
+        // The first row of the ManagementPanel that has the 'Score' label, the 'Box Score', 'Undo', and 'Done' buttons
+<span class="nc" id="L499">        JPanel buttonHeader = new JPanel();</span>
+<span class="nc" id="L500">        setIcon(this.score, SCORE_BUTTON_ICON);</span>
+<span class="nc" id="L501">        formatPanel(buttonHeader, new Component[] {this.score, </span>
+        		                                   this.buttonArray[BOXSCORE_BUTTON], 
+        		                                   this.buttonArray[UNDO_BUTTON], 
+        		                                   this.buttonArray[DONE_BUTTON]}, 
+        		    null, layout, background);
+        // The second row of the ManagementPanel that has the current time and period of the game (timePanel), the 'Start'
+        // and 'Timeout' buttons and the 'Team Fouls' label.
+<span class="nc" id="L508">        JPanel timerHeader = new JPanel();</span>
+<span class="nc" id="L509">        setIcon(this.teamFouls, TEAMFOULS_ICON);</span>
+<span class="nc" id="L510">        formatPanel(timerHeader, new Component[] {timePanel, </span>
+        		                                  this.buttonArray[START_BUTTON], 
+        		                                  this.buttonArray[TIMEOUT_BUTTON], 
+        		                                  this.teamFouls}, 
+        		    null, layout, background);
+        
+        // The panel that stores all of the components above in a 3 x 1 grid with the header coming first,
+        // then the first row of buttons, followed by the second row of buttons.
+<span class="nc" id="L518">        formatPanel(this.headerPanel, new Component[] {panelfy(header, background, new GridBagLayout(), null), </span>
+        		                                       buttonHeader, timerHeader},
+        		    new MatteBorder(0, 0, BORDER_SIZE * 4, 0, background), new GridLayout(3, 1), background);
+        
+        // The panel that stores the 'Bench' label that appears above all the players currently on the bench
+<span class="nc" id="L523">        JPanel bench = panelfy(formatLabel(&quot;Bench&quot;, FONT_SIZE * 2 / 3, SETTINGS), DEFAULT_BACKGROUND_COLOR, null,</span>
+        		               new MatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, DEFAULT_TEXT_BORDER_COLOR));
+        // The panel that stores all the players on the bench. A scroll bar is added if the number of players on the bench
+        // is large
+<span class="nc" id="L527">        JPanel menu = new JPanel();</span>
+<span class="nc" id="L528">        formatPanel(menu, new Component[] {bench, addScrollPane(this.playersOnBenchPanel)}, null, null, background);</span>
+        // The panel that stores all the players currently on the court
+<span class="nc" id="L530">        JPanel onCourt = panelfy(formatLabel(&quot;Currently on Court&quot;, FONT_SIZE * 2 / 3, SETTINGS), DEFAULT_BACKGROUND_COLOR,</span>
+        		                 null, new MatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, DEFAULT_TEXT_BORDER_COLOR));
+<span class="nc" id="L532">        JPanel onCourtPanel = new JPanel();</span>
+<span class="nc" id="L533">        formatPanel(onCourtPanel, new Component[] {onCourt, addScrollPane(this.onFloorPanel)}, null, null, background);</span>
+        
+        // Switches which side the bench panel and the on court panel are based on if the user selected
+        // left/right handed
+<span class="nc bnc" id="L537" title="All 2 branches missed.">        if (!this.splitPane) {</span>
+<span class="nc" id="L538">            JPanel pane = new JPanel(new GridLayout(1, 2));</span>
+            if (RIGHT_HANDED) {
+            	pane.add(menu);
+            	pane.add(onCourtPanel);
+            } else {
+<span class="nc" id="L543">            	pane.add(onCourtPanel);</span>
+<span class="nc" id="L544">            	pane.add(menu);</span>
+            }
+<span class="nc" id="L546">        	pane.setBackground(background);</span>
+<span class="nc" id="L547">            this.managementPanel = pane;</span>
+<span class="nc" id="L548">        } else {</span>
+<span class="nc" id="L549">            this.managementPanel = this.playersOnBenchPanel;</span>
+        }
+<span class="nc" id="L551">    }</span>
+    
+    // Post: Starts the loop that updates the 'timePanel' which stores the timer for the game.
+    private void startTimerWindow() {
+    	// Timer
+<span class="nc" id="L556">        this.timePanel = new JPanel();</span>
+<span class="nc" id="L557">        JLabel currentTime = formatLabel(getPeriodText(), FONT_SIZE * 6 / 7, SETTINGS);</span>
+<span class="nc" id="L558">        this.timePanel.add(currentTime);</span>
+<span class="nc" id="L559">        Timer timer = new Timer();</span>
+<span class="nc" id="L560">        TimerTask t = new TimerTask() {</span>
+            public void run() {
+            	// If the clock is at 0.0, then it is time for the next period of the game.
+<span class="nc bnc" id="L563" title="All 2 branches missed.">                if (clock.isRunning()) {</span>
+<span class="nc bnc" id="L564" title="All 2 branches missed.">                	if (clock.getTime().equals(&quot;0.0&quot;)) {</span>
+<span class="nc" id="L565">                        buttonArray[START_BUTTON].setText(&quot;   Start&quot;);</span>
+<span class="nc bnc" id="L566" title="All 2 branches missed.">                        startStop = !startStop;</span>
+<span class="nc" id="L567">                        setIcon(buttonArray, START_BUTTON, PLAY_BUTTON_ICON);</span>
+<span class="nc" id="L568">                        clock.setTime((int) ((double) SETTINGS.getSetting(Setting.GAME_LENGTH) * 10 * 60));</span>
+<span class="nc bnc" id="L569" title="All 2 branches missed.">                        if (clock.isRunning()) {</span>
+<span class="nc" id="L570">                            clock.stopTimer();</span>
+                        }
+<span class="nc" id="L572">                        teamFoulsInPeriod = 0;</span>
+<span class="nc" id="L573">                        period++;</span>
+<span class="nc" id="L574">                        SETTINGS.setSetting(period, Setting.CURRENT_PERIOD);</span>
+                        // If the last period of the game is over, then the current period is set to END_OF_GAME to signal the
+                        // end of the game.
+<span class="nc bnc" id="L577" title="All 10 branches missed.">                        if (((isQuarters &amp;&amp; period &gt; HALVES) || (!isQuarters &amp;&amp; period &gt; QUARTERS)) &amp;&amp; !gameOver) {</span>
+<span class="nc" id="L578">                        	AbstractAction yesButton = new AbstractAction() {</span>
+                        		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L580">                        			SETTINGS.setSetting(period, Setting.CURRENT_PERIOD);</span>
+<span class="nc" id="L581">                        			double gameLength = (double) SETTINGS.getSetting(Setting.OVERTIME_LENGTH);</span>
+<span class="nc" id="L582">                        			SETTINGS.setSetting(gameLength, Setting.TIME_REMAINING);</span>
+<span class="nc" id="L583">                        			SETTINGS.setSetting(gameLength, Setting.GAME_LENGTH);</span>
+<span class="nc" id="L584">                        			clock.setTime((int) ((double) SETTINGS.getSetting(Setting.GAME_LENGTH) * 10 * 60));</span>
+<span class="nc" id="L585">                        			pane.removeAll();</span>
+<span class="nc" id="L586">                        			setPane();</span>
+<span class="nc" id="L587">                        			gameOver = false;</span>
+<span class="nc" id="L588">                        			timeouts = (int) SETTINGS.getSetting(Setting.OT_TIMEOUTS);</span>
+<span class="nc" id="L589">                        			buttonArray[TIMEOUT_BUTTON].setText(&quot; [T]imeouts: &quot; + timeouts);</span>
+<span class="nc" id="L590">                        			buttonArray[TIMEOUT_BUTTON].setEnabled(true);</span>
+<span class="nc" id="L591">                                    setTimerLabel(timer, currentTime);</span>
+<span class="nc" id="L592">                        		}</span>
+                        	};
+<span class="nc" id="L594">                        	AbstractAction noButton = new AbstractAction() {</span>
+                        		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L596">                        			period = END_OF_GAME;</span>
+<span class="nc" id="L597">                                    SETTINGS.setSetting(END_OF_GAME, Setting.CURRENT_PERIOD);</span>
+<span class="nc" id="L598">                        			pane.removeAll();</span>
+<span class="nc" id="L599">                        			setPane();</span>
+<span class="nc" id="L600">                        			gameOver = true;</span>
+<span class="nc" id="L601">                        		}</span>
+                        	};
+<span class="nc" id="L603">                        	confirmPane(pane, frame, noButton, yesButton, &quot;Overtime?&quot;, OVERTIME_ICON, SETTINGS);</span>
+                        }
+<span class="nc" id="L605">                    	updateFile(total);</span>
+                    }
+                	// Increment the time the player is on the court
+<span class="nc bnc" id="L608" title="All 2 branches missed.">                    for (Player p : players) {</span>
+<span class="nc" id="L609">                        p.add(true, &quot;MIN&quot;);</span>
+<span class="nc" id="L610">                    }</span>
+<span class="nc" id="L611">                    SETTINGS.setSetting(clock.getTenthsTime() / 600.0, Setting.TIME_REMAINING);</span>
+                    // Update the time the players are on the court every minute
+<span class="nc bnc" id="L613" title="All 2 branches missed.">                    if (clock.getTime().endsWith(&quot;:00&quot;)) {</span>
+<span class="nc" id="L614">                        updateFile(total);</span>
+                    }
+<span class="nc bnc" id="L616" title="All 2 branches missed.">                    if (timePanel.isDisplayable()) {</span>
+<span class="nc" id="L617">                    	setTimerLabel(timer, currentTime);</span>
+                    } 
+                }           
+<span class="nc" id="L620">            }</span>
+        };
+<span class="nc" id="L622">        timer.schedule(t, 0, TIMER_SETTING);        </span>
+<span class="nc" id="L623">        this.timePanel.setBackground(background);</span>
+<span class="nc" id="L624">    }</span>
+    
+    // Post: Sets the current period number and time left in the period for the timer.
+    private void setTimerLabel(Timer timer, JLabel currentTime) {
+<span class="nc" id="L628">    	String result = getPeriodText();</span>
+<span class="nc bnc" id="L629" title="All 2 branches missed.">        if (period == END_OF_GAME) { // If the game has ended</span>
+<span class="nc" id="L630">            buttonArray[START_BUTTON].setEnabled(false);</span>
+            // Disable all buttons
+<span class="nc bnc" id="L632" title="All 2 branches missed.">            for (JButton btn : playerButtons) {</span>
+<span class="nc" id="L633">                btn.setEnabled(false);</span>
+<span class="nc" id="L634">            }</span>
+<span class="nc bnc" id="L635" title="All 2 branches missed.">            if (clock.isRunning()) {</span>
+<span class="nc" id="L636">            	clock.stopTimer();</span>
+            }
+            // Stop the timer
+<span class="nc" id="L639">            timer.cancel();</span>
+<span class="nc" id="L640">            timer.purge();</span>
+        }
+        // Label showing the current period and time of game
+<span class="nc" id="L643">        currentTime.setText(result);</span>
+<span class="nc" id="L644">        currentTime.revalidate();</span>
+<span class="nc" id="L645">        currentTime.repaint();</span>
+<span class="nc" id="L646">    }</span>
+    
+    // Post: Opens a window asking the user to substitute the given Player 'play' for a new player.
+    // Parameters:
+    // 'play': The player being substituted.
+    // 'players': The list of Players from which the substitute is chosen.
+    // 'bench': The list of Players from which the player is pulled out of.
+    // 'freeze': Whether a player is being substituted because they have fouled out of the game (If so freeze: true)
+    private void subNewPlayer(Player play, List&lt;Player&gt; players, List&lt;Player&gt; bench, boolean freeze) {
+<span class="nc" id="L655">    	this.frame.setTitle(&quot;Substitution - &quot; + play.toString() + &quot; for:&quot;);</span>
+<span class="nc" id="L656">    	this.pane.removeAll();</span>
+<span class="nc" id="L657">    	this.pane.setLayout(new GridBagLayout());</span>
+<span class="nc" id="L658">    	JLabel label = formatLabel(&quot; SUBSTITUTION&quot;, FONT_SIZE * 3 / 4, SETTINGS);</span>
+<span class="nc" id="L659">    	JPanel header = panelfy(label, background, new GridBagLayout(), </span>
+    			                new MatteBorder(BORDER_SIZE * 2, 0, BORDER_SIZE * 3, 0, background));
+<span class="nc" id="L661">    	setIcon(label, SUB_PLAYER_ICON);</span>
+<span class="nc" id="L662">    	JPanel subHeader = panelfy(formatLabel(play.toString() + &quot; for...&quot;, FONT_SIZE * 2 / 3, SETTINGS),</span>
+    			                   background, new GridBagLayout(), null);
+<span class="nc" id="L664">    	JPanel headers = new JPanel();</span>
+<span class="nc" id="L665">    	formatPanel(headers, new Component[] {header, subHeader},</span>
+    			    new MatteBorder(0, 0, 0, BORDER_SIZE * 10, background),
+    			    new GridLayout(2, 1), background);
+<span class="nc" id="L668">    	this.pane.add(headers);</span>
+<span class="nc" id="L669">    	JPanel buttons = new JPanel();</span>
+<span class="nc" id="L670">    	buttons.setBorder(new MatteBorder(0, BORDER_SIZE, 0, 0, DEFAULT_TEXT_BORDER_COLOR));</span>
+<span class="nc" id="L671">        int numberButtons = 0;</span>
+<span class="nc" id="L672">        JPanel subPanel = new JPanel();</span>
+<span class="nc" id="L673">        subPanel.setBackground(background);</span>
+<span class="nc bnc" id="L674" title="All 2 branches missed.">        for (Player player : players) {</span>
+<span class="nc bnc" id="L675" title="All 2 branches missed.">        	if (!player.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {</span>
+<span class="nc" id="L676">        		JButton sub = new JButton(&quot;[&quot; + (numberButtons + 1) + &quot;]  &quot; + player.toString());</span>
+<span class="nc" id="L677">                formatButton(sub, BUTTON_HEIGHT * 4, BUTTON_HEIGHT, FONT_SIZE / 2, SETTINGS);</span>
+<span class="nc" id="L678">                sub.setBorder(null);</span>
+<span class="nc" id="L679">                buttons.add(sub);</span>
+<span class="nc" id="L680">                sub.addActionListener(new AbstractAction() {</span>
+                    public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L682">                        bench.remove(play);</span>
+<span class="nc" id="L683">                        bench.add(player);</span>
+<span class="nc" id="L684">                        players.remove(player);</span>
+<span class="nc" id="L685">                        players.add(play);</span>
+<span class="nc bnc" id="L686" title="All 2 branches missed.">                        if (freeze) {</span>
+<span class="nc" id="L687">                            play.setOffFloor();</span>
+<span class="nc" id="L688">                            player.setOnFloor();</span>
+                        } else {
+<span class="nc" id="L690">                            player.setOffFloor();</span>
+<span class="nc" id="L691">                            play.setOnFloor();</span>
+                        }              
+<span class="nc" id="L693">                        onFloorPanel.revalidate();</span>
+<span class="nc" id="L694">                        playersOnBenchPanel.revalidate();</span>
+<span class="nc" id="L695">                    	buttonArray[HOME_BUTTON].setText(&quot;  Return to Game&quot;);</span>
+<span class="nc" id="L696">                    	setIcon(buttonArray, HOME_BUTTON, ROSTER_MANAGEMENT_ICON);</span>
+<span class="nc" id="L697">                        pane.removeAll();</span>
+<span class="nc" id="L698">                        setPane();</span>
+<span class="nc" id="L699">                        updateOnFloorPanel();</span>
+<span class="nc" id="L700">                    }</span>
+                });	
+<span class="nc" id="L702">                setButtonKey(sub, this.playerKeys.get(numberButtons + 1), 0);</span>
+<span class="nc" id="L703">        		numberButtons++;</span>
+        	}
+<span class="nc" id="L705">        }</span>
+<span class="nc bnc" id="L706" title="All 2 branches missed.">        if (numberButtons == 0) {</span>
+<span class="nc" id="L707">        	updateOnFloorPanel();</span>
+        } else {
+        	int grid;
+<span class="nc bnc" id="L710" title="All 2 branches missed.">            if (!freeze) {</span>
+<span class="nc" id="L711">            	JButton cancel = new JButton(&quot;[ESC] ::: Cancel&quot;);</span>
+<span class="nc" id="L712">            	formatButton(cancel, BUTTON_HEIGHT * 4, BUTTON_HEIGHT, FONT_SIZE / 2, SETTINGS);</span>
+<span class="nc" id="L713">            	cancel.setBorder(null);</span>
+<span class="nc" id="L714">            	cancel.addActionListener(this.buttonArray[HOME_BUTTON].getActionListeners()[0]);</span>
+<span class="nc" id="L715">            	setButtonKey(cancel, KeyEvent.VK_ESCAPE, 0);</span>
+<span class="nc" id="L716">            	buttons.add(cancel);</span>
+<span class="nc" id="L717">            	grid = players.size() + 1;</span>
+<span class="nc" id="L718">            } else {</span>
+<span class="nc" id="L719">            	grid = numberButtons;</span>
+            }
+<span class="nc" id="L721">            buttons.setLayout(new GridLayout(grid, 1));</span>
+<span class="nc" id="L722">            this.pane.add(buttons);</span>
+<span class="nc" id="L723">	        this.pane.repaint();</span>
+<span class="nc" id="L724">	        this.pane.revalidate();</span>
+<span class="nc" id="L725">	        this.frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);</span>
+<span class="nc" id="L726">	        this.playersOnBenchPanel.revalidate();</span>
+        }
+<span class="nc" id="L728">    }</span>
+    
+    // Post: Returns a two-dimensional String Array with all the player data. Used for the table from the 'Box Score'
+    //       button.
+    private String[][] getData() {
+<span class="nc" id="L733">    	int rows = this.total.size() + 1;</span>
+<span class="nc bnc" id="L734" title="All 2 branches missed.">    	if (this.total.size() == 1) {</span>
+<span class="nc" id="L735">    		rows -= 1;</span>
+    	}
+<span class="nc" id="L737">        String[][] data = new String[rows][STATISTIC_ABBREVIATIONS.length];</span>
+<span class="nc" id="L738">        int i = 0;</span>
+<span class="nc bnc" id="L739" title="All 2 branches missed.">        for (Player player : this.total){</span>
+<span class="nc bnc" id="L740" title="All 2 branches missed.">            for (int column = 0; column &lt; STATISTIC_ABBREVIATIONS.length; column++) {</span>
+<span class="nc" id="L741">                data[i][column] = player.getStat(STATISTIC_ABBREVIATIONS[column] + &quot;*&quot;).replaceAll(&quot;_&quot;, &quot; &quot;);</span>
+            }
+<span class="nc" id="L743">            i++;</span>
+<span class="nc" id="L744">        }</span>
+<span class="nc" id="L745">        return data;</span>
+    }
+    
+    // Post: Updates the 'onFloorPanel' to include all players currently on the court. Used to update after substitutions
+    //       are made.
+    private void updateOnFloorPanel() {
+<span class="nc" id="L751">        Set&lt;String&gt; fouledOut = new HashSet&lt;String&gt;(this.total.size());</span>
+<span class="nc bnc" id="L752" title="All 2 branches missed.">        for (Player player : this.total) {</span>
+<span class="nc bnc" id="L753" title="All 2 branches missed.">        	if (player.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {</span>
+<span class="nc" id="L754">        		fouledOut.add(player.toString());</span>
+        	}
+<span class="nc" id="L756">        }</span>
+<span class="nc bnc" id="L757" title="All 2 branches missed.">    	if (!this.splitPane) {</span>
+<span class="nc" id="L758">    		this.onFloorPanel.removeAll();</span>
+<span class="nc" id="L759">        	this.playersOnBenchPanel.removeAll();</span>
+<span class="nc" id="L760">        	this.onFloorPanel.setLayout(new GridLayout(this.players.size(), 2));</span>
+<span class="nc" id="L761">            Set&lt;String&gt; names = new HashSet&lt;String&gt;(this.players.size());</span>
+<span class="nc bnc" id="L762" title="All 2 branches missed.">            for (Player player : this.players) {</span>
+<span class="nc" id="L763">            	names.add(player.toString());</span>
+<span class="nc" id="L764">            }</span>
+<span class="nc" id="L765">            int index = 1;</span>
+<span class="nc" id="L766">            int benchIndex = 0;</span>
+<span class="nc bnc" id="L767" title="All 2 branches missed.">        	for (JButton playerButton : this.playerButtons) {</span>
+<span class="nc" id="L768">        		String text = playerButton.getText();</span>
+<span class="nc bnc" id="L769" title="All 2 branches missed.">    			if (&quot;123456789&quot;.contains(text.charAt(1) + &quot;&quot;)) {</span>
+<span class="nc" id="L770">    				text = text.substring(3).trim();</span>
+<span class="nc bnc" id="L771" title="All 2 branches missed.">    			} else if (text.contains(&quot;Shift&quot;)) {</span>
+<span class="nc" id="L772">    				text = text.substring(9).trim();</span>
+    			}
+<span class="nc bnc" id="L774" title="All 2 branches missed.">        		if (names.contains(text)) {</span>
+<span class="nc" id="L775">        			playerButton.setText(&quot;[&quot; + index + &quot;]&quot; + &quot;  &quot; + text);</span>
+<span class="nc" id="L776">        			this.onFloorPanel.add(playerButton);</span>
+<span class="nc" id="L777">        			playerButton.setBackground(DEFAULT_BACKGROUND_COLOR);</span>
+<span class="nc" id="L778">                    setButtonKey(playerButton, this.playerKeys.get(index), 0);</span>
+<span class="nc" id="L779">        			index++;</span>
+        		} else {
+<span class="nc" id="L781">        			playerButton.setText(&quot;[Shift-&quot; + benchIndex + &quot;]&quot; + &quot;  &quot; + text);</span>
+<span class="nc" id="L782">        			this.playersOnBenchPanel.add(playerButton);</span>
+<span class="nc" id="L783">        			playerButton.setBackground(BENCH_BUTTON_COLOR);</span>
+<span class="nc" id="L784">                    setButtonKey(playerButton, this.playerKeys.get(benchIndex), </span>
+                        		 InputEvent.SHIFT_DOWN_MASK);
+<span class="nc" id="L786">        			benchIndex++;</span>
+        		}
+<span class="nc" id="L788">    			playerButton.setEnabled(true);</span>
+<span class="nc bnc" id="L789" title="All 2 branches missed.">        		if (fouledOut.contains(text)) {</span>
+<span class="nc" id="L790">        			playerButton.setText(text);</span>
+<span class="nc" id="L791">        			playerButton.setBackground(FOULED_OUT_BUTTON_COLOR);</span>
+<span class="nc" id="L792">        			playerButton.setEnabled(false);</span>
+        		}
+<span class="nc" id="L794">        	}</span>
+<span class="nc bnc" id="L795" title="All 2 branches missed.">        	if (this.onFloorPanel.isDisplayable()) {</span>
+<span class="nc" id="L796">            	this.onFloorPanel.repaint();</span>
+<span class="nc" id="L797">            	this.onFloorPanel.revalidate();</span>
+        	}
+<span class="nc bnc" id="L799" title="All 2 branches missed.">        	if (this.playersOnBenchPanel.isDisplayable()) {</span>
+<span class="nc" id="L800">            	this.playersOnBenchPanel.repaint();</span>
+<span class="nc" id="L801">            	this.playersOnBenchPanel.revalidate();	</span>
+        	}
+<span class="nc" id="L803">    	} else {</span>
+<span class="nc bnc" id="L804" title="All 2 branches missed.">    		for (JButton playerButton : this.playerButtons) {</span>
+<span class="nc bnc" id="L805" title="All 2 branches missed.">    			if (fouledOut.contains(playerButton.getText())) {</span>
+<span class="nc" id="L806">    				playerButton.setBackground(FOULED_OUT_BUTTON_COLOR);</span>
+<span class="nc" id="L807">    				playerButton.setEnabled(false);</span>
+    			} else {
+<span class="nc" id="L809">    				playerButton.setBackground(DEFAULT_BACKGROUND_COLOR);</span>
+<span class="nc" id="L810">    				playerButton.setEnabled(true);</span>
+    			}
+<span class="nc" id="L812">    		}</span>
+    	}
+<span class="nc" id="L814">    	this.pane.revalidate();</span>
+<span class="nc" id="L815">    	this.pane.repaint();</span>
+<span class="nc" id="L816">    }</span>
+    
+    // Post: Returns a String used to display the time in the ManagementPanel.
+    private String getPeriodText() {
+        String labelText;
+<span class="nc bnc" id="L821" title="All 2 branches missed.">        if (this.period != END_OF_GAME) {</span>
+<span class="nc bnc" id="L822" title="All 2 branches missed.">        	if (this.period &lt; GAME_PERIODS.length) {</span>
+<span class="nc" id="L823">                labelText = GAME_PERIODS[this.period] + &quot;   &quot; + this.clock.getTime();</span>
+        	} else {
+        		int OTConstant;
+<span class="nc bnc" id="L826" title="All 2 branches missed.">        		if (this.isQuarters) {</span>
+<span class="nc" id="L827">        			OTConstant = QUARTERS;</span>
+        		} else {
+<span class="nc" id="L829">        			OTConstant = HALVES;</span>
+        		}
+<span class="nc" id="L831">        		labelText = &quot;OT&quot; + (this.period - OTConstant + 1) + &quot;   &quot; + this.clock.getTime();</span>
+<span class="nc" id="L832">        	}</span>
+        } else {
+<span class="nc" id="L834">        	labelText = &quot;FINAL&quot;;</span>
+        }
+<span class="nc" id="L836">        return labelText;</span>
+    }
+    
+    // Post: Opens a window with an array of buttons each labeled with a certain basketball statistic. Clicking on a button
+    //       will increment that players statistic and close the window that appeared. In the case of made shots, the user will
+    //       be asked if the shot was assisted. In the case of missed shots, the user will be asked if someone on their team
+    //       secured the offensive rebound for the shot.
+    // Parameters:
+    // 'play': The player to which the statistic will be added.
+    // 'frame': The frame the window will appear in.
+    // 'button': The button that corresponds to the player.
+    private void addStatButton(Player play, JButton button) {
+<span class="nc" id="L848">        JFrame statsMenu = new JFrame(play.getStatLine());</span>
+<span class="nc" id="L849">    	JPanel statsMenuPanel = new JPanel(new GridLayout(STATISTICS.length / 2, 2));</span>
+        JButton statButton;
+<span class="nc" id="L851">        int fontSize = FONT_SIZE * 5 / 12;</span>
+<span class="nc bnc" id="L852" title="All 2 branches missed.">        for (int i = 0; i &lt; STATISTICS.length; i++) {</span>
+<span class="nc" id="L853">        	String stat = STATISTICS[i];</span>
+<span class="nc" id="L854">            statButton = new JButton(&quot;[&quot; + STAT_KEYS[i] + &quot;] ::: &quot; + stat + &quot;  &quot; + play.getStat(stat));</span>
+<span class="nc" id="L855">            formatButton(statButton, BUTTON_HEIGHT, BUTTON_HEIGHT, fontSize, SETTINGS);</span>
+<span class="nc" id="L856">            statsMenuPanel.add(statButton);   </span>
+<span class="nc" id="L857">            Undo recent = new Undo(play, stat, getPeriodText().substring(0, 5).trim() + &quot; &quot; + this.clock.getTime());</span>
+<span class="nc" id="L858">            statButton.addKeyListener(new KeyListener() {</span>
+				@Override
+				public void keyPressed(KeyEvent e) {
+<span class="nc bnc" id="L861" title="All 2 branches missed.">					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {</span>
+<span class="nc" id="L862">						statsMenu.dispose();</span>
+					}
+<span class="nc" id="L864">				}</span>
+				@Override
+<span class="nc" id="L866">				public void keyReleased(KeyEvent e) {}</span>
+				@Override
+<span class="nc" id="L868">				public void keyTyped(KeyEvent e) {}          	</span>
+            });
+<span class="nc" id="L870">            statButton.addActionListener(new AbstractAction() {</span>
+                public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L872">                    statButtonFunction(play, stat, recent, button, statsMenu);</span>
+<span class="nc" id="L873">                }</span>
+            });
+<span class="nc bnc" id="L875" title="All 2 branches missed.">            if (STAT_KEYS[i].contains(&quot;Shift&quot;)) {</span>
+<span class="nc" id="L876">                setButtonKey(statButton, this.keyMap.get(STAT_KEYS[i]), InputEvent.SHIFT_DOWN_MASK);</span>
+            } else {
+<span class="nc" id="L878">                setButtonKey(statButton, this.keyMap.get(STAT_KEYS[i]), 0);</span>
+            }
+        }
+<span class="nc" id="L881">        formatFrame(statsMenu, statsMenuPanel, SCREENWIDTH - (BUTTON_HEIGHT * 4), SCREENHEIGHT - (BUTTON_HEIGHT * 2));</span>
+<span class="nc" id="L882">    }</span>
+    
+    // Post: Opens a window with a button for every statistic available to select.
+    private void statButtonFunction(Player play, String stat, Undo recent, JButton button, JFrame frame) {
+<span class="nc" id="L886">    	play.add(true, stat);</span>
+<span class="nc bnc" id="L887" title="All 2 branches missed.">    	if (play.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {</span>
+<span class="nc bnc" id="L888" title="All 2 branches missed.">    		if (stat.equals(&quot;Personal Foul&quot;)) {</span>
+<span class="nc" id="L889">        		this.teamFoulsInPeriod++;</span>
+    		}
+<span class="nc bnc" id="L891" title="All 4 branches missed.">    		if (!this.splitPane &amp;&amp; getFouledOut() &gt;= 1) {</span>
+<span class="nc" id="L892">                subNewPlayer(play, bench, players, true);</span>
+    		}
+<span class="nc" id="L894">    		button.setEnabled(false);</span>
+<span class="nc" id="L895">    		button.setBackground(FOULED_OUT_BUTTON_COLOR);</span>
+<span class="nc bnc" id="L896" title="All 2 branches missed.">    	} else if (this.numberStarters != 1) {</span>
+<span class="nc bnc" id="L897" title="All 6 branches missed.">    		switch (stat) {</span>
+        	case &quot;Made FG&quot;:
+        	case &quot;Made 3pt FG&quot;:
+<span class="nc" id="L900">        		openNewStatWindow(recent, play, &quot;Assist&quot;, &quot;Assisted FG?&quot;, &quot;Who got the Assist?&quot;, false);</span>
+<span class="nc" id="L901">    			break;</span>
+            case &quot;Personal Foul&quot;:
+<span class="nc" id="L903">            	this.teamFoulsInPeriod++;</span>
+            case &quot;Technical Foul&quot;:
+            case &quot;Flagrant I Foul&quot;:
+            case &quot;Flagrant II Foul&quot;:
+            	// Stop timer if foul is called
+<span class="nc bnc" id="L908" title="All 2 branches missed.">            	if (this.clock.isRunning()) {</span>
+<span class="nc" id="L909">            		this.clock.stopTimer();</span>
+<span class="nc bnc" id="L910" title="All 2 branches missed.">                    this.startStop = !this.startStop;</span>
+<span class="nc" id="L911">                    this.buttonArray[START_BUTTON].setText(&quot;   Start&quot;);</span>
+<span class="nc" id="L912">                    setIcon(this.buttonArray, START_BUTTON, PLAY_BUTTON_ICON);</span>
+            	}
+            	break;
+            case &quot;Missed FG&quot;:
+            case &quot;Missed 3pt FG&quot;:
+            case &quot;Missed Free Throw&quot;:
+<span class="nc" id="L918">            	openNewStatWindow(recent, play, &quot;Offensive Rebound&quot;, &quot;Offensive Rebounded?&quot;, </span>
+            			          &quot;Who got the Offensive Rebound?&quot;, true);
+<span class="nc" id="L920">            	break;</span>
+            case &quot;Block&quot;:
+<span class="nc" id="L922">            	openNewStatWindow(recent, play, &quot;Defensive Rebound&quot;, &quot;Defensive Rebounded?&quot;, </span>
+            			          &quot;Who got the Defensive Rebound?&quot;, true);
+            	break;
+        	}
+    	}
+<span class="nc" id="L927">        this.buttonArray[UNDO_BUTTON].setEnabled(true);</span>
+<span class="nc" id="L928">        this.undo.add(recent);</span>
+<span class="nc" id="L929">        updateFile(players);</span>
+<span class="nc" id="L930">        this.score.setText(&quot;Score: &quot; + getTotal(&quot;PTS&quot;) + &quot;    &quot;);</span>
+<span class="nc" id="L931">    	this.teamFouls.setText(&quot;  Team Fouls: &quot; + teamFoulsInPeriod);</span>
+<span class="nc" id="L932">    	frame.dispose();</span>
+<span class="nc" id="L933">    }</span>
+    
+    // Post: In the case that the statistic chosen in the method addStatButton is a shot or a missed shot,
+    //       a new window opens prompting the user:
+    //       -For a shot:
+    //       Was the shot assisted? (Yes/No)
+    //       -For a missed shot:
+    //       Did someone on the users team secure the offensive rebound? (Yes/No)
+    // Parameters:
+    // 'recent': The Undo object that will be used to chronologically archive this players statistical contribution
+    //           to the game.
+    // 'play': The player that got the statistic.
+    // 'stat': The statistic in question.
+    // 'frameText': The text the appears in the Yes/No frame title bar.
+    // 'frameHeder': The text that appears in the frame that opens when 'Yes' is clicked in the 'assistFrame'.
+    private void openNewStatWindow(Undo recent, Player play, String stat, String frameText, String frameHeader, boolean allPlayers) {
+<span class="nc" id="L949">    	JFrame assistFrame = new JFrame(frameText);</span>
+<span class="nc" id="L950">        JPanel assistPanel = new JPanel(new GridLayout(2, 1));</span>
+<span class="nc" id="L951">        formatFrame(assistFrame, assistPanel, SCREENWIDTH / 3, SCREENHEIGHT / 2);</span>
+<span class="nc" id="L952">        JButton yes = new JButton(&quot;[Enter] ::: Yes&quot;);</span>
+<span class="nc" id="L953">        formatButton(yes, BUTTON_HEIGHT, BUTTON_HEIGHT, FONT_SIZE * 2 / 3, SETTINGS);</span>
+<span class="nc" id="L954">        yes.addActionListener(new AbstractAction() {</span>
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L956">                int size = players.size();</span>
+<span class="nc bnc" id="L957" title="All 2 branches missed.">                if (!allPlayers) {</span>
+<span class="nc" id="L958">                	size -= 1;</span>
+                } 
+<span class="nc" id="L960">                JPanel panel = new JPanel(new GridLayout(size, 1));</span>
+                JButton assistPlayerButton;
+<span class="nc" id="L962">                int fontSize = FONT_SIZE / 2;</span>
+<span class="nc bnc" id="L963" title="All 6 branches missed.">                if (players.size() == 2 &amp;&amp; !stat.equals(&quot;Offensive Rebound&quot;) &amp;&amp; !stat.equals(&quot;Defensive Rebound&quot;)) {</span>
+<span class="nc" id="L964">                	int index = players.indexOf(play);</span>
+<span class="nc" id="L965">                	int newIndex = 0;</span>
+<span class="nc bnc" id="L966" title="All 2 branches missed.">                	if (index == 0) {</span>
+<span class="nc" id="L967">                		newIndex = 1;</span>
+                	}
+<span class="nc bnc" id="L969" title="All 2 branches missed.">                	if (!allPlayers) {</span>
+<span class="nc" id="L970">                        score.setText(&quot;Score: &quot; + getTotal(&quot;PTS&quot;) + &quot;    &quot;);</span>
+<span class="nc" id="L971">                		players.get(newIndex).add(true, stat);</span>
+<span class="nc" id="L972">                    	recent.setAstPlayer(players.get(newIndex));</span>
+                	}
+<span class="nc" id="L974">                    updateFile(players);</span>
+<span class="nc" id="L975">                } else {</span>
+<span class="nc" id="L976">                    JFrame frame = new JFrame(frameHeader);</span>
+<span class="nc" id="L977">                	int playerNumber = 1;</span>
+<span class="nc bnc" id="L978" title="All 2 branches missed.">                    for (Player assistPlayer : players) {</span>
+<span class="nc bnc" id="L979" title="All 2 branches missed.">                    	boolean check = assistPlayer != play;</span>
+<span class="nc bnc" id="L980" title="All 2 branches missed.">                    	if (allPlayers) {</span>
+<span class="nc" id="L981">                    		check = true;</span>
+                    	}
+<span class="nc bnc" id="L983" title="All 4 branches missed.">                    	if (check &amp;&amp; !assistPlayer.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {</span>
+<span class="nc" id="L984">                            assistPlayerButton = new JButton(&quot;[&quot; + playerNumber + &quot;]  &quot; + assistPlayer.toString());</span>
+<span class="nc" id="L985">                            formatButton(assistPlayerButton, BUTTON_HEIGHT, BUTTON_HEIGHT, fontSize, SETTINGS);</span>
+<span class="nc" id="L986">                            panel.add(assistPlayerButton);</span>
+<span class="nc" id="L987">                            assistPlayerButton.addActionListener(new AbstractAction() {</span>
+                                public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L989">                                    assistPlayer.add(true, stat);</span>
+<span class="nc" id="L990">                                    frame.dispose();</span>
+<span class="nc" id="L991">                                    score.setText(&quot;Score: &quot; + getTotal(&quot;PTS&quot;) + &quot;    &quot;);</span>
+<span class="nc bnc" id="L992" title="All 2 branches missed.">                                    switch (stat) {</span>
+                                    case &quot;Offensive Rebound&quot;:
+                                    case &quot;Defensive Rebound&quot;:
+<span class="nc" id="L995">                                		undo.add(new Undo(assistPlayer, stat, recent.getTimeOf()));</span>
+<span class="nc" id="L996">                                		break;</span>
+                                    default:
+<span class="nc" id="L998">                                    	recent.setAstPlayer(assistPlayer);</span>
+                                    	break;
+                                    }
+<span class="nc" id="L1001">                                    updateFile(players);</span>
+<span class="nc" id="L1002">                                }</span>
+                            });
+<span class="nc" id="L1004">                            setButtonKey(assistPlayerButton, playerKeys.get(playerNumber), 0);</span>
+<span class="nc" id="L1005">                            playerNumber++;</span>
+                        }
+<span class="nc" id="L1007">                    }</span>
+<span class="nc" id="L1008">                    formatFrame(frame, panel, SCREENWIDTH / 3, SCREENHEIGHT / 2 + (SCREENHEIGHT / 6));</span>
+                }
+<span class="nc" id="L1010">                assistFrame.dispose();</span>
+<span class="nc" id="L1011">            }</span>
+        });
+<span class="nc" id="L1013">        assistPanel.add(yes);</span>
+<span class="nc" id="L1014">        noButton(assistFrame, assistPanel, FONT_SIZE * 2 / 3, BUTTON_HEIGHT, BUTTON_HEIGHT, &quot;[ESC] ::: No&quot;, SETTINGS, false);</span>
+<span class="nc" id="L1015">		yes.addKeyListener(new KeyListener() {</span>
+			@Override
+			public void keyPressed(KeyEvent e) {
+<span class="nc bnc" id="L1018" title="All 2 branches missed.">				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {</span>
+<span class="nc" id="L1019">					assistFrame.dispose();</span>
+				}
+<span class="nc" id="L1021">			}</span>
+			@Override
+<span class="nc" id="L1023">			public void keyReleased(KeyEvent e) {}</span>
+			@Override
+<span class="nc" id="L1025">			public void keyTyped(KeyEvent e) {}			</span>
+		});
+<span class="nc" id="L1027">        assistFrame.getRootPane().setDefaultButton(yes);</span>
+<span class="nc" id="L1028">    }</span>
+    
+    // Post: Updates the file with 'fileName' to have all the current statistics of each player and the time remaining
+    //       and current period of the game.
+    private void updateFile(List&lt;Player&gt; players) {
+<span class="nc" id="L1033">        CreateFile gameFile = new CreateFile(this.fileName);</span>
+<span class="nc" id="L1034">        gameFile.openFile();</span>
+<span class="nc" id="L1035">        gameFile.addGameConfig(SETTINGS);</span>
+<span class="nc bnc" id="L1036" title="All 2 branches missed.">        for (Player player : players){</span>
+<span class="nc bnc" id="L1037" title="All 2 branches missed.">            for (int column = 0; column &lt; STATISTIC_ABBREVIATIONS.length; column++) {</span>
+<span class="nc" id="L1038">            	gameFile.addInformation(STATISTIC_ABBREVIATIONS[column], player.getStat(STATISTIC_ABBREVIATIONS[column]));</span>
+            }
+<span class="nc" id="L1040">        	gameFile.addInformation(&quot;OnCourt&quot;, player.isStarter() + &quot;&quot;);</span>
+<span class="nc" id="L1041">        }</span>
+<span class="nc" id="L1042">        gameFile.addUndo(this.undo);</span>
+<span class="nc" id="L1043">        gameFile.closeFile();</span>
+<span class="nc" id="L1044">    }</span>
+    
+    // Post: Resets the window to have all the components of the standard ManagementPanel.
+    private void setPane() {
+<span class="nc" id="L1048">    	this.frame.setTitle(&quot;Roster Management - &quot; + this.fileName);</span>
+<span class="nc" id="L1049">    	this.frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</span>
+<span class="nc bnc" id="L1050" title="All 2 branches missed.">    	if (this.splitPane) {</span>
+<span class="nc" id="L1051">        	this.pane.setLayout(new BoxLayout(this.pane, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L1052">        	this.pane.add(this.headerPanel);</span>
+<span class="nc" id="L1053">        	this.pane.add(this.managementPanel);</span>
+    	} else {
+<span class="nc" id="L1055">    		this.pane.setLayout(new BorderLayout());</span>
+<span class="nc" id="L1056">        	this.pane.add(this.headerPanel, BorderLayout.NORTH);</span>
+<span class="nc" id="L1057">        	this.pane.add(this.managementPanel, BorderLayout.CENTER);</span>
+    	}
+<span class="nc" id="L1059">		this.pane.revalidate();</span>
+<span class="nc" id="L1060">		this.pane.repaint();</span>
+<span class="nc" id="L1061">    }</span>
+    
+    // Post: Puts all the Components of the ManagementPanel into a window that opens when the user starts the game.
+    public void frame() {
+<span class="nc" id="L1065">    	setPane();</span>
+<span class="nc" id="L1066">    	this.frame.add(this.pane);</span>
+<span class="nc" id="L1067">        this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);</span>
+<span class="nc" id="L1068">        this.frame.setVisible(true);</span>
+<span class="nc" id="L1069">        this.frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</span>
+<span class="nc" id="L1070">        this.frame.getRootPane().setDefaultButton(this.buttonArray[START_BUTTON]);</span>
+<span class="nc" id="L1071">    }</span>
+    
+    // Post: Returns a JPanel with all the components of a ManagementPanel. Used in the InstructionsPanel.
+    public JPanel getManagementPanel() {
+<span class="nc" id="L1075">        JPanel panel = new JPanel();</span>
+<span class="nc" id="L1076">        panel.add(this.headerPanel, BorderLayout.NORTH);</span>
+<span class="nc" id="L1077">        JPanel managementP = panelfy(this.managementPanel, background, new GridLayout(1, 1), null);</span>
+<span class="nc" id="L1078">        managementP.setPreferredSize(new Dimension(SCREENWIDTH - (BUTTON_HEIGHT * 5 / 2), 700));</span>
+<span class="nc" id="L1079">        panel.setBorder(new MatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, DEFAULT_TEXT_BORDER_COLOR));</span>
+<span class="nc" id="L1080">        panel.setPreferredSize(new Dimension(SCREENWIDTH - (BUTTON_HEIGHT * 5 / 2), 1100));</span>
+<span class="nc" id="L1081">        panel.add(managementP);</span>
+<span class="nc" id="L1082">        panel.setBackground(background);</span>
+<span class="nc" id="L1083">        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L1084">        return panel;</span>
+    }
+    
+    // Post: Returns the number of players who have fouled out of the game.
+    private int getFouledOut() {
+<span class="nc" id="L1089">        int fouledOut = 0;</span>
+<span class="nc bnc" id="L1090" title="All 2 branches missed.">        for (Player player : this.bench) {</span>
+<span class="nc bnc" id="L1091" title="All 2 branches missed.">            if (!player.hasFouledOut(personalFouls, technicalFouls, flagrantI, flagrantII)) {</span>
+<span class="nc" id="L1092">                fouledOut++;</span>
+            }
+<span class="nc" id="L1094">        }</span>
+<span class="nc" id="L1095">        return fouledOut;</span>
+    }
+    
+    // Post: Returns the total of the statistic 'stat' for the entire team.
+    private int getTotal(String stat) {
+<span class="nc" id="L1100">        int totalPoints = 0;</span>
+<span class="nc bnc" id="L1101" title="All 2 branches missed.">        for (Player play : this.total) {</span>
+<span class="nc" id="L1102">            totalPoints += Integer.valueOf(play.getStat(stat));</span>
+<span class="nc" id="L1103">        }</span>
+<span class="nc" id="L1104">        return totalPoints;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

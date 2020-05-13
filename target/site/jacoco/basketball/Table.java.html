@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Table.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">basketball</a> &gt; <a href="index.source.html" class="el_package">basketball</a> &gt; <span class="el_source">Table.java</span></div><h1>Table.java</h1><pre class="source lang-java linenums">// Alex Eidt
+// Basketball Statistics Tracking Program
+// Table Class
+// Opens a window with a table showing all player statistics in the classic
+// Box Score format used in the NBA.
+package basketball;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.table.*;
+
+public class Table extends GUISettings {
+    
+	private static final long serialVersionUID = 1L;
+	private GameSettings SETTINGS;			// Settings used to format the table
+	private JScrollPane scrollPanel; 		// Scrollbar used for the table
+	private JTable boxscore;				// Table with all information
+    
+	// Post: Constructs a new table according to the parameters given.
+	// Parameters:
+	// 'players': The list of players to be displayed in the table
+	// 'data': The data for each cell of the table
+	// 'width', 'height': Dimensions of the table
+	// 'fontSize', 'headerFontSize': Font sizes
+	// 'settings': Settings used to format the fonts and colors used in the table
+<span class="nc" id="L27">    public Table(List&lt;Player&gt; players, String[][] data, int fontSize, int headerFontSize, GameSettings settings) {</span>
+        
+<span class="nc" id="L29">        this.SETTINGS = settings;</span>
+        
+        // Creates a new ArrayList of the existing players in order to accommodate for the
+        // 'total' player which represents the totals for each statistic.
+<span class="nc" id="L33">        List&lt;Player&gt; newPlayers = new ArrayList&lt;Player&gt;(players.size() + 1);</span>
+<span class="nc" id="L34">        newPlayers.addAll(players);</span>
+        
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (players.size() &gt; 1) {</span>
+        	// Adds a row at the bottom of the table representing the totals for each statistical category.
+<span class="nc" id="L38">            Player total = new Player(&quot;Total&quot;);</span>
+<span class="nc" id="L39">            int[] totalStats = new int[STATISTIC_ABBREVIATIONS.length];</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">            for (Player player : players) {</span>
+<span class="nc" id="L41">            	int index = 0;</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">            	for (String stat : STATISTIC_ABBREVIATIONS) {</span>
+<span class="nc bnc" id="L43" title="All 8 branches missed.">            		if (!(stat.equals(&quot;FG%&quot;) || stat.equals(&quot;3P%&quot;) || stat.equals(&quot;FT%&quot;) || stat.equals(&quot;Player&quot;))) {</span>
+<span class="nc" id="L44">            			totalStats[index] += Integer.valueOf(player.getStat(stat + &quot;*&quot;));</span>
+            		}
+<span class="nc" id="L46">            		index++;</span>
+            	}
+<span class="nc" id="L48">            }</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">            for (int i = 1; i &lt; totalStats.length; i++) {</span>
+<span class="nc" id="L50">            	total.setStat(STATISTIC_ABBREVIATIONS[i], String.valueOf(totalStats[i]));</span>
+            }
+<span class="nc" id="L52">    		total.setStat(STATISTIC_ABBREVIATIONS[0], &quot;Total&quot;);</span>
+<span class="nc" id="L53">            newPlayers.add(total);</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">            for (int column = 0; column &lt; STATISTIC_ABBREVIATIONS.length; column++) {</span>
+<span class="nc" id="L55">            	data[newPlayers.size() - 1][column] = total.getStat(STATISTIC_ABBREVIATIONS[column]).replaceAll(&quot;_&quot;, &quot; &quot;);</span>
+            }
+        }
+                            
+<span class="nc" id="L59">        this.boxscore = new JTable(data, STATISTIC_ABBREVIATIONS) {</span>
+			private static final long serialVersionUID = 1L;
+			public boolean isCellEditable(int data, int STATISTIC_ABBREVIATIONS) {
+<span class="nc" id="L62">                return false;</span>
+            }
+            public Component prepareRenderer(TableCellRenderer r, int data, int STATISTIC_ABBREVIATIONS) {
+<span class="nc" id="L65">                Component c = super.prepareRenderer(r, data, STATISTIC_ABBREVIATIONS);</span>
+                //Change color of cell when selected
+<span class="nc bnc" id="L67" title="All 2 branches missed.">                if (isCellSelected(data, STATISTIC_ABBREVIATIONS)) {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                    c.setBackground(((Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR) != Color.WHITE) ? </span>
+<span class="nc" id="L69">                    		        (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR): Color.CYAN);</span>
+                } else {
+<span class="nc" id="L71">                	c.setBackground(Color.WHITE);</span>
+                }  
+<span class="nc" id="L73">                return c;</span>
+            }
+        };
+        //Get longest player name
+<span class="nc" id="L77">        String longest = &quot;&quot;;</span>
+<span class="nc" id="L78">        int max = 0;</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        for (Player player : newPlayers) {</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">            if (player.getName().length() &gt; max) {</span>
+<span class="nc" id="L81">                max = player.getName().length();</span>
+            }
+<span class="nc" id="L83">        }</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        for (Player player : newPlayers) {</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        	if (player.getName().length() == max) {</span>
+<span class="nc" id="L86">        		longest = player.getName();</span>
+<span class="nc" id="L87">        		break;</span>
+        	}
+<span class="nc" id="L89">        }</span>
+<span class="nc" id="L90">        int maxWidth = (int) getDimension(formatLabel(longest, fontSize, settings)).getWidth(); </span>
+        
+<span class="nc" id="L92">        JTableHeader header = this.boxscore.getTableHeader();</span>
+<span class="nc" id="L93">        header.setBackground((Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR));</span>
+        
+<span class="nc" id="L95">        this.scrollPanel = new JScrollPane(this.boxscore);</span>
+<span class="nc" id="L96">        this.scrollPanel.getVerticalScrollBar().setUnitIncrement(6);</span>
+<span class="nc" id="L97">        this.scrollPanel.setBackground((Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR)); </span>
+        
+        int size;
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (players.size() &gt; 1) {</span>
+<span class="nc" id="L101">        	size = Math.min(SCREENHEIGHT / newPlayers.size(), FONT_SIZE * 20 / 3);</span>
+        } else {
+<span class="nc" id="L103">        	size = SCREENHEIGHT * 3 / 4;</span>
+        }
+        // Format Table
+<span class="nc" id="L106">        this.boxscore.setFont(new Font(DEFAULT_FONT_TYPE, Font.PLAIN, fontSize));</span>
+<span class="nc" id="L107">        this.boxscore.setRowHeight(size);</span>
+<span class="nc" id="L108">        this.boxscore.setRowMargin(20);</span>
+<span class="nc" id="L109">        this.boxscore.getColumnModel().getColumn(0).setPreferredWidth(Math.max(maxWidth, FONT_SIZE * 10 / 3));</span>
+<span class="nc" id="L110">        this.boxscore.getTableHeader().setFont(new Font(DEFAULT_FONT_TYPE, Font.BOLD, headerFontSize));</span>
+        
+        // Center Data in cell
+<span class="nc" id="L113">        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();</span>
+<span class="nc" id="L114">        centerRenderer.setHorizontalAlignment(JLabel.CENTER);</span>
+        
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        for(int i = 0; i &lt; STATISTIC_ABBREVIATIONS.length; i++) {</span>
+<span class="nc" id="L117">        	this.boxscore.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);</span>
+        }
+        
+<span class="nc" id="L120">        this.boxscore.setEnabled(false);</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        this.boxscore.setShowGrid(players.size() &gt; 1);</span>
+<span class="nc" id="L122">    }</span>
+    
+    // Post: Returns the JTable in a JPanel.
+    public JPanel getTable() {
+<span class="nc" id="L126">    	JPanel table = new JPanel(new GridLayout(1, 1));</span>
+<span class="nc" id="L127">    	table.add(this.scrollPanel);</span>
+<span class="nc" id="L128">     	table.setBackground((Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR));</span>
+<span class="nc" id="L129">    	return table;</span>
+    }
+    
+    // Post: Returns the JTable.
+    public JTable getBoxScore() {
+<span class="nc" id="L134">    	return this.boxscore;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

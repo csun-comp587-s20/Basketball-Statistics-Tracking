@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Player.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">basketball</a> &gt; <a href="index.source.html" class="el_package">basketball</a> &gt; <span class="el_source">Player.java</span></div><h1>Player.java</h1><pre class="source lang-java linenums">// Alex Eidt
+// Basketball Statistics Tracking Program
+// Player Class
+// The Player class keeps track of all the statistic data for a player.
+package basketball;
+import java.util.*;
+
+public class Player extends Constants implements Comparable&lt;Player&gt; {
+
+	private static final long serialVersionUID = 1L;
+	private String name, lastName, displayName;			// Players first and last names
+    private boolean isOnFloor;
+	private Map&lt;String, Integer&gt; data;					// Map to store players statistical data
+    private Map&lt;String, String&gt; statMap;				// Map to map extended statistic names to abbreviations
+      
+    // Parameters: 
+    //		String 'name': The first name of the player
+    //      String 'lastName': The last name of the player
+    //	    String 'display': The display name of the player. Represented as their first name
+    //      followed by their last initial followed by a period. If more than two players have
+    //      the same first name and last initial, then the second player with the same first name
+    //      and last initial's display name becomes their first name followed by their last name followed
+    //      by a period.
+    // Post: Initializes the 'data' map to map all statistical abbreviations found in the STATISTIC_ABBREVIATIONS array
+    //       to a number.
+    //       Initializes the 'statMap' map to map all full length statistic names to their
+    //       abbreviations.
+<span class="fc" id="L28">    public Player(String name, String lastName, String display) {</span>
+<span class="fc" id="L29">    	this.name = name;</span>
+<span class="fc" id="L30">    	this.lastName = lastName;</span>
+<span class="fc" id="L31">    	this.displayName = display;</span>
+<span class="fc" id="L32">    	this.data = new TreeMap&lt;String, Integer&gt;();</span>
+<span class="fc" id="L33">    	this.statMap = new TreeMap&lt;String, String&gt;();</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">    	for (int i = 0; i &lt; STATISTIC_ABBREVIATIONS.length; i++) {</span>
+<span class="fc" id="L35">    		this.data.put(STATISTIC_ABBREVIATIONS[i], 0);</span>
+    	}
+<span class="fc" id="L37">    	this.data.put(&quot;OnCourt&quot;, -1);</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">    	for (int i = 0; i &lt; STATISTIC_ABBREVIATIONS.length; i++) {</span>
+<span class="fc" id="L39">    		this.statMap.put(STATISTIC_DISPLAY_WORDS[i], STATISTIC_ABBREVIATIONS[i]);</span>
+    	}
+<span class="fc" id="L41">    	this.statMap.put(&quot;OnCourt&quot;, &quot;OnCourt&quot;);</span>
+<span class="fc" id="L42">    }</span>
+    
+    // Post: Alternate Player Constructor with only the first name given
+    public Player(String name) {
+<span class="fc" id="L46">    	this(name, &quot;&quot;, &quot;&quot;);</span>
+<span class="fc" id="L47">    }</span>
+    
+    // Post: Returns true if the two players being compared have the exact same first and last name (case sensitive)
+    //       Otherwise returns false
+    public boolean equals(Object obj){
+<span class="fc bfc" id="L52" title="All 2 branches covered.">    	if (obj == null) {</span>
+<span class="fc" id="L53">    		return false;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">    	} else if (obj == this) {</span>
+<span class="fc" id="L55">    		return true;</span>
+    	} else {
+<span class="fc" id="L57">    		Player player = (Player) obj;</span>
+<span class="pc bpc" id="L58" title="2 of 6 branches missed.">        	return (player.getName().equals(this.name) &amp;&amp; player.getLastName().equals(this.lastName) &amp;&amp; player.getDisplayName().equals(this.displayName));</span>
+    	}     
+    }			
+    
+    public int compareTo(Player other) {
+<span class="fc" id="L63">    	int firstNames = this.name.compareTo(other.getName());</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">    	if (firstNames == 0) {</span>
+<span class="fc" id="L65">    		return this.lastName.compareTo(other.getLastName());</span>
+    	} else {
+<span class="fc" id="L67">    		return firstNames;</span>
+    	}
+    }
+    
+    // Pre:  'statistic' is a key in either the 'data' or 'statMap' map, otherwise an 
+    //       IllegalArgumentException is thrown.
+    // Post: Increments/Decrements the value associated with the String 'statistic' by the right amount.
+    //       (i.e, A 3 point shot will increment the players points by 3).
+    //       If 'add' is true then the value is incremented, otherwise it is decremented.
+    public void add(boolean add, String statistic) {
+<span class="nc" id="L77">    	String stat = mapStat(statistic);</span>
+    	int addMultiplier;
+<span class="nc bnc" id="L79" title="All 2 branches missed.">    	if (add) {</span>
+<span class="nc" id="L80">    		addMultiplier = 1;</span>
+    	} else {
+<span class="nc" id="L82">    		addMultiplier = -1;</span>
+    	}
+<span class="nc" id="L84">    	int addOne = 1 * addMultiplier;</span>
+    	/*
+    	 * FGM, 3PM, 3PA, FTM all involve multiple statistics being incremented
+    	 * such as PTS, FGM/FGA.
+    	 */
+<span class="nc bnc" id="L89" title="All 5 branches missed.">    	switch (stat) {</span>
+    	case &quot;Made FG&quot;:
+    	case &quot;FGM&quot;:
+<span class="nc" id="L92">    		this.data.put(&quot;FGA&quot;, this.data.get(&quot;FGA&quot;) + addOne);</span>
+<span class="nc" id="L93">    		this.data.put(&quot;PTS&quot;, this.data.get(&quot;PTS&quot;) + (2 * addOne));</span>
+<span class="nc" id="L94">    		break;</span>
+    	case &quot;Made 3pt FG&quot;:
+    	case &quot;3PM&quot;:
+<span class="nc" id="L97">    		this.data.put(&quot;FGM&quot;, this.data.get(&quot;FGM&quot;) + addOne);</span>
+<span class="nc" id="L98">    		this.data.put(&quot;FGA&quot;, this.data.get(&quot;FGA&quot;) + addOne);</span>
+<span class="nc" id="L99">    		this.data.put(&quot;3PA&quot;, this.data.get(&quot;3PA&quot;) + addOne);</span>
+<span class="nc" id="L100">    		this.data.put(&quot;PTS&quot;, this.data.get(&quot;PTS&quot;) + (3 * addOne));</span>
+<span class="nc" id="L101">    		break;</span>
+    	case &quot;Missed 3pt FG&quot;:
+    	case &quot;3PA&quot;:
+<span class="nc" id="L104">    		this.data.put(&quot;FGA&quot;, this.data.get(&quot;FGA&quot;) + addOne);</span>
+<span class="nc" id="L105">    		break;</span>
+    	case &quot;Made Free Throw&quot;:
+    	case &quot;FTM&quot;:
+<span class="nc" id="L108">    		this.data.put(&quot;FTA&quot;, this.data.get(&quot;FTA&quot;) + addOne);</span>
+<span class="nc" id="L109">    		this.data.put(&quot;PTS&quot;, this.data.get(&quot;PTS&quot;) + addOne);</span>
+    		break;
+       	}
+<span class="nc" id="L112">    	int value = this.data.get(stat) + addOne;</span>
+<span class="nc" id="L113">		this.data.put(stat, value);</span>
+<span class="nc" id="L114">    }</span>
+    
+    // Pre:  'statistic' is a key in either the 'data' or 'statMap' map, otherwise an 
+    //       IllegalArgumentException is thrown.
+    // Post: Sets the value associated with the String 'statistic' to be the Integer value of 'num'.
+    //       If 'num' is a Player name, then the players name is set to 'num'. 
+    public void setStat(String statistic, String num) {
+<span class="nc" id="L121">    	String stat = mapStat(statistic);</span>
+<span class="nc bnc" id="L122" title="All 5 branches missed.">    	switch (stat) {</span>
+    	case &quot;Player&quot;:
+<span class="nc bnc" id="L124" title="All 2 branches missed.">    		if (!num.equals(&quot;Total&quot;)) {</span>
+<span class="nc" id="L125">        		num = num.replace(&quot;_&quot;, &quot; &quot;);</span>
+<span class="nc" id="L126">        		Scanner scanner = new Scanner(num);</span>
+<span class="nc" id="L127">         		this.name = scanner.next();</span>
+<span class="nc" id="L128">         		this.lastName = scanner.next();</span>
+<span class="nc" id="L129">         		this.displayName = this.name + &quot; &quot; + this.lastName.charAt(0) + &quot;.&quot;;</span>
+<span class="nc" id="L130">         		scanner.close();</span>
+<span class="nc" id="L131">        	} else {</span>
+<span class="nc" id="L132">        		this.name = this.displayName = num;</span>
+<span class="nc" id="L133">        		this.lastName = &quot;&quot;;</span>
+        	}
+<span class="nc" id="L135">    		break;</span>
+    	case &quot;MIN&quot;:
+<span class="nc" id="L137">        	this.data.put(stat, Integer.valueOf(num));</span>
+<span class="nc" id="L138">        	break;</span>
+    	case &quot;FG%&quot;:
+    	case &quot;3P%&quot;:
+    	case &quot;FT%&quot;:
+<span class="nc" id="L142">    		break;</span>
+    	case &quot;OnCourt&quot;:
+<span class="nc" id="L144">    		this.isOnFloor = num.equals(&quot;true&quot;);</span>
+<span class="nc" id="L145">    		break;</span>
+    	default:
+<span class="nc" id="L147">        	this.data.put(stat, Integer.valueOf(num));</span>
+    	}
+<span class="nc" id="L149">    }</span>
+    
+    // Pre:  'statistic' is a key in either the 'data' or 'statMap' map, otherwise an 
+    //       IllegalArgumentException is thrown.
+    // Post: Returns the String representation of the value associated with the given 'statistic'.
+    //       The 'total' parameter only applies if the 'statistic' in question is &quot;Player&quot;. In which case,
+    //       'total' is used to distinguish a normal player from the abstract Total player used in the
+    //       Table class to show the totals of each statistic throughout the team.
+    public String getStat(String statistic) {
+<span class="nc" id="L158">    	boolean isForTable = statistic.contains(&quot;*&quot;);</span>
+<span class="nc" id="L159">    	statistic = statistic.replace(&quot;*&quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L160" title="All 4 branches missed.">    	switch (statistic) {</span>
+    	case &quot;Missed FG&quot;:
+<span class="nc" id="L162">    		return Integer.toString(this.data.get(&quot;FGA&quot;) - this.data.get(&quot;FGM&quot;));</span>
+    	case &quot;Missed 3pt FG&quot;:
+<span class="nc" id="L164">    		return Integer.toString(this.data.get(&quot;3PA&quot;) - this.data.get(&quot;3PM&quot;));</span>
+    	case &quot;Missed Free Throw&quot;:
+<span class="nc" id="L166">    		return Integer.toString(this.data.get(&quot;FTA&quot;) - this.data.get(&quot;FTM&quot;));</span>
+    	}
+<span class="nc" id="L168">    	String stat = mapStat(statistic);</span>
+<span class="nc bnc" id="L169" title="All 7 branches missed.">    	switch (stat) {</span>
+    	case &quot;Player&quot;:
+<span class="nc bnc" id="L171" title="All 2 branches missed.">    		if (this.displayName.isEmpty()) {</span>
+<span class="nc" id="L172">    			return this.name;</span>
+    		} else {
+<span class="nc" id="L174">        		return this.name + &quot;_&quot; + this.lastName;</span>
+    		}
+    	case &quot;MIN&quot;:
+<span class="nc bnc" id="L177" title="All 2 branches missed.">    		if (isForTable) {</span>
+<span class="nc" id="L178">                return Integer.toString((int) Math.round(this.data.get(stat) / 600.0));</span>
+    		} else {
+<span class="nc" id="L180">                return Integer.toString((int) Math.round(this.data.get(stat)));</span>
+    		}
+    	case &quot;FG%&quot;:
+<span class="nc" id="L183">        	return getPercentage(this.data.get(&quot;FGM&quot;), this.data.get(&quot;FGA&quot;));</span>
+    	case &quot;3P%&quot;:
+<span class="nc" id="L185">        	return getPercentage(this.data.get(&quot;3PM&quot;), this.data.get(&quot;3PA&quot;));</span>
+    	case &quot;FT%&quot;:
+<span class="nc" id="L187">        	return getPercentage(this.data.get(&quot;FTM&quot;), this.data.get(&quot;FTA&quot;));</span>
+    	case &quot;REB&quot;:
+<span class="nc" id="L189">    		return Integer.toString(this.data.get(&quot;OREB&quot;) + this.data.get(&quot;DREB&quot;));</span>
+    	default:
+<span class="nc" id="L191">        	return this.data.get(stat) + &quot;&quot;;</span>
+    	}
+    }
+    
+    // Pre:  'made' and 'attempted' are greater than 0, otherwise throws an IllegalArgumentException.
+    // Post: Returns a String representation of the percentage of 'made' / 'attempted'.
+    //       If percentage is 100%, then &quot;100&quot; is returned.
+    //       If no shots were made, then &quot;0.0&quot; is returned.
+    //       Otherwise, a number with one decimal spot is returned as a String.
+    private String getPercentage(int made, int attempted) {
+<span class="nc bnc" id="L201" title="All 4 branches missed.">    	if (made &lt; 0 || attempted &lt; 0) {</span>
+<span class="nc" id="L202">    		throw new IllegalArgumentException(&quot;Number of made/attemped shots cannot be negative&quot;);</span>
+    	}
+<span class="nc bnc" id="L204" title="All 2 branches missed.">        if (made == 0) {</span>
+<span class="nc" id="L205">            return &quot;0.0&quot;;</span>
+        } else {
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        	if (attempted == made) {</span>
+<span class="nc" id="L208">        		return &quot;100&quot;;</span>
+        	} else {
+<span class="nc" id="L210">                double fg = (double) made / attempted * 100;</span>
+<span class="nc" id="L211">                return Math.round(fg * 10.0) / 10.0 + &quot;&quot;;</span>
+        	}
+        }
+    }
+    
+    // Pre:  'stat' is a key in either the data or statMap maps.
+    //       Otherwise throws an IllegalArgumentException.
+    // Post: Returns the abbreviated version of the 'stat' if 'stat' is the full statistic
+    //       name. Otherwise 'stat' is simply returned.
+    private String mapStat(String stat) {
+<span class="nc bnc" id="L221" title="All 4 branches missed.">    	if (!this.data.containsKey(stat) &amp;&amp; !this.statMap.containsKey(stat)) {</span>
+<span class="nc" id="L222">    		throw new IllegalArgumentException(stat + &quot; is not a valid statistic&quot;);</span>
+    	}
+<span class="nc bnc" id="L224" title="All 2 branches missed.">    	if (!this.data.containsKey(stat)) {</span>
+<span class="nc" id="L225">    		return this.statMap.get(stat);</span>
+    	} else {
+<span class="nc" id="L227">    		return stat;</span>
+    	}
+    }
+    
+    // Post: Returns true if the player's personal fouls are greater than the minimum given by the user
+    //       or if the player's technical fouls are greater than the minimum given by the user.
+    public boolean hasFouledOut(int PF, int TF, int FI, int FII) {
+<span class="nc bnc" id="L234" title="All 2 branches missed.">    	return Integer.valueOf(getStat(&quot;PF&quot;)) &gt;= PF </span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">    		   || Integer.valueOf(getStat(&quot;TF&quot;)) &gt;= TF </span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">    		   || Integer.valueOf(getStat(&quot;FLGI&quot;)) &gt;= FI </span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">    		   || Integer.valueOf(getStat(&quot;FLGII&quot;)) &gt;= FII;</span>
+    }
+    
+    public boolean isEqual(Player other) {
+<span class="nc bnc" id="L241" title="All 2 branches missed.">    	return this.name.equals(other.getName()) &amp;&amp; </span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">    		   this.lastName.equals(other.getLastName()) &amp;&amp; </span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">    		   this.displayName.equals(other.getDisplayName());</span>
+    }
+    
+    // Post: Returns the calculated statistics for the player
+    public String getStatLine() {
+<span class="nc" id="L248">    	return toString() + &quot;: &quot; + getStat(&quot;PTS&quot;) + &quot; Points | &quot; + getStat(&quot;REB&quot;) + &quot; Rebounds | FG%: &quot;</span>
+<span class="nc" id="L249">               + getStat(&quot;FG%&quot;) + &quot; | 3P% &quot; + getStat(&quot;3P%&quot;) + &quot; | FT%: &quot; + getStat(&quot;FT%&quot;);</span>
+    }
+    
+    // Post: Returns the players first and last name separated by a space
+    public String toString() {
+<span class="fc" id="L254">    	return this.name + &quot; &quot; + this.lastName;</span>
+    }
+    
+    // Post: Returns the First Name of the Player.
+    public String getName() {
+<span class="fc" id="L259">        return this.name;</span>
+    }
+    
+    // Post: Returns the Last Name of the Player.
+    public String getLastName() {
+<span class="fc" id="L264">    	return this.lastName;</span>
+    }
+    
+    // Post: Returns the Display Name of the Player.
+    public String getDisplayName() {
+<span class="fc" id="L269">    	return this.displayName;</span>
+    }
+    
+    // Post: Returns true if the player is currently on the court.
+    //       Returns false if not.
+    public boolean isStarter() {
+<span class="fc" id="L275">    	return this.isOnFloor;</span>
+    }
+    
+    // Post: Sets the players first name to be 'name'.
+    public void setName(String name) {
+<span class="fc" id="L280">        this.name = name;</span>
+<span class="fc" id="L281">    }</span>
+    
+    // Post: Sets the players display name to be 'name'.
+    public void setDisplayName(String name) {
+<span class="fc" id="L285">        this.displayName = name;</span>
+<span class="fc" id="L286">    }</span>
+    
+    // Post: Player is on court.
+    public void setOnFloor() {
+<span class="fc" id="L290">    	this.isOnFloor = true;</span>
+<span class="fc" id="L291">    }</span>
+    
+    // Post: Player if off court.
+    public void setOffFloor() {
+<span class="fc" id="L295">    	this.isOnFloor = false;</span>
+<span class="fc" id="L296">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

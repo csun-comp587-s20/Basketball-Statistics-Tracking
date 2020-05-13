@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameSettings.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">basketball</a> &gt; <a href="index.source.html" class="el_package">basketball</a> &gt; <span class="el_source">GameSettings.java</span></div><h1>GameSettings.java</h1><pre class="source lang-java linenums">// Alex Eidt
+// Basketball Statistics Tracking Program
+// GameSettings Class
+// GameSettings keeps track of all the settings used for the actual game/game play and the
+// settings used to format the program (background color, etc.).
+package basketball;
+import java.awt.*;
+import java.awt.event.*;
+
+public class GameSettings extends BasketballMain implements ActionListener {
+	
+	private Color background_color; // Background color used throughout the program
+	private int number_of_starters; // Number of starters for the game
+	private int personal_fouls; // Number of personal fouls allowed
+	private int technical_fouls; // Number of technical fouls allowed
+	private int flagrant_i; // Number of Flagrant I fouls allowed
+	private int flagrant_ii; // Number of Flagrant II fouls allowed
+	private int current_period; // The current period of the game (1st quarter/half, 2nd quarter/half ...)
+	private boolean period_type; // Period Type ---&gt; Quarters: true / Halves: false
+	private double game_length; // The length of each period
+	private double overtime_length; // The length of an overtime
+	private double time_remaining; // The time remaining in the current period
+	private int timeouts; // The number of timeouts for the team
+	private int OTTimeouts; // The number of timeouts per overtime period
+	
+    private static final long serialVersionUID = 1L;
+    
+    // Post: Set the settings of the game to resemble those of a typical NBA
+    //       basketball game with four 12-minute quarters, 6 personal and 2 technical
+    //       fouls allowed per player.
+    //       The background colors are set to white and all borders and text colors are
+    //       set to black.
+<span class="nc" id="L33">    public GameSettings() {</span>
+<span class="nc" id="L34">    	this.background_color = DEFAULT_BACKGROUND_COLOR;</span>
+<span class="nc" id="L35">    	this.number_of_starters = DEFAULT_NUMBER_OF_STARTERS;</span>
+<span class="nc" id="L36">    	this.personal_fouls = DEFAULT_PERSONAL_FOULS_ALLOWED;</span>
+<span class="nc" id="L37">    	this.technical_fouls = DEFAULT_TECHNICAL_FOULS_ALLOWED;</span>
+<span class="nc" id="L38">    	this.flagrant_i = DEFAULT_FLAGRANT_1;</span>
+<span class="nc" id="L39">    	this.flagrant_ii = DEFAULT_FLAGRANT_2;</span>
+<span class="nc" id="L40">    	this.period_type = DEFAULT_PERIOD_TYPE;</span>
+<span class="nc" id="L41">    	this.game_length = DEFAULT_GAME_LENGTH;</span>
+<span class="nc" id="L42">    	this.overtime_length = DEFAULT_OVERTIME_LENGTH;</span>
+<span class="nc" id="L43">    	this.time_remaining = DEFAULT_TIME_REMAINING;</span>
+<span class="nc" id="L44">    	this.current_period = DEFAULT_CURRENT_PERIOD;</span>
+<span class="nc" id="L45">    	this.timeouts = DEFAULT_TIMEOUTS;</span>
+<span class="nc" id="L46">    	this.OTTimeouts = DEFAULT_OT_TIMEOUTS;</span>
+    	
+<span class="nc" id="L48">    }</span>
+    
+    // Post: Returns an object representing the setting linked with a certain integer
+    //       defined by the &quot;Settings&quot; constants in the Constants superclass.
+    //       If the parameter 'choose' is not linked with a setting, the method returns null.
+    protected Object getSetting(Setting choose) {
+<span class="nc bnc" id="L54" title="All 14 branches missed.">    	switch(choose) {</span>
+    	case BACKGROUND_COLOR:
+<span class="nc" id="L56">    		return this.background_color;</span>
+    	case NUMBER_OF_STARTERS:
+<span class="nc" id="L58">    		return this.number_of_starters;</span>
+    	case PERSONAL_FOULS:
+<span class="nc" id="L60">    		return this.personal_fouls;</span>
+    	case TECHNICAL_FOULS:
+<span class="nc" id="L62">    		return this.technical_fouls;</span>
+    	case FLAGRANT_I:
+<span class="nc" id="L64">    		return this.flagrant_i;</span>
+    	case FLAGRANT_II:
+<span class="nc" id="L66">    		return this.flagrant_ii;</span>
+    	case CURRENT_PERIOD:
+<span class="nc" id="L68">    		return this.current_period;</span>
+    	case PERIOD_TYPE:
+<span class="nc" id="L70">    		return this.period_type;</span>
+    	case GAME_LENGTH:
+<span class="nc" id="L72">    		return this.game_length;</span>
+    	case OVERTIME_LENGTH:
+<span class="nc" id="L74">    		return this.overtime_length;</span>
+    	case TIME_REMAINING:
+<span class="nc" id="L76">    		return this.time_remaining;</span>
+    	case TIMEOUTS:
+<span class="nc" id="L78">    		return this.timeouts;</span>
+    	case OT_TIMEOUTS:
+<span class="nc" id="L80">    		return this.OTTimeouts;</span>
+    	default:
+<span class="nc" id="L82">    		return null;	</span>
+    	}
+    }
+    
+    // Post: Sets the setting linked with the parameter 'choose' with the Object 'data'.
+    //       THe Object is cast to the correct type depending on which setting is being set.
+    protected void setSetting(Object data, Setting choose) {
+<span class="nc bnc" id="L89" title="All 14 branches missed.">    	switch (choose) {</span>
+    	case BACKGROUND_COLOR:
+<span class="nc" id="L91">    		this.background_color = (Color) data;</span>
+<span class="nc" id="L92">    		break;</span>
+    	case NUMBER_OF_STARTERS:
+<span class="nc" id="L94">    		this.number_of_starters = (int) data;</span>
+<span class="nc" id="L95">    		break;</span>
+    	case PERSONAL_FOULS:
+<span class="nc" id="L97">    		this.personal_fouls = (int) data;</span>
+<span class="nc" id="L98">    		break;</span>
+    	case TECHNICAL_FOULS:
+<span class="nc" id="L100">    		this.technical_fouls = (int) data;</span>
+<span class="nc" id="L101">    		break;</span>
+    	case FLAGRANT_I:
+<span class="nc" id="L103">    		this.flagrant_i = (int) data;</span>
+<span class="nc" id="L104">    		break;</span>
+    	case FLAGRANT_II:
+<span class="nc" id="L106">    		this.flagrant_ii = (int) data;</span>
+<span class="nc" id="L107">    		break;</span>
+    	case CURRENT_PERIOD:
+<span class="nc" id="L109">    		this.current_period = (int) data;</span>
+<span class="nc" id="L110">    		break;</span>
+    	case PERIOD_TYPE:
+<span class="nc" id="L112">    		this.period_type = (boolean) data;</span>
+<span class="nc" id="L113">    		break;</span>
+    	case GAME_LENGTH:
+<span class="nc" id="L115">    		this.game_length = (double) data;</span>
+<span class="nc" id="L116">    		break;</span>
+    	case OVERTIME_LENGTH:
+<span class="nc" id="L118">    		this.overtime_length = (double) data;</span>
+<span class="nc" id="L119">    		break;</span>
+    	case TIME_REMAINING:
+<span class="nc" id="L121">    		this.time_remaining = (double) data;</span>
+<span class="nc" id="L122">    		break;</span>
+    	case TIMEOUTS:
+<span class="nc" id="L124">    		this.timeouts = (int) data;</span>
+<span class="nc" id="L125">    		break;</span>
+    	case OT_TIMEOUTS:
+<span class="nc" id="L127">    		this.OTTimeouts = (int) data;</span>
+<span class="nc" id="L128">    		break;</span>
+    	default:
+    		break;
+    	}
+<span class="nc" id="L132">    }</span>
+    
+    protected static final String DIVIDER = &quot;_&quot;;
+    
+    // Post: Returns a String representation of the game settings used when writing
+    //       to the game file.
+    public String toString() {
+<span class="nc" id="L139">    	String[] data = {this.number_of_starters + &quot;&quot;, + this.personal_fouls + &quot;&quot;,</span>
+            this.technical_fouls + &quot;&quot;, this.flagrant_i + &quot;&quot;,
+            this.flagrant_ii + &quot;&quot;, this.period_type + &quot;&quot;,
+            this.game_length + &quot;&quot;, this.time_remaining + &quot;&quot;,
+            this.overtime_length + &quot;&quot;, this.current_period + &quot;&quot;, 
+            this.timeouts + &quot;&quot;};
+<span class="nc" id="L145">    	String result = data[0];</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">    	for (int i = 1; i &lt; data.length; i++) {</span>
+<span class="nc" id="L147">    		result += DIVIDER + data[i];</span>
+    	}
+<span class="nc" id="L149">    	return result;</span>
+    }
+    
+    public void actionPerformed(ActionEvent arg0) {       
+<span class="nc" id="L153">    }</span>
+}
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
