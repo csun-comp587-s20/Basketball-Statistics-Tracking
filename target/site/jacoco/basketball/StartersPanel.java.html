@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StartersPanel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">basketball</a> &gt; <a href="index.source.html" class="el_package">basketball</a> &gt; <span class="el_source">StartersPanel.java</span></div><h1>StartersPanel.java</h1><pre class="source lang-java linenums">// Alex Eidt
+// Basketball Statistics Tracking Program
+// StartersPanel Class
+// A window that opens once the 'Start Game' button is pressed in the GetPlayersPanel
+// if the number of players entered is greater than the number of starters specified in the settings.
+// Allows the user to select their starters for the game before beginning to track statistics. 
+package basketball;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.border.*;
+
+public class StartersPanel extends GUISettings {
+	
+	private static final long serialVersionUID = 1L;
+	
+	// Indices of buttons in the 'buttonArray'
+	private static final int UNDO_BUTTON = 0;
+	private static final int STARTGAME_BUTTON = 1;
+	private static final int CLOSE_BUTTON = 2;
+	private static final int HOME_BUTTON = 3;
+	
+	// Key Bindings for each button in 'buttonArray'
+	// Start button uses the enter key -- It is set to be the default button for the frame.
+	private static final int UNDO_BUTTON_KEY = KeyEvent.VK_BACK_SPACE;
+	private static final int CLOSE_BUTTON_KEY = KeyEvent.VK_ESCAPE;
+	
+	private List&lt;Player&gt; startingOnCourt; // The players that will be starting the game.
+	private List&lt;Player&gt; startingOnBench; // The players that will be on the bench to begin the game.
+	private List&lt;Player&gt; players; // Total list of players.
+	private List&lt;JButton&gt; playerButtons; // List of JButtons for each player.
+	private Stack&lt;String&gt; displayNames; // The names of players who are selected for being a starter.
+	private int starters; // The number of starters currently selected 
+	private JTextArea playerList; // The names of players who are selected for being a starter.
+	private JLabel header; // The header of the panel that reads 'Select X Starter(s)'
+	private JPanel buttons; // The panel on the left side of the panel that lists all buttons in 'playerButtons'.
+	private JPanel pane; // Used to switch viewing windows when certain buttons are pressed.
+	private JButton[] buttonArray; // All the non-player buttons used in the StartersPanel.
+	private JFrame frame; // The frame the StartersPanel is in.
+	private String fileName; // The fileName where the game data will be stored.
+	private String startersPlural; // Plural/Singular version of 'Starter(s)'.
+	private JSplitPane splitPane; // SplitPane used to split the player buttons and the rest of the panel.
+	private GameSettings SETTINGS; // The settings used to format this panel and the number of starters.
+	
+	final private Color background; // The background color as chosen by the user in the settings.
+	final int numberStarters; // The number of starters as chosen by the user in the settings.
+	
+	// Parameters:
+	// 'players': The total list of players
+	// 'fileName': The name of the file the game data will be stored in
+	// 'settings': The settings being used for the game
+<span class="nc" id="L54">	public StartersPanel(List&lt;Player&gt; players, String fileName, GameSettings settings) {</span>
+<span class="nc" id="L55">		this.SETTINGS = settings;</span>
+<span class="nc" id="L56">		this.startersPlural = &quot;Starter&quot;;</span>
+<span class="nc" id="L57">		int numberStarters = (int) SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS);</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">		if (numberStarters &gt; 1) {</span>
+<span class="nc" id="L59">			this.startersPlural += &quot;s&quot;;</span>
+		}
+<span class="nc" id="L61">		this.players = players;</span>
+<span class="nc" id="L62">		this.startingOnCourt = new ArrayList&lt;Player&gt;(numberStarters);</span>
+<span class="nc" id="L63">		this.startingOnBench = new ArrayList&lt;Player&gt;(this.players.size() - numberStarters);</span>
+<span class="nc" id="L64">		this.playerButtons = new ArrayList&lt;JButton&gt;(this.players.size());</span>
+<span class="nc" id="L65">		this.displayNames = new Stack&lt;String&gt;();</span>
+<span class="nc" id="L66">		this.background = (Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR);</span>
+<span class="nc" id="L67">		this.numberStarters = (int) SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS);</span>
+<span class="nc" id="L68">        this.header = formatLabel(&quot;Select &quot; + numberStarters + &quot; &quot; + startersPlural, FONT_SIZE, SETTINGS);</span>
+<span class="nc" id="L69">        this.playerList = formatTextArea(SCREENWIDTH / 2 + 90, 500, SETTINGS);</span>
+<span class="nc" id="L70">		this.buttons = new JPanel();</span>
+<span class="nc" id="L71">        this.buttons.setBackground((Color) SETTINGS.getSetting(Setting.BACKGROUND_COLOR));</span>
+<span class="nc" id="L72">    	this.fileName = fileName;</span>
+<span class="nc" id="L73">    	this.pane = new JPanel(new GridLayout(1, 1));</span>
+<span class="nc" id="L74">    	this.pane.setBackground(background);</span>
+<span class="nc" id="L75">    	initializeButtons();</span>
+<span class="nc" id="L76">	}</span>
+	
+	public void createAllButtons() {
+<span class="nc" id="L79">		createPlayerButtons();</span>
+<span class="nc" id="L80">		createUndoButton();</span>
+<span class="nc" id="L81">		createStartButton();</span>
+<span class="nc" id="L82">		createCloseButton();</span>
+<span class="nc" id="L83">		createHomeButton();</span>
+<span class="nc" id="L84">	}</span>
+	
+    // Post: Creates and formats all buttons used in the StartersPanel.
+	private void initializeButtons() {
+<span class="nc" id="L88">		String[] buttonNames = {&quot; Undo&quot;, &quot; Start Game&quot;, &quot; Close&quot;, &quot;No&quot;};</span>
+<span class="nc" id="L89">        int size = FONT_SIZE / 2;</span>
+<span class="nc" id="L90">        int[] sizes = {size, size, size, FONT_SIZE * 3 / 4};</span>
+<span class="nc" id="L91">        this.buttonArray = createButtonArray(buttonNames, sizes, SETTINGS);</span>
+<span class="nc" id="L92">        this.buttonArray[UNDO_BUTTON].setEnabled(false);</span>
+<span class="nc" id="L93">        this.buttonArray[STARTGAME_BUTTON].setEnabled(false);</span>
+<span class="nc" id="L94">        this.buttonArray[HOME_BUTTON].setBorder(null);</span>
+<span class="nc" id="L95">    	int[] indices = {UNDO_BUTTON, STARTGAME_BUTTON, CLOSE_BUTTON};</span>
+<span class="nc" id="L96">    	String[] icons = {UNDO_BUTTON_ICON, START_BUTTON_ICON, CLOSE_BUTTON_ICON};</span>
+<span class="nc" id="L97">    	formatIcons(this.buttonArray, indices, icons);</span>
+<span class="nc" id="L98">	}</span>
+	
+	// Post: Adds functionality to the Home Button. 
+	public void createHomeButton() {
+<span class="nc" id="L102">		this.buttonArray[HOME_BUTTON].addActionListener(new AbstractAction() {</span>
+			public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L104">				pane.removeAll();</span>
+<span class="nc" id="L105">				pane.setLayout(new GridLayout(1, 1));</span>
+<span class="nc" id="L106">				pane.add(splitPane);</span>
+<span class="nc" id="L107">				pane.repaint();</span>
+<span class="nc" id="L108">				pane.revalidate();</span>
+<span class="nc" id="L109">				frame.setTitle(&quot;Starter Selection&quot;);</span>
+<span class="nc" id="L110">            	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</span>
+<span class="nc" id="L111">                frame.getRootPane().setDefaultButton(buttonArray[STARTGAME_BUTTON]);</span>
+<span class="nc" id="L112">			}</span>
+		});
+<span class="nc" id="L114">	}</span>
+	
+	// Post: Adds functionality to all player buttons that appear in a grid on the left side of the StartersPanel.
+	public void createPlayerButtons() {
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        for (Player player : this.players) {</span>
+<span class="nc" id="L119">        	JButton button = new JButton(player.toString());</span>
+<span class="nc" id="L120">        	formatButton(button, BUTTON_HEIGHT * 3, BUTTON_HEIGHT, FONT_SIZE / 2, SETTINGS);</span>
+<span class="nc" id="L121">        	buttons.add(button);</span>
+<span class="nc" id="L122">        	playerButtons.add(button);</span>
+<span class="nc" id="L123">        	button.addActionListener(new AbstractAction() {</span>
+        		public void actionPerformed(ActionEvent e) {
+        			// If the number of starters required has not yet been reached
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        			if (starters &lt; numberStarters) {</span>
+<span class="nc" id="L127">    					starters++;</span>
+<span class="nc" id="L128">            			startingOnCourt.add(player); </span>
+<span class="nc" id="L129">                        displayNames.push(player.getName() + &quot; &quot; + player.getLastName());</span>
+<span class="nc" id="L130">                        playerList.setText(displayNames.toString().replaceAll(&quot;\\[&quot;, &quot;&quot;).replaceAll(&quot;\\]&quot;, &quot;&quot;));</span>
+<span class="nc" id="L131">                        button.setEnabled(false);</span>
+<span class="nc" id="L132">                        buttonArray[UNDO_BUTTON].setEnabled(true);</span>
+                        // If the number of starters is reached, all player buttons are disabled
+<span class="nc bnc" id="L134" title="All 2 branches missed.">                        if (startingOnCourt.size() == numberStarters) {</span>
+<span class="nc" id="L135">                        	buttonArray[STARTGAME_BUTTON].setEnabled(true);</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">                        	for (JButton btn : playerButtons) {</span>
+<span class="nc" id="L137">                        		btn.setEnabled(false);</span>
+<span class="nc" id="L138">                        	}</span>
+                        } else { // The pressed player button is disabled
+<span class="nc" id="L140">                        	buttonArray[STARTGAME_BUTTON].setEnabled(false);</span>
+                        }
+        			}
+<span class="nc" id="L143">        		}</span>
+        	});
+<span class="nc" id="L145">        }</span>
+<span class="nc" id="L146">	}</span>
+	
+	// Post: Adds the function for the 'Undo' button which removes the most recently added player
+	//       to the starters list.
+	public void createUndoButton() {
+<span class="nc" id="L151">    	this.buttonArray[UNDO_BUTTON].addActionListener(new AbstractAction() {</span>
+    		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L153">				Player remove = startingOnCourt.get(startingOnCourt.size() - 1);</span>
+				// Reactivate the button of the most recently removed player
+<span class="nc bnc" id="L155" title="All 2 branches missed.">				for (JButton btn : playerButtons) {</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">					if (btn.getText().equals(remove.toString())) {</span>
+<span class="nc" id="L157">						btn.setEnabled(true);</span>
+<span class="nc" id="L158">						break;</span>
+					}
+<span class="nc" id="L160">				}</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">            	for (JButton btn : playerButtons) {</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">            		if (!displayNames.contains(btn.getText())) {</span>
+<span class="nc" id="L163">            			btn.setEnabled(true);</span>
+            		}
+<span class="nc" id="L165">            	}</span>
+<span class="nc" id="L166">		        displayNames.pop();</span>
+<span class="nc" id="L167">		        playerList.setText(displayNames.toString().replaceAll(&quot;\\[&quot;, &quot;&quot;).replaceAll(&quot;\\]&quot;, &quot;&quot;));</span>
+<span class="nc" id="L168">				startingOnCourt.remove(remove); </span>
+<span class="nc" id="L169">				starters--;		  </span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">				buttonArray[UNDO_BUTTON].setEnabled(!startingOnCourt.isEmpty());</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">				buttonArray[STARTGAME_BUTTON].setEnabled(startingOnCourt.size() &gt;= (int) SETTINGS.getSetting(Setting.NUMBER_OF_STARTERS));</span>
+<span class="nc" id="L172">    		}</span>
+    	});
+<span class="nc" id="L174">    	setButtonKey(this.buttonArray[UNDO_BUTTON], UNDO_BUTTON_KEY, 0);</span>
+<span class="nc" id="L175">	}</span>
+	
+	// Post: Adds the function for the 'Start' button. Asks the user to confirm whether they want to 
+	//       start the game. 
+	public void createStartButton() {
+<span class="nc" id="L180">    	this.buttonArray[STARTGAME_BUTTON].addActionListener(new AbstractAction() {</span>
+    		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L182">    			AbstractAction button = new AbstractAction() {</span>
+                    public void actionPerformed(ActionEvent e) {                 	
+                    	// Set starters to be on the court
+<span class="nc bnc" id="L185" title="All 2 branches missed.">                    	for (int i = 0; i &lt; startingOnCourt.size(); i++) {</span>
+<span class="nc" id="L186">                    		Player starter = startingOnCourt.get(i);</span>
+<span class="nc" id="L187">                    		starter.setOnFloor();</span>
+<span class="nc" id="L188">                    		players.remove(starter);</span>
+                    	}
+                    	// Rest of players go to the bench
+<span class="nc" id="L191">                    	startingOnBench.addAll(players);</span>
+<span class="nc" id="L192">                        startTracking(startingOnCourt, startingOnBench, new ArrayList&lt;Undo&gt;(), fileName, SETTINGS);</span>
+<span class="nc" id="L193">                        frame.dispose();</span>
+<span class="nc" id="L194">                    }</span>
+                };
+<span class="nc" id="L196">            	confirmPane(pane, frame, buttonArray[HOME_BUTTON].getActionListeners()[0], button, </span>
+<span class="nc" id="L197">            			    &quot;Confirm &quot; + startersPlural + &quot;?&quot;, TEAM_ICON, SETTINGS);	</span>
+<span class="nc" id="L198">    		}</span>
+    	});
+<span class="nc" id="L200">	}</span>
+	
+	// Post: Adds functionality for the 'Close' button. Closes the StartersPanel window when pressed.
+	public void createCloseButton() {
+<span class="nc" id="L204">    	this.buttonArray[CLOSE_BUTTON].addActionListener(new AbstractAction() {</span>
+    		public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L206">    			startingOnCourt.clear();</span>
+<span class="nc" id="L207">    			startingOnBench.clear();</span>
+<span class="nc" id="L208">    			frame.dispose();</span>
+<span class="nc" id="L209">    		}</span>
+    	});
+<span class="nc" id="L211">    	setButtonKey(this.buttonArray[CLOSE_BUTTON], CLOSE_BUTTON_KEY, 0);</span>
+<span class="nc" id="L212">	}</span>
+	
+	// Post: Adds all components to the StartersPanel.
+	public void addElements() {  		       
+        // The panel that stores all three buttons on the StartersPanel
+<span class="nc" id="L217">        JPanel undoStartClose = new JPanel();</span>
+<span class="nc" id="L218">        formatPanel(undoStartClose, new Component[] {panelfy(this.buttonArray[UNDO_BUTTON], background, null, null), </span>
+<span class="nc" id="L219">        		                                     panelfy(this.buttonArray[STARTGAME_BUTTON], background, null, null), </span>
+<span class="nc" id="L220">        		                                     panelfy(this.buttonArray[CLOSE_BUTTON], background, null, null)}, null,</span>
+        		    new GridLayout(3, 1), background);
+        
+        // All the elements of the StartersPanel
+<span class="nc" id="L224">        JPanel total = new JPanel();</span>
+<span class="nc" id="L225">        formatPanel(total, new Component[] {panelfy(this.header, background, null, </span>
+        		                            new MatteBorder(BORDER_SIZE * 4, BORDER_SIZE, BORDER_SIZE * 2, BORDER_SIZE, background)), 
+<span class="nc" id="L227">        		                            panelfy(this.playerList, background, null, null), </span>
+        		                            undoStartClose}, 
+        		    null, null, background);
+        
+        // Adds a scroll bar to the list of player buttons on the left/right side of the StartersPanel
+<span class="nc" id="L232">        this.buttons.setLayout(new GridLayout(players.size(), 1));</span>
+<span class="nc" id="L233">        JScrollPane scrollPane = addScrollPane(this.buttons);</span>
+        
+        // The panel that stores the scrollable list of players that appears on either side of the StartersPanel
+<span class="nc" id="L236">        JPanel panePanel = new JPanel(new GridLayout(1, 1));</span>
+<span class="nc" id="L237">        panePanel.add(scrollPane);</span>
+        
+        // If the user selects the right handed option, the scrollable player list appears on the right
+        if (RIGHT_HANDED) {
+            this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, total, panePanel);
+            this.splitPane.setDividerLocation(SCREENWIDTH - (SCREENWIDTH * 2 / 5));
+        } else { // Scrollable player list appears on left for left handed users
+<span class="nc" id="L244">            this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panePanel, total);</span>
+<span class="nc" id="L245">            this.splitPane.setDividerLocation(SCREENWIDTH * 2 / 7);</span>
+        }
+<span class="nc" id="L247">        this.splitPane.setEnabled(false);     </span>
+<span class="nc" id="L248">	}</span>
+    
+	// Post: Puts the StartersPanel in a Frame.
+    public void frame() {
+<span class="nc" id="L252">        this.frame = new JFrame(&quot;Starter Selection&quot;);</span>
+<span class="nc" id="L253">        this.frame.setVisible(true);</span>
+<span class="nc" id="L254">        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+<span class="nc" id="L255">        this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);</span>
+<span class="nc" id="L256">        this.pane.add(this.splitPane);</span>
+<span class="nc" id="L257">        this.frame.add(this.pane);</span>
+<span class="nc" id="L258">        this.frame.getRootPane().setDefaultButton(this.buttonArray[STARTGAME_BUTTON]);</span>
+<span class="nc" id="L259">    }</span>
+    
+    // Post: Returns a JPanel with all the components of a StartersPanel.
+    public JPanel getStartersPanel() {
+<span class="nc" id="L263">    	this.splitPane.setBorder(new MatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, DEFAULT_TEXT_BORDER_COLOR));</span>
+<span class="nc" id="L264">    	this.splitPane.setBackground(background);</span>
+<span class="nc" id="L265">    	JPanel panel = new JPanel(new GridLayout(1, 1));</span>
+<span class="nc" id="L266">    	panel.setPreferredSize(new Dimension(SCREENWIDTH - 250, 900));</span>
+<span class="nc" id="L267">    	panel.setBackground(background);</span>
+<span class="nc" id="L268">    	panel.add(this.splitPane);</span>
+<span class="nc" id="L269">    	return panel;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

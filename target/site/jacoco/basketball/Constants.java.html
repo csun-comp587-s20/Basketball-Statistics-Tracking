@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Constants.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">basketball</a> &gt; <a href="index.source.html" class="el_package">basketball</a> &gt; <span class="el_source">Constants.java</span></div><h1>Constants.java</h1><pre class="source lang-java linenums">// Alex Eidt
+// Basketball Statistics Tracking Program
+// Constants Class
+// All the constants used in the program.
+package basketball;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.*;
+import javax.swing.JFrame;
+
+<span class="fc" id="L11">public abstract class Constants extends JFrame {</span>
+
+	protected static final long serialVersionUID = 1L;
+	
+	/*
+	 * ************************************************
+	 * *		         TEXT ARRAYS                  *
+	 * ************************************************
+	 * These are the arrays with the statistic names and
+	 * abbreviations used in basketball. 
+	 * STATISTICS are all the statistics kept track of by this program
+	 * STATISTIC_ABBREVIATIONS are the abbreviated statistic names used
+	 * STATISTIC_ENTIRE_WORDS are all statistics spelled out entirely with no abbreviations
+	 * 		-Necessary for the abbreviation explanations found in the InstructionsPanel class.
+	 * STATISTIC_DISPLAY_WORDS is an extension of STATISTIC_ENTIRE_WORDS but has the calculated statistics
+	 * (Percentages and total rebounds) abbreviated for display purposes.
+	 * GAME_PERIODS is used for the GameClock to cycle through periods. Used for both Halves and Quarters.
+	 */
+<span class="fc" id="L29">    protected static final String[] STATISTICS = {&quot;Made FG&quot;, </span>
+    											  &quot;Missed FG&quot;, 
+    											  &quot;Made 3pt FG&quot;, 
+    											  &quot;Missed 3pt FG&quot;, 
+    											  &quot;Made Free Throw&quot;, 
+    											  &quot;Missed Free Throw&quot;, 
+    											  &quot;Assist&quot;, 
+    											  &quot;Offensive Rebound&quot;, 
+    											  &quot;Defensive Rebound&quot;, 
+    											  &quot;Turnover&quot;, 
+    											  &quot;Steal&quot;, 
+    											  &quot;Block&quot;, 
+    											  &quot;Personal Foul&quot;, 
+    											  &quot;Technical Foul&quot;,
+    											  &quot;Flagrant I Foul&quot;,
+    											  &quot;Flagrant II Foul&quot;};
+<span class="fc" id="L45">    protected static final String[] STAT_KEYS = {&quot;2&quot;, &quot;Shift-2&quot;, &quot;3&quot;, &quot;Shift-3&quot;, &quot;1&quot;, &quot;Shift-1&quot;, &quot;A&quot;, &quot;Shift-R&quot;, &quot;R&quot;, &quot;T&quot;, &quot;S&quot;, &quot;B&quot;, &quot;P&quot;, &quot;F&quot;, &quot;X&quot;, &quot;Shift-X&quot;};</span>
+<span class="fc" id="L46">    protected static final int[] KEY_EVENTS = {KeyEvent.VK_2,</span>
+    										   KeyEvent.VK_2,
+    										   KeyEvent.VK_3,
+    										   KeyEvent.VK_3,
+    										   KeyEvent.VK_1,
+    										   KeyEvent.VK_1,
+    										   KeyEvent.VK_A,
+    										   KeyEvent.VK_R,
+    										   KeyEvent.VK_R,
+    										   KeyEvent.VK_T,
+    										   KeyEvent.VK_S,
+    										   KeyEvent.VK_B,
+    										   KeyEvent.VK_P,
+    										   KeyEvent.VK_F,
+    										   KeyEvent.VK_X,
+    										   KeyEvent.VK_X};
+<span class="fc" id="L62">    protected static final String[] STATISTIC_ABBREVIATIONS = {&quot;Player&quot;, </span>
+    														   &quot;MIN&quot;, 
+    														   &quot;PTS&quot;, 
+    														   &quot;FGM&quot;, 
+    														   &quot;FGA&quot;, 
+    														   &quot;FG%&quot;, 
+    														   &quot;3PM&quot;, 
+    														   &quot;3PA&quot;, 
+    														   &quot;3P%&quot;, 
+    														   &quot;FTM&quot;, 
+    														   &quot;FTA&quot;, 
+    														   &quot;FT%&quot;, 
+    														   &quot;OREB&quot;, 
+    														   &quot;DREB&quot;, 
+    														   &quot;REB&quot;, 
+    														   &quot;AST&quot;, 
+    														   &quot;TOV&quot;, 
+    														   &quot;STL&quot;, 
+    														   &quot;BLK&quot;, 
+    														   &quot;PF&quot;, 
+    														   &quot;TF&quot;,
+    														   &quot;FLGI&quot;,
+    														   &quot;FLGII&quot;};  
+<span class="fc" id="L85">    protected static final String[] STATISTIC_ENTIRE_WORDS = {&quot;Player&quot;, </span>
+    														  &quot;Minutes&quot;, 
+    														  &quot;Points&quot;, 
+    														  &quot;Made Field Goal&quot;, 
+    														  &quot;Missed Field Goal&quot;, 
+    														  &quot;Field Goal Percentage&quot;, 
+    														  &quot;Made 3 Pointer&quot;, 
+    														  &quot;Missed 3 Pointer&quot;, 
+    														  &quot;Three Point Percentage&quot;, 
+    														  &quot;Made Free Throw&quot;, 
+    														  &quot;Missed Free Throw&quot;, 
+    														  &quot;Free Throw Percentage&quot;, 
+    														  &quot;Offensive Rebound&quot;, 
+    														  &quot;Defensive Rebound&quot;, 
+    														  &quot;Rebound&quot;, 
+    														  &quot;Assist&quot;, 
+    														  &quot;Turnover&quot;, 
+    														  &quot;Steal&quot;, 
+    														  &quot;Block&quot;, 
+    														  &quot;Personal Foul&quot;, 
+    														  &quot;Technical Foul&quot;,
+    														  &quot;Flagrant Level I Foul&quot;,
+    														  &quot;Flagrant Level II Foul&quot;};
+<span class="fc" id="L108">	protected static final String[] STATISTIC_DISPLAY_WORDS = {&quot;Player&quot;, </span>
+															   &quot;Minutes&quot;, 
+															   &quot;Points&quot;, 
+															   &quot;Made FG&quot;, 
+															   &quot;Missed FG&quot;, 
+															   &quot;FG%&quot;, 
+															   &quot;Made 3pt FG&quot;, 
+															   &quot;Missed 3pt FG&quot;, 
+															   &quot;3P%&quot;, 
+															   &quot;Made Free Throw&quot;, 
+															   &quot;Missed Free Throw&quot;, 
+															   &quot;FT%&quot;, 
+															   &quot;Offensive Rebound&quot;, 
+															   &quot;Defensive Rebound&quot;, 
+															   &quot;Rebound&quot;, 
+															   &quot;Assist&quot;, 
+															   &quot;Turnover&quot;, 
+															   &quot;Steal&quot;, 
+															   &quot;Block&quot;, 
+															   &quot;Personal Foul&quot;, 
+															   &quot;Technical Foul&quot;,
+															   &quot;Flagrant I Foul&quot;,
+															   &quot;Flagrant II Foul&quot;};
+<span class="fc" id="L131">	protected static final String[] GAME_PERIODS = {&quot;1st&quot;, &quot;2nd&quot;, &quot;3rd&quot;, &quot;4th&quot;};</span>
+	
+	/*
+	 * ************************************************
+	 * *			   DEFAULT CONSTANTS              *
+	 * ************************************************
+	 * These are the default game settings used for a game.
+	 * They resemble the settings for an NBA game.
+	 */
+<span class="fc" id="L140">	protected static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;</span>
+<span class="fc" id="L141">	protected static final Color DEFAULT_FONT_COLOR = Color.BLACK;</span>
+<span class="fc" id="L142">	protected static final Color DEFAULT_TEXT_BORDER_COLOR = Color.BLACK;</span>
+	protected static final String DEFAULT_FONT_TYPE = &quot;Verdana&quot;;
+	protected static final int DEFAULT_NUMBER_OF_STARTERS = 5;
+	protected static final int DEFAULT_PERSONAL_FOULS_ALLOWED = 6;
+	protected static final int DEFAULT_TECHNICAL_FOULS_ALLOWED = 2;
+	protected static final int DEFAULT_CURRENT_PERIOD = 0;
+	protected static final boolean DEFAULT_PERIOD_TYPE = true; // Default Period Type is Quarters
+	protected static final double DEFAULT_GAME_LENGTH = 12.0;
+	protected static final double DEFAULT_OVERTIME_LENGTH = 5.0;
+	protected static final double DEFAULT_TIME_REMAINING = 12.0;
+	protected static final int DEFAULT_TIMEOUTS = 7;
+	protected static final int DEFAULT_OT_TIMEOUTS = 2;
+	protected static final int DEFAULT_FLAGRANT_1 = 2;
+	protected static final int DEFAULT_FLAGRANT_2 = 1;
+	
+	/*
+	 * ************************************************
+	 * *			   MAXIMUM CONSTANTS              *
+	 * ************************************************
+	 * The Maximum values for each of the settings shown in the 'DEFAULT SETTINGS'.
+	 */
+	protected static final int MAX_STARTERS = 5;
+	protected static final int MAX_PERSONAL_FOULS = 7;
+	protected static final int MAX_TECHNICAL_FOULS = 4;
+	protected static final int MAX_TIMEOUTS = 7;
+	
+	/*
+	 * ************************************************
+	 * *		         MISC DATA                    *
+	 * ************************************************
+	 * Constants used for formatting purposes.
+	 * YEAR, MONTH, and DAYNUM are used to write the date on new game files.
+	 * COLOR_NAMES and COLORS have the Color name represented as a String (in COLOR_NAMES) that corresponds
+	 * to the same Color of the same index in COLORS.
+	 * ROUNDED_BORDERS is used mainly for button borders, default is no rounded borders.
+	 * FILETYPE is the type of file the game data is written to.
+	 */
+    protected static final boolean RIGHT_HANDED = false;
+<span class="fc" id="L180">	protected static final int SCREENWIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;</span>
+<span class="fc" id="L181">    protected static final int SCREENHEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height;</span>
+<span class="fc" id="L182">    protected static final int BUTTON_HEIGHT = SCREENHEIGHT / 10;</span>
+<span class="fc" id="L183">    protected static final int FONT_SIZE = SCREENHEIGHT / 18;</span>
+<span class="fc" id="L184">    protected static final int BORDER_SIZE = SCREENHEIGHT / 108;</span>
+    protected static final int QUARTERS = 4;
+    protected static final int HALVES = 2;
+    protected static final int END_OF_GAME = 1909;
+    protected static final int TIMER_SETTING = 100;
+<span class="fc" id="L189">    protected static final Color FOULED_OUT_BUTTON_COLOR = Color.RED;</span>
+<span class="fc" id="L190">    protected static final Color BENCH_BUTTON_COLOR = Color.LIGHT_GRAY;</span>
+<span class="fc" id="L191">    protected static final int YEAR = Calendar.getInstance().get(Calendar.YEAR);</span>
+<span class="fc" id="L192">    protected static final int MONTH = Calendar.getInstance().get(Calendar.MONTH) + 1;</span>
+<span class="fc" id="L193">    protected static final int DAYNUM = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);</span>
+<span class="fc" id="L194">    protected static final String[] COLOR_NAMES = {&quot;Red&quot;, &quot;Orange&quot;, &quot;Yellow&quot;, &quot;Green&quot;, &quot;Cyan&quot;, &quot;Blue&quot;, &quot;Magenta&quot;, &quot;Pink&quot;, &quot;Light Gray&quot;, &quot;Gray&quot;, &quot;Dark Gray&quot;};</span>
+<span class="fc" id="L195">    protected static final Color[] COLORS = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE, Color.MAGENTA, Color.PINK, Color.LIGHT_GRAY, Color.GRAY, Color.DARK_GRAY};</span>
+    protected static final boolean ROUNDED_BORDERS = false;
+    protected static final String FILETYPE = &quot;bball&quot;;
+    
+	// InstructionPanel Files:
+	
+	// Name of the text file containing the written explanations for each statistic being
+	// tracked by the program
+    protected static final String STAT_EXPLANATIONS_FILE = &quot;Stat_Explanations.txt&quot;;
+	// Name of the text file containing the explanations found in the Instructions window
+    protected static final String TEXT_FILE_NAME = &quot;Instructions.txt&quot;;	
+	// The sequence of characters in the TEXT_FILE that signals a new paragraph
+    protected static final String GAMEDATA_FILE_NAME = &quot;InstructionExample.&quot; + FILETYPE;
+	// Used when scanning the text file to enter the correct number of starters
+    
+	/*
+	 * ************************************************
+	 * *		         ICON NAMES                   *
+	 * ************************************************
+	 * File names of all icons used for buttons
+	 */
+    protected static final String SLASH = &quot;/&quot;;
+    protected static final String SUBMIT_BUTTON_ICON = SLASH + &quot;submit.png&quot;;
+    protected static final String UNDO_BUTTON_ICON = SLASH + &quot;undo.png&quot;;
+    protected static final String START_BUTTON_ICON = SLASH + &quot;start.png&quot;;
+    protected static final String OLDGAMES_BUTTON_ICON = SLASH + &quot;oldGames.png&quot;;
+    protected static final String INSTRUCTIONS_BUTTON_ICON = SLASH + &quot;instructions.png&quot;;
+    protected static final String CLOSE_BUTTON_ICON = SLASH + &quot;close.png&quot;;
+    protected static final String SETTINGS_BUTTON_ICON = SLASH + &quot;settings.png&quot;;
+    protected static final String PLAYER_ICON = SLASH + &quot;player.png&quot;;
+    protected static final String SCORE_BUTTON_ICON = SLASH + &quot;score.png&quot;;
+    protected static final String PLAY_BUTTON_ICON = SLASH + &quot;play.png&quot;;
+    protected static final String PAUSE_BUTTON_ICON = SLASH + &quot;pause.png&quot;;
+    protected static final String DONE_BUTTON_ICON = SLASH + &quot;done.png&quot;;
+    protected static final String BOXSCORE_BUTTON_ICON = SLASH + &quot;boxscore.png&quot;;
+    protected static final String MAINMENU_BUTTON_ICON = SLASH + &quot;mainMenu.png&quot;;
+    protected static final String ABBREVIATIONS_BUTTON_ICON = SLASH + &quot;abbreviations.png&quot;;
+    protected static final String ROSTER_MANAGEMENT_ICON = SLASH + &quot;rosterManagement.png&quot;;
+    protected static final String TIMEOUT_BUTTON_ICON = SLASH + &quot;timeout.png&quot;;
+    protected static final String TEAMFOULS_ICON = SLASH + &quot;fouls.png&quot;;
+    protected static final String FILE_WARNING_ICON = SLASH + &quot;fileWarning.png&quot;;
+    protected static final String OVERTIME_ICON = SLASH + &quot;overtime.png&quot;;
+    protected static final String SUB_PLAYER_ICON = SLASH + &quot;sub.png&quot;;
+    protected static final String TEAM_ICON = SLASH + &quot;team.png&quot;;
+    protected static final String GAME_OVER_ICON = SLASH + &quot;gameOver.png&quot;;
+    protected static final String GAMEOVER_WARNING_ICON = SLASH + &quot;combo.png&quot;;
+<span class="fc" id="L241">    protected static final int ICON_SIZE = SCREENHEIGHT * 2 / 27;</span>
+    
+	/*
+	 * ************************************************
+	 * *		         Settings                     *
+	 * ************************************************
+	 * Enumerated values used to identify certain settings
+	 */
+<span class="fc" id="L249">	enum Setting {</span>
+<span class="fc" id="L250">		 BACKGROUND_COLOR,</span>
+<span class="fc" id="L251">		 FONT_COLOR,</span>
+<span class="fc" id="L252">		 TEXT_BORDER_COLOR,</span>
+<span class="fc" id="L253">		 FONT_TYPE,</span>
+<span class="fc" id="L254">		 NUMBER_OF_STARTERS,</span>
+<span class="fc" id="L255">		 PERSONAL_FOULS,</span>
+<span class="fc" id="L256">		 TECHNICAL_FOULS,</span>
+<span class="fc" id="L257">		 FLAGRANT_I,</span>
+<span class="fc" id="L258">		 FLAGRANT_II,</span>
+<span class="fc" id="L259">		 CURRENT_PERIOD,</span>
+<span class="fc" id="L260">		 PERIOD_TYPE,</span>
+<span class="fc" id="L261">		 GAME_LENGTH,</span>
+<span class="fc" id="L262">		 OVERTIME_LENGTH,</span>
+<span class="fc" id="L263">		 TIME_REMAINING,</span>
+<span class="fc" id="L264">		 TIMEOUTS,</span>
+<span class="fc" id="L265">		 OT_TIMEOUTS;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
